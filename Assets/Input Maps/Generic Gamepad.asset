@@ -1,0 +1,37 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f1b5490004515324cb2fb30147c93eaa, type: 3}
+  m_Name: Generic Gamepad
+  m_EditorClassIdentifier: 
+  Map:
+    LeftStickAxes: {x: 1, y: 2}
+    LeftStickInvertY: 1
+    RightStickAxes: {x: 3, y: 4}
+    RightStickInvertY: 1
+    TriggersAxes: {x: 7, y: 8}
+    DPadAxes: {x: 5, y: 6}
+    DPadInvertY: 0
+    Button1: 330
+    Button2: 331
+    Button3: 332
+    Button4: 334
+    Start: 335
+    Select: 336
+    LeftBumper: 337
+    RightBumper: 338
+    LeftStick: 339
+    RightStick: 340
+    LeftTrigger: 341
+    RightTrigger: 342
+    DPadLeft: 343
+    DPadRight: 344
+    DPadUp: 345
+    DPadDown: 346

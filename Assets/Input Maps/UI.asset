@@ -1,0 +1,68 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f03499c209fc714d861e159eda75862, type: 3}
+  m_Name: UI
+  m_EditorClassIdentifier: 
+  _axes:
+  - Name: Navigation
+    Data:
+      AxisType: 2
+      ReadMousePosition: 1
+      IsUIInput: 1
+      Sensitivity: 0.5
+      InvertYAxis: 0
+      Normalize: 0
+      Left:
+        KeyEvent: 1
+        Main: 97
+        Alternative: 276
+        GamepadButton: 12
+      Right:
+        KeyEvent: 1
+        Main: 100
+        Alternative: 275
+        GamepadButton: 13
+      Up:
+        KeyEvent: 1
+        Main: 119
+        Alternative: 273
+        GamepadButton: 14
+      Down:
+        KeyEvent: 1
+        Main: 115
+        Alternative: 274
+        GamepadButton: 15
+      Debug: 0
+  _actions:
+  - Name: Submit
+    Data:
+      KeyEvent: 1
+      Main: 13
+      Alternative: 271
+      GamepadButton: 0
+  - Name: Cancel
+    Data:
+      KeyEvent: 1
+      Main: 27
+      Alternative: 0
+      GamepadButton: 1
+  - Name: Default
+    Data:
+      KeyEvent: 1
+      Main: 9
+      Alternative: 0
+      GamepadButton: 2
+  - Name: Delete
+    Data:
+      KeyEvent: 1
+      Main: 127
+      Alternative: 8
+      GamepadButton: 3

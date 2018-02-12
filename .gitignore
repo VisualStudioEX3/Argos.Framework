@@ -1,0 +1,44 @@
+# =============== #
+# Unity generated #
+# =============== #
+Temp/
+Obj/
+
+# ================== #
+# Own build binaries #
+# ================== #
+Builds/
+Library/cache/
+Library/FacebookSDK/
+Library/metadata/
+Library/PlayerDataCache/
+Library/ScriptAssemblies/
+Library/ShaderCache/
+Library/UnityAssemblies/
+Screen Shoots/
+
+# ===================================== #
+# Visual Studio / MonoDevelop generated #
+# ===================================== #
+ExportedObj/
+*.svd
+*.userprefs
+*.csproj
+*.pidb
+*.suo
+*.sln
+*.user
+*.unityproj
+*.booproj
+*.lock
+
+# ============ #
+# OS generated #
+# ============ #
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

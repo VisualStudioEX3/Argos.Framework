@@ -10,4 +10,4 @@
 : * Generic controllers (manual setup)
 * Multiplatform file system layer.
 * Localization system.
-* More functionalities coming soon.
+* More features coming soon.

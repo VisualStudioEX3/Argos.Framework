@@ -20,7 +20,7 @@ Screen Shoots/
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #
-.vs/
+.vs
 ExportedObj/
 *.svd
 *.userprefs

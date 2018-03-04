@@ -160,7 +160,7 @@ namespace Argos.Framework.Input
         /// <param name="sensitivity">Axis sensitivity factor. By default 3.</param>
         /// <param name="gamepadAxis">Predefined gamepad axis.</param>
         /// <param name="invertY">Invert Y axis.</param>
-        /// <param name="normalize">Normalize the axis on 360 movements.</param>
+        /// <param name="normalize">Normalize the axis on 360º/free movements.</param>
         /// <param name="debug">Debug values on console.</param>
         public InputAxis(InputAction leftKey, InputAction rightKey, InputAction downKey, InputAction upKey, float sensitivity = InputAxis.DEFAULT_SENSITIVITY, InputAxisType gamepadAxis = InputAxisType.GamepadLeftStick, bool invertY = false, bool normalize = false, bool debug = false)
         {

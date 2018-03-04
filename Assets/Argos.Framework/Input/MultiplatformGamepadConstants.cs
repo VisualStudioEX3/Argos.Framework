@@ -86,7 +86,7 @@ namespace Argos.Framework.Input
     }
 #else
     /// <summary>
-    /// XBox 360/XBox One Controller button map for Windows.
+    /// XBox 360/XBox One Controller button map for Windows and XBox One.
     /// </summary>
     /// <remarks>Not required driver setup on Windows 8/8.1 and 10. Windows 7 and early required driver setup: https://www.microsoft.com/accessories/en-gb/d/xbox-360-controller-for-windows </remarks>
     public enum XBoxControllerButtons
@@ -104,9 +104,9 @@ namespace Argos.Framework.Input
     }
 
     /// <summary>
-    /// XBox 360/XBox One Controller axis map for Windows.
+    /// XBox 360/XBox One Controller axis map for Windows and XBox One.
     /// </summary>
-    /// <remarks>LeftStick always is the X and Y axis.</remarks>
+    /// <remarks>LeftStick always is the X and Y axis on Unity Input Manager asset.</remarks>
     public enum XboxControllerAxes
     {
         LeftStickX = 1,
@@ -136,9 +136,9 @@ namespace Argos.Framework.Input
         R2 = KeyCode.JoystickButton7,
         Share = KeyCode.JoystickButton8,
         Options = KeyCode.JoystickButton9,
-        L3 = KeyCode.JoystickButton10, // Left stick button.
-        R3 = KeyCode.JoystickButton11, // Right stick button.
-        PadPress = KeyCode.JoystickButton13
+        L3 = KeyCode.JoystickButton10,
+        R3 = KeyCode.JoystickButton11,
+        TouchPad = KeyCode.JoystickButton13
     }
 
     /// <summary>
@@ -158,10 +158,10 @@ namespace Argos.Framework.Input
     }
 
     /// <summary>
-    /// Nintendo Switch Controller button map.
+    /// Nintendo Switch Pro Controller button map.
     /// </summary>
-    /// <remarks>Only supported on Nintendo Switch.</remarks>
-    public enum NintendoSwitchControllerButtons
+    /// <remarks>Nintendo Switch Pro Controller only supported natively on Windows (Windows 10 at least) via Bluetooth.</remarks>
+    public enum NintendoSwitchProControllerButtons
     {
         B = KeyCode.JoystickButton0,
         A = KeyCode.JoystickButton1,
@@ -182,10 +182,10 @@ namespace Argos.Framework.Input
     }
 
     /// <summary>
-    /// Nintendo Switch Controller axis map.
+    /// Nintendo Switch Pro Controller axis map.
     /// </summary>
-    /// <remarks>Only supported on Nintendo Switch.</remarks>
-    public enum NintendoSwitchControllerAxes
+    /// <remarks>Nintendo Switch Pro Controller only supported natively on Windows (Windows 10 at least) via Bluetooth.</remarks>
+    public enum NintendoSwitchProControllerAxes
     {
         LeftStickX = 1,
         LeftStickY = 2,

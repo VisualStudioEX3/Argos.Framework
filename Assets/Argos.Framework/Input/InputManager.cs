@@ -204,7 +204,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Assignable buttons for Nintendo Switch Controller.
         /// </summary>
-        static readonly KeyCode[] ASSIGNABLE_NINTENDO_SWITCH_BUTTONS = (KeyCode[])Enum.GetValues(typeof(NintendoSwitchControllerButtons));
+        static readonly KeyCode[] ASSIGNABLE_NINTENDO_SWITCH_BUTTONS = (KeyCode[])Enum.GetValues(typeof(NintendoSwitchProControllerButtons));
         #endregion
         
         #region Inspector fields
@@ -394,7 +394,7 @@ namespace Argos.Framework.Input
                             case Gamepad.GamepadType.PS4Controller:
                                 this.CurrentInputType = InputType.PS4Controller;
                                 break;
-                            case Gamepad.GamepadType.NintendoSwitchController:
+                            case Gamepad.GamepadType.NintendoSwitchProController:
                                 this.CurrentInputType = InputType.NintendoSwitchController;
                                 break;
                             default:

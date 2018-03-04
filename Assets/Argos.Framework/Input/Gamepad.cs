@@ -189,13 +189,13 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Static members
-        static readonly string[] XBOX_CONTROLLER_CHECK_NAMES = new string[] { "xbox", "xinput", "gpx gamepad" };                                    // Windows and Linux (OSX via third party driver).
+        static readonly string[] XBOX_CONTROLLER_CHECK_NAMES = new string[] { "xbox", "xinput" };                                                   // Windows and Linux (OSX via third party driver).
         static readonly string[] PS4_CONTROLLER_CHECK_NAMES = new string[] { "wireless controller", "sony" };                                       // Windows and OSX.
         static readonly string[] NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES = new string[] { "pro controller" };                                        // Only bluetooth, and at least, only on Windows.
 
-        static readonly string[] XBOX_CONTROLLER_NAME_IDENTIFIERS = { "Controller (XBOX 360 For Windows)", "XInput Controller" };                   // Windows and Linux (OSX via third party driver).
-        static readonly string[] PS4_CONTROLLER_NAME_IDENTIFIERS = { "Wireless Controller", "Sony Computer Entertainment Wireless Controller |" };  // Windows and OSX.
-        static readonly string[] NINTENDO_SWITCH_CONTROLLER_NAME_IDENTIFIERS = { "Pro Controller" };                                                // Only bluetooth, and at least, only on Windows.
+        //static readonly string[] XBOX_CONTROLLER_NAME_IDENTIFIERS = { "Controller (XBOX 360 For Windows)", "XInput Controller" };                   // Windows and Linux (OSX via third party driver).
+        //static readonly string[] PS4_CONTROLLER_NAME_IDENTIFIERS = { "Wireless Controller", "Sony Computer Entertainment Wireless Controller |" };  // Windows and OSX.
+        //static readonly string[] NINTENDO_SWITCH_CONTROLLER_NAME_IDENTIFIERS = { "Pro Controller" };                                                // Only bluetooth, and at least, only on Windows.
         #endregion
 
         #region Enums
@@ -219,7 +219,7 @@ namespace Argos.Framework.Input
             /// <summary>
             /// Nintendo Switch Pro controller.
             /// </summary>
-            NintendoSwitchController
+            NintendoSwitchProController
         }
 
         /// <summary>
@@ -426,18 +426,18 @@ namespace Argos.Framework.Input
                     rightStickButton = (KeyCode)PS4ControllerButtons.R3;
                     break;
 
-                case GamepadType.NintendoSwitchController:
+                case GamepadType.NintendoSwitchProController:
 
-                    button1 = (KeyCode)NintendoSwitchControllerButtons.B;
-                    button2 = (KeyCode)NintendoSwitchControllerButtons.A;
-                    button3 = (KeyCode)NintendoSwitchControllerButtons.Y;
-                    button4 = (KeyCode)NintendoSwitchControllerButtons.X;
-                    start = (KeyCode)NintendoSwitchControllerButtons.Plus;
-                    select = (KeyCode)NintendoSwitchControllerButtons.Minus;
-                    leftBumper = (KeyCode)NintendoSwitchControllerButtons.ZL;
-                    rightBumper = (KeyCode)NintendoSwitchControllerButtons.ZR;
-                    leftStickButton = (KeyCode)NintendoSwitchControllerButtons.LeftStick;
-                    rightStickButton = (KeyCode)NintendoSwitchControllerButtons.RightStick;
+                    button1 = (KeyCode)NintendoSwitchProControllerButtons.B;
+                    button2 = (KeyCode)NintendoSwitchProControllerButtons.A;
+                    button3 = (KeyCode)NintendoSwitchProControllerButtons.Y;
+                    button4 = (KeyCode)NintendoSwitchProControllerButtons.X;
+                    start = (KeyCode)NintendoSwitchProControllerButtons.Plus;
+                    select = (KeyCode)NintendoSwitchProControllerButtons.Minus;
+                    leftBumper = (KeyCode)NintendoSwitchProControllerButtons.ZL;
+                    rightBumper = (KeyCode)NintendoSwitchProControllerButtons.ZR;
+                    leftStickButton = (KeyCode)NintendoSwitchProControllerButtons.LeftStick;
+                    rightStickButton = (KeyCode)NintendoSwitchProControllerButtons.RightStick;
                     break;
 
                 default:
@@ -519,10 +519,10 @@ namespace Argos.Framework.Input
                     invertY = -1f;
                     break;
 
-                case GamepadType.NintendoSwitchController:
+                case GamepadType.NintendoSwitchProController:
 
-                    xAxis = this.GetAxisName((int)NintendoSwitchControllerAxes.LeftStickX);
-                    yAxis = this.GetAxisName((int)NintendoSwitchControllerAxes.LeftStickY);
+                    xAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.LeftStickX);
+                    yAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.LeftStickY);
                     invertY = -1f;
                     break;
 
@@ -560,10 +560,10 @@ namespace Argos.Framework.Input
                     invertY = -1f;
                     break;
 
-                case GamepadType.NintendoSwitchController:
+                case GamepadType.NintendoSwitchProController:
 
-                    xAxis = this.GetAxisName((int)NintendoSwitchControllerAxes.RightStickX);
-                    yAxis = this.GetAxisName((int)NintendoSwitchControllerAxes.RightStickY);
+                    xAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.RightStickX);
+                    yAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.RightStickY);
                     invertY = -1f;
                     break;
 
@@ -633,23 +633,23 @@ namespace Argos.Framework.Input
                                             UnityEngine.Input.GetAxis(yAxis) * invertY);
                     break;
 
-                case GamepadType.NintendoSwitchController:
+                case GamepadType.NintendoSwitchProController:
 
                     if (this.DPad == Vector2.zero)
                     {
-                        if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchControllerButtons.DPadLeft))
+                        if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchProControllerButtons.DPadLeft))
                         {
                             this.DPad = Vector2.left;
                         }
-                        else if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchControllerButtons.DPadRight))
+                        else if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchProControllerButtons.DPadRight))
                         {
                             this.DPad = Vector2.right;
                         }
-                        else if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchControllerButtons.DPadUp))
+                        else if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchProControllerButtons.DPadUp))
                         {
                             this.DPad = Vector2.up;
                         }
-                        else if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchControllerButtons.DPadDown))
+                        else if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchProControllerButtons.DPadDown))
                         {
                             this.DPad = Vector2.down;
                         }
@@ -737,10 +737,10 @@ namespace Argos.Framework.Input
 
                     break;
 
-                case GamepadType.NintendoSwitchController:
+                case GamepadType.NintendoSwitchProController:
 
-                    this.ReadButtonState((KeyCode)NintendoSwitchControllerButtons.ZL, ref left);
-                    this.ReadButtonState((KeyCode)NintendoSwitchControllerButtons.ZR, ref right);
+                    this.ReadButtonState((KeyCode)NintendoSwitchProControllerButtons.ZL, ref left);
+                    this.ReadButtonState((KeyCode)NintendoSwitchProControllerButtons.ZR, ref right);
 
                     break;
 
@@ -810,7 +810,7 @@ namespace Argos.Framework.Input
         /// </summary>
         /// <param name="xAxis">Horizontal axis.</param>
         /// <param name="yAxis">Vertical axis.</param>
-        /// <returns>Vector2.right (1, 0) when keydonw on x axis and Vector2.up (0, 1) when keydown on y axis.</returns>
+        /// <returns>Vector2.right (1, 0) when keydown on x axis and Vector2.up (0, 1) when keydown on y axis.</returns>
         Vector2 GetAxisKeyDownVector(string xAxis, string yAxis)
         {
             return new Vector2()
@@ -841,7 +841,7 @@ namespace Argos.Framework.Input
                     }
                     else if (Helper.IsInString(name.ToLower(), Gamepad.NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES))
                     {
-                        return GamepadType.NintendoSwitchController;
+                        return GamepadType.NintendoSwitchProController;
                     }
                 }
             }

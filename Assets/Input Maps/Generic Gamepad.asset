@@ -9,7 +9,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f1b5490004515324cb2fb30147c93eaa, type: 3}
-  m_Name: Generic Gamepad
+  m_Name: 
   m_EditorClassIdentifier: 
   Map:
     LeftStickAxes: {x: 1, y: 2}
@@ -22,16 +22,16 @@ MonoBehaviour:
     Button1: 330
     Button2: 331
     Button3: 332
-    Button4: 334
-    Start: 335
-    Select: 336
-    LeftBumper: 337
-    RightBumper: 338
-    LeftStick: 339
-    RightStick: 340
-    LeftTrigger: 341
-    RightTrigger: 342
-    DPadLeft: 343
-    DPadRight: 344
-    DPadUp: 345
-    DPadDown: 346
+    Button4: 333
+    Start: 334
+    Select: 335
+    LeftBumper: 336
+    RightBumper: 337
+    LeftStick: 338
+    RightStick: 339
+    LeftTrigger: 340
+    RightTrigger: 341
+    DPadLeft: 342
+    DPadRight: 343
+    DPadUp: 344
+    DPadDown: 345

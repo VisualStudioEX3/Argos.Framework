@@ -10,7 +10,7 @@ namespace Argos.Framework.Input
     /// <summary>
     /// Virtual Input Axis.
     /// </summary>
-    /// <remarks>Simulated a input axis with the capacity of configurate input actions for each axis direction, and support predefined axes for mouse input and gamepad axes.</remarks>
+    /// <remarks>Simulated a input axis with the capacity of setup input actions for each axis direction, and support predefined axes for mouse input and gamepad axes.</remarks>
     [Serializable]
     public class InputAxis
     {
@@ -92,8 +92,8 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Normalize axis.
         /// </summary>
-        /// <remarks>Use this property to fix the diagonal ranges on 360 movements.</remarks>
-        [Tooltip("Use this property to fix the diagonal ranges on 360 movements.")]
+        /// <remarks>Use this property to fix the diagonal ranges on 360º/free movements.</remarks>
+        [Tooltip("Use this property to fix the diagonal ranges on 360º/free movements.")]
         public bool Normalize;
 
         /// <summary>

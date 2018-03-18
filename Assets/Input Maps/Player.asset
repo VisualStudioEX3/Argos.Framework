@@ -15,7 +15,7 @@ MonoBehaviour:
   - Name: Movement
     Data:
       AxisType: 2
-      ReadMousePosition: 0
+      AlternativeMouseInput: 0
       IsUIInput: 0
       Sensitivity: 10
       InvertYAxis: 0
@@ -44,7 +44,7 @@ MonoBehaviour:
   - Name: Aim
     Data:
       AxisType: 3
-      ReadMousePosition: 1
+      AlternativeMouseInput: 1
       IsUIInput: 0
       Sensitivity: 10
       InvertYAxis: 0

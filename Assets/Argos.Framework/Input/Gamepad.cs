@@ -161,7 +161,7 @@ namespace Argos.Framework.Input
     /// </summary>
     /// <remarks>
     /// Multiplatform single player gamepad mapper for works natively with the XBox 360/One and PS4 controllers maps on PC (Windows, Linux & Mac), and support for manual setup any generic gamepad or joystick.
-    /// FYI: The PS4 Controller is not supported natively on Linux, and the XBox 360 controller (and wired XBox One 1º Gen) not supported on OSX). Maybe add support for third party drivers for these cases in the future.
+    /// FYI: The PS4 Controller is not supported natively on Linux, and the XBox 360 controller (and wired XBox One 1º Gen) not supported on OSX. Maybe add support for third party drivers for these cases in the future.
     /// </remarks>
     public sealed class Gamepad
     {
@@ -191,11 +191,7 @@ namespace Argos.Framework.Input
         #region Static members
         static readonly string[] XBOX_CONTROLLER_CHECK_NAMES = new string[] { "xbox", "xinput" };                                                   // Windows and Linux (OSX via third party driver).
         static readonly string[] PS4_CONTROLLER_CHECK_NAMES = new string[] { "wireless controller", "sony" };                                       // Windows and OSX.
-        static readonly string[] NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES = new string[] { "pro controller" };                                        // Only bluetooth, and at least, only on Windows.
-
-        //static readonly string[] XBOX_CONTROLLER_NAME_IDENTIFIERS = { "Controller (XBOX 360 For Windows)", "XInput Controller" };                   // Windows and Linux (OSX via third party driver).
-        //static readonly string[] PS4_CONTROLLER_NAME_IDENTIFIERS = { "Wireless Controller", "Sony Computer Entertainment Wireless Controller |" };  // Windows and OSX.
-        //static readonly string[] NINTENDO_SWITCH_CONTROLLER_NAME_IDENTIFIERS = { "Pro Controller" };                                                // Only bluetooth, and at least, only on Windows.
+        static readonly string[] NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES = new string[] { "pro controller", "wireless gamepad" };                    // Only bluetooth, and at least, only on Windows.
         #endregion
 
         #region Enums
@@ -635,25 +631,12 @@ namespace Argos.Framework.Input
 
                 case GamepadType.NintendoSwitchProController:
 
-                    if (this.DPad == Vector2.zero)
-                    {
-                        if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchProControllerButtons.DPadLeft))
-                        {
-                            this.DPad = Vector2.left;
-                        }
-                        else if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchProControllerButtons.DPadRight))
-                        {
-                            this.DPad = Vector2.right;
-                        }
-                        else if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchProControllerButtons.DPadUp))
-                        {
-                            this.DPad = Vector2.up;
-                        }
-                        else if (UnityEngine.Input.GetKeyDown((KeyCode)NintendoSwitchProControllerButtons.DPadDown))
-                        {
-                            this.DPad = Vector2.down;
-                        }
-                    }
+                    xAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.DPadX);
+                    yAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.DPadY);
+                    invertY = 1f;
+
+                    this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
+                                            UnityEngine.Input.GetAxis(yAxis) * invertY);
                     break;
 
                 default:

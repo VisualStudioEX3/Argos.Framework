@@ -43,7 +43,7 @@ namespace Argos.Framework.Input
             GenericGamepad,
             XBoxController,
             PS4Controller,
-            NintendoSwitchController
+            NintendoSwitchProController
         }
         #endregion
 
@@ -354,7 +354,7 @@ namespace Argos.Framework.Input
 
                             return InputManager.ASSIGNABLE_PS4_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
 
-                        case InputType.NintendoSwitchController:
+                        case InputType.NintendoSwitchProController:
 
                             return InputManager.ASSIGNABLE_NINTENDO_SWITCH_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
 
@@ -395,7 +395,7 @@ namespace Argos.Framework.Input
                                 this.CurrentInputType = InputType.PS4Controller;
                                 break;
                             case Gamepad.GamepadType.NintendoSwitchProController:
-                                this.CurrentInputType = InputType.NintendoSwitchController;
+                                this.CurrentInputType = InputType.NintendoSwitchProController;
                                 break;
                             default:
                                 this.CurrentInputType = InputType.GenericGamepad;
@@ -408,6 +408,7 @@ namespace Argos.Framework.Input
                     else
                     {
                         Cursor.visible = true;
+                        Cursor.lockState = CursorLockMode.None;
                         this.CurrentInputType = InputType.KeyboardAndMouse;
                     }
 

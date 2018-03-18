@@ -169,16 +169,12 @@ namespace Argos.Framework.Input
         X = KeyCode.JoystickButton3,
         L = KeyCode.JoystickButton4,
         R = KeyCode.JoystickButton5,
-        Minus = KeyCode.JoystickButton6,
-        Plus = KeyCode.JoystickButton7,
-        LeftStick = KeyCode.JoystickButton8,
-        RightStick = KeyCode.JoystickButton9,
-        ZL = KeyCode.JoystickButton10,
-        ZR = KeyCode.JoystickButton11,
-        DPadDown = KeyCode.JoystickButton12,
-        DPadRight = KeyCode.JoystickButton13,
-        DPadLeft = KeyCode.JoystickButton14,
-        DPadUp = KeyCode.JoystickButton15
+        Minus = KeyCode.JoystickButton8,
+        Plus = KeyCode.JoystickButton9,
+        LeftStick = KeyCode.JoystickButton10,
+        RightStick = KeyCode.JoystickButton11,
+        ZL = KeyCode.JoystickButton6,
+        ZR = KeyCode.JoystickButton7
     }
 
     /// <summary>
@@ -187,11 +183,11 @@ namespace Argos.Framework.Input
     /// <remarks>Nintendo Switch Pro Controller only supported natively on Windows (Windows 10 at least) via Bluetooth.</remarks>
     public enum NintendoSwitchProControllerAxes
     {
-        LeftStickX = 1,
-        LeftStickY = 2,
-        RightStickX = 4,
-        RightStickY = 5,
-        DPadX = 6,
-        DPadY = 7
+        LeftStickX = 2,
+        LeftStickY = 4,
+        RightStickX = 7,
+        RightStickY = 8,
+        DPadX = 9,
+        DPadY = 10
     }
 }

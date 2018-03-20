@@ -12,6 +12,11 @@ public class Test : MonoBehaviour
         InputManager.Instance.GetInputMap("UI").GetAction("Cancel").OnKeyDown += this.OnEventCancelTest;
     }
 
+    void Update()
+    {
+        XInput.SetVibration(Mathf.Abs(InputManager.Instance.GetAxis("Player", "Movement").x), Mathf.Abs(InputManager.Instance.GetAxis("Player", "Movement").y));
+    }
+
     void OnEventSubmitTest()
     {
         print("Submit!");

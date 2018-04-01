@@ -255,10 +255,13 @@ namespace Argos.Framework.Input
         #region Initializers
         private void Awake()
         {
-            //Gamepad.Instance.BaseMap = this._gamepadBaseMap.Settings;
-            Gamepad.Instance.TryToIndentifyGamepad();
+#if UNITY_EDITOR
+            // Reset all input axes defined in Project Settings/Input Manager:
+            UnityInputManagerAsset.SetupInputAxes();
+#endif
 
             // Check in defined intervals the current active input:
+            Gamepad.Instance.TryToIndentifyGamepad();
             StartCoroutine(this.CheckCurrentInputTypeCoroutine());
 
             InputManager.Instance = this;

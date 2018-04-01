@@ -45,10 +45,10 @@ namespace Argos.Framework.Input
             this.Map.DPadUp = GamepadBaseMap.UnityJoystickButtons.JoystickButton14;
             this.Map.DPadDown = GamepadBaseMap.UnityJoystickButtons.JoystickButton15;
 
-            this.Map.LeftStickAxes = new Vector2(1f, 2f);
-            this.Map.RightStickAxes = new Vector2(3f, 4f);
-            this.Map.DPadAxes = new Vector2(5f, 6f);
-            this.Map.TriggersAxes = new Vector2(7f, 8f);
+            this.Map.LeftStickAxes = new Vector2Int(1, 2);
+            this.Map.RightStickAxes = new Vector2Int(3, 4);
+            this.Map.DPadAxes = new Vector2Int(5, 6);
+            this.Map.TriggersAxes = new Vector2Int(7, 8);
 
             this.Map.LeftStickInvertY = this.Map.RightStickInvertY = true;
             this.Map.DPadInvertY = false;
@@ -59,7 +59,7 @@ namespace Argos.Framework.Input
         private void OnEnable()
         {
             this.Reset();
-        } 
+        }
         #endregion
     }
 
@@ -67,19 +67,42 @@ namespace Argos.Framework.Input
     [CustomEditor(typeof(GamepadBaseMapAsset))]
     public class GamepadBaseMapAssetEditor : Editor
     {
+        GamepadBaseMapAsset _target;
+
         #region Events
+        private void OnEnable()
+        {
+            this._target = (GamepadBaseMapAsset)this.target;
+        }
+
         public override void OnInspectorGUI()
         {
             this.serializedObject.Update();
 
-            EditorGUILayout.HelpBox("This is the base map for use in gamepad input operations.\nUse this asset to define the axis and button map for any generic gamepad.\nThis values not affect to XBox, PS4 or Nintendo Switch controller maps.", MessageType.Info);
-            EditorGUILayout.HelpBox("You can restore default values using Reset command on the asset context menu or from script.", MessageType.Warning);
+            EditorGUILayout.HelpBox("Use this asset to setup axis and button map for any generic gamepad.", MessageType.Info);
+            EditorGUILayout.HelpBox("This values not affect to XBox, PS4 or Nintendo Switch Pro controller map setup.", MessageType.Warning);
 
             var serializedProperty = this.serializedObject.FindProperty("Map");
             serializedProperty.isExpanded = true;
             EditorGUILayout.PropertyField(serializedProperty, true);
 
+            this.CheckAxisRanges();
+
             this.serializedObject.ApplyModifiedProperties();
+        }
+        #endregion
+
+        #region Methods & Functions
+        void CheckAxisRanges()
+        {
+            this._target.Map.LeftStickAxes = new Vector2Int(Mathf.Clamp(this._target.Map.LeftStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
+                                                            Mathf.Clamp(this._target.Map.LeftStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+
+            this._target.Map.RightStickAxes = new Vector2Int(Mathf.Clamp(this._target.Map.RightStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
+                                                             Mathf.Clamp(this._target.Map.RightStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+
+            this._target.Map.DPadAxes = new Vector2Int(Mathf.Clamp(this._target.Map.DPadAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
+                                                       Mathf.Clamp(this._target.Map.DPadAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
         } 
         #endregion
     } 

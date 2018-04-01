@@ -79,7 +79,7 @@ namespace Argos.Framework.Input
         /// Left Stick axes setup.
         /// </summary>
         [Header("Axes:")]
-        public Vector2 LeftStickAxes;
+        public Vector2Int LeftStickAxes;
 
         /// <summary>
         /// Invert Y axis on Left Stick.
@@ -90,7 +90,7 @@ namespace Argos.Framework.Input
         /// Right Stick axes setup.
         /// </summary>
         [Space]
-        public Vector2 RightStickAxes;
+        public Vector2Int RightStickAxes;
 
         /// <summary>
         /// Invert Y axis on Right Stick.
@@ -103,13 +103,13 @@ namespace Argos.Framework.Input
         /// <remarks>X = Left trigger axis, Y = Right trigger axis.</remarks>        
         [Tooltip("Some gamepads and joysticks defined the triggers as separated axes:\n\nX = Left trigger axis, Y = Right trigger axis.")]
         [Space]
-        public Vector2 TriggersAxes;
+        public Vector2Int TriggersAxes;
 
         /// <summary>
         /// Some gamepads and joysticks defined the DPad as separated axes.
         /// </summary>
         [Space]
-        public Vector2 DPadAxes;
+        public Vector2Int DPadAxes;
 
         /// <summary>
         /// Invert Y axis on DPad.
@@ -139,7 +139,7 @@ namespace Argos.Framework.Input
         public UnityJoystickButtons RightBumper;
 
         [Space]        
-        public UnityJoystickButtons LeftStick;        
+        public UnityJoystickButtons LeftStick;
         public UnityJoystickButtons RightStick;
 
         [Space]
@@ -183,8 +183,9 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Constants
-        const int MAX_AXIS_INDEX = 10;
-        const int MIN_AXIS_INDEX = 1;
+        public const int MAX_AXIS_INDEX = 10;
+        public const int MIN_AXIS_INDEX = 1;
+
         const float AXIS_DELTA = 0.5f;
         #endregion
 

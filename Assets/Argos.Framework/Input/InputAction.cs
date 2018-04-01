@@ -34,6 +34,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Main key input.
         /// </summary>
+        [Space]
         public KeyCode Main;
         /// <summary>
         /// Alternative key input.

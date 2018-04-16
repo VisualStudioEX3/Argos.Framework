@@ -555,7 +555,7 @@ PlayerSettings:
   webGLUseWasm: 0
   webGLCompressionFormat: 1
   scriptingDefineSymbols:
-    1: ENABLE_FORCE_FEEDBACK_SUPPORT
+    1: 
   platformArchitecture: {}
   scriptingBackend:
     Metro: 1

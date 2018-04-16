@@ -1,23 +1,28 @@
-﻿#if ENABLE_FORCE_FEEDBACK_SUPPORT && (UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN)
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using System.Runtime.CompilerServices;
-using UnityEngine;
-using SharpDX.DirectInput;
+﻿#if UNITY_STANDALONE_WIN || UNITY_EDITOR_WIN
+#define ENABLE_FORCE_FEEDBACK_SUPPORT
+#endif
 
-namespace Argos.Framework.Input
+using System;
+using System.Collections.Generic;
+using UnityEngine;
+using System.Runtime.CompilerServices;
+#if ENABLE_FORCE_FEEDBACK_SUPPORT
+using System.Runtime.InteropServices;
+using SharpDX.DirectInput;
+#endif
+
+namespace Argos.Framework.Input.Extensions
 {
     /// <summary>
-    /// DirectInput Force Feedback support via SharpDX wrapper.
+    /// DirectInput8 Force Feedback support via SharpDX wrapper.
     /// </summary>
-    /// <remarks>WARNING: For use this feature you must add SharpDX DLLs to Unity project.
-    /// Also need to install the gamepad drivers to enable force feedback support in hardware.</remarks>
+    /// <remarks>WARNING: You need to install the joystick driver to enable the force feedback support.</remarks>
     public static class ForceFeedback
     {
+#if ENABLE_FORCE_FEEDBACK_SUPPORT
         #region Internal vars
         static DirectInput _directInput;
+        static IList<DeviceInstance> _devices;
         static Joystick _joystick;
         static Effect _effect;
         static EffectParameters _effectParams;
@@ -44,61 +49,109 @@ namespace Argos.Framework.Input
             };
         }
         #endregion
+#endif
 
-        #region Methods & Functions
-        public static void SetupJoystick()
+        #region Properties
+        /// <summary>
+        /// Check if the joystick instance need initialized and setup.
+        /// </summary>
+        public static bool IsJoystickNeedSetup
         {
-            var devices = ForceFeedback._directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AttachedOnly | DeviceEnumerationFlags.ForceFeedback);
-
-            if (devices.Count > 0)
+            get
             {
-                ForceFeedback._joystick = new Joystick(ForceFeedback._directInput, devices[0].InstanceGuid);
-                ForceFeedback._joystick.SetCooperativeLevel(ForceFeedback.GetActiveWindow(), CooperativeLevel.Exclusive | CooperativeLevel.Background);
-                ForceFeedback._joystick.Acquire();
-                ForceFeedback._effect = new Effect(ForceFeedback._joystick, EffectGuid.ConstantForce, ForceFeedback._effectParams);
-            }
-        }
-
-        public static void Release()
-        {
-            if (ForceFeedback._joystick != null)
-            {
-                ForceFeedback._effect.Stop();
-                ForceFeedback._joystick.Unacquire();
+#if ENABLE_FORCE_FEEDBACK_SUPPORT
+                return (ForceFeedback._joystick == null || ForceFeedback._joystick.GetForceFeedbackState() == ForceFeedbackState.DeviceLost);
+#else
+                return false;
+#endif
             }
         }
 
         /// <summary>
-        /// 
+        /// Has any joystick conected?
         /// </summary>
-        /// <param name="axes"></param>
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void SetVibration(Vector2 axes)
+        /// <remarks>Use this to check if the joystick is conected and ready.</remarks>
+        public static bool HasJoystickConected
         {
-            if (ForceFeedback._joystick != null) // Find way to check if joysticks in disconected.
+            get
             {
-                if (axes == Vector2.zero)
-                {
-                    ForceFeedback._effect.Stop();
-                }
-                else
-                {
-                    int x = (int)(axes.x * ForceFeedback._effectParams.Gain);
-                    int y = (int)(axes.y * ForceFeedback._effectParams.Gain);
-
-                    (ForceFeedback._effectParams.Parameters as SharpDX.DirectInput.ConstantForce).Magnitude = (int)Mathf.Sqrt(x * x + y * y);
-                    ForceFeedback._effectParams.Directions = new int[] { Mathf.CeilToInt(axes.x), Mathf.CeilToInt(axes.y) };
-
-                    ForceFeedback._effect.SetParameters(ForceFeedback._effectParams, EffectParameterFlags.Direction | EffectParameterFlags.TypeSpecificParameters | EffectParameterFlags.Start);
-
-                    if (ForceFeedback._joystick.GetForceFeedbackState() == ForceFeedbackState.Stopped)
-                    {
-                        ForceFeedback._effect.Start();
-                    }
-                }
+#if ENABLE_FORCE_FEEDBACK_SUPPORT
+                return (ForceFeedback._devices != null && ForceFeedback._devices.Count > 0) && !ForceFeedback.IsJoystickNeedSetup;
+#else
+                return false;
+#endif
             }
+        } 
+        #endregion
+
+        #region Methods & Functions
+        /// <summary>
+        /// Check for available joysticks and setup the first joystick found if is needed.
+        /// </summary>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static void CheckForAvailableJoysticks()
+        {
+#if ENABLE_FORCE_FEEDBACK_SUPPORT
+            if (ForceFeedback.IsJoystickNeedSetup)
+            {
+                ForceFeedback._devices = ForceFeedback._directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AttachedOnly | DeviceEnumerationFlags.ForceFeedback);
+
+                if (ForceFeedback._devices.Count > 0)
+                {
+                    ForceFeedback.ReleaseJoystick();
+
+                    ForceFeedback._joystick = new Joystick(ForceFeedback._directInput, ForceFeedback._devices[0].InstanceGuid);
+                    ForceFeedback._joystick.SetCooperativeLevel(ForceFeedback.GetActiveWindow(), CooperativeLevel.Exclusive | CooperativeLevel.Background);
+                    ForceFeedback._joystick.Acquire();
+
+                    ForceFeedback._effect = new Effect(ForceFeedback._joystick, EffectGuid.ConstantForce, ForceFeedback._effectParams);
+                    ForceFeedback._effect.Start();
+                }
+            } 
+#endif
+        }
+
+        /// <summary>
+        /// Release the joystick if already is setup.
+        /// </summary>
+        /// <remarks>Call this method at the end of the program.</remarks>
+        public static void ReleaseJoystick()
+        {
+#if ENABLE_FORCE_FEEDBACK_SUPPORT
+            ForceFeedback._effect?.Stop();
+            ForceFeedback._effect?.Dispose();
+            ForceFeedback._effect = null;
+
+            ForceFeedback._joystick?.Unacquire();
+            ForceFeedback._joystick?.Dispose();
+            ForceFeedback._joystick = null; 
+#endif
+        }
+
+        /// <summary>
+        /// Set the vibrator forces values.
+        /// </summary>
+        /// <param name="axes">Force Feedback axis forces. Values per axis go from 0 to 1.</param>
+        /// <remarks>Return true if the joystick has conected.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static bool SetVibration(Vector2 axes)
+        {
+#if ENABLE_FORCE_FEEDBACK_SUPPORT
+            if (ForceFeedback.HasJoystickConected)
+            {
+                int x = (int)(axes.x * ForceFeedback._effectParams.Gain);
+                int y = (int)(axes.y * ForceFeedback._effectParams.Gain);
+
+                (ForceFeedback._effectParams.Parameters as SharpDX.DirectInput.ConstantForce).Magnitude = (int)Mathf.Sqrt(x * x + y * y);
+                ForceFeedback._effectParams.Directions = new int[] { Mathf.CeilToInt(axes.x), Mathf.CeilToInt(axes.y) };
+
+                ForceFeedback._effect.SetParameters(ForceFeedback._effectParams, EffectParameterFlags.Direction | EffectParameterFlags.TypeSpecificParameters | EffectParameterFlags.Start);
+
+                return true;
+            } 
+#endif
+            return false;
         } 
         #endregion
     }
 }
-#endif

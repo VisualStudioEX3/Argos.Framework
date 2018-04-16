@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Argos.Framework;
 using Argos.Framework.Input;
+using Argos.Framework.Input.Extensions;
 
 public class Test : MonoBehaviour
 {
@@ -14,7 +15,7 @@ public class Test : MonoBehaviour
 
     void Update()
     {
-        XInput.SetVibration(InputManager.Instance.GetAxis("Player", "Movement"));
+        XInput.SetVibration(InputManager.Instance.GetAxis("Player", "Movement"), Vector2.zero);
     }
 
     void OnEventSubmitTest()

@@ -14,7 +14,7 @@ public class Test : MonoBehaviour
 
     void Update()
     {
-        XInput.SetVibration(Mathf.Abs(InputManager.Instance.GetAxis("Player", "Movement").x), Mathf.Abs(InputManager.Instance.GetAxis("Player", "Movement").y));
+        XInput.SetVibration(InputManager.Instance.GetAxis("Player", "Movement"));
     }
 
     void OnEventSubmitTest()

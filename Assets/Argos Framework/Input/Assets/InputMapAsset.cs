@@ -123,12 +123,12 @@ namespace Argos.Framework.Input
         public override void OnInspectorGUI()
         {
             this.serializedObject.Update();
+            {
+                this._axisList.DoLayoutList();
+                EditorGUILayout.Space();
 
-            this._axisList.DoLayoutList();
-            EditorGUILayout.Space();
-
-            this._actionList.DoLayoutList();
-
+                this._actionList.DoLayoutList();
+            }
             this.serializedObject.ApplyModifiedProperties();
         }
         #endregion

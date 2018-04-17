@@ -29,6 +29,9 @@ namespace Argos.Framework
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static ReorderableList CreateNamedList(Editor editorInstance, ReorderableList list, string headerName, string property, string prefixName = "")
         {
+            const string PROPERTY_NAME = "Name";
+            const string PROPERTY_DATA = "Data";
+
             var ret = new ReorderableList(editorInstance.serializedObject, editorInstance.serializedObject.FindProperty(property), true, true, true, true);
 
             ret.drawHeaderCallback = rect =>
@@ -39,7 +42,7 @@ namespace Argos.Framework
             ret.elementHeightCallback = (int index) =>
             {
                 var element = ret.serializedProperty.GetArrayElementAtIndex(index);
-                return EditorGUI.GetPropertyHeight(element.FindPropertyRelative("Name"), GUIContent.none) + EditorGUI.GetPropertyHeight(element.FindPropertyRelative("Data"), GUIContent.none, true) + EditorGUIUtility.singleLineHeight;
+                return EditorGUI.GetPropertyHeight(element.FindPropertyRelative(PROPERTY_NAME), GUIContent.none) + EditorGUI.GetPropertyHeight(element.FindPropertyRelative(PROPERTY_DATA), GUIContent.none, true) + EditorGUIUtility.singleLineHeight;
             };
 
             ret.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
@@ -55,11 +58,11 @@ namespace Argos.Framework
 
                 var element = ret.serializedProperty.GetArrayElementAtIndex(index);
 
-                var nameField = element.FindPropertyRelative("Name");
+                var nameField = element.FindPropertyRelative(PROPERTY_NAME);
                 EditorGUI.PropertyField(rect, nameField, new GUIContent(nameField.name));
 
-                var dataField = element.FindPropertyRelative("Data");
-                rect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;                
+                var dataField = element.FindPropertyRelative(PROPERTY_DATA);
+                rect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
                 EditorGUI.PropertyField(rect, dataField, new GUIContent(string.IsNullOrEmpty(prefixName) ? dataField.name : prefixName), true);
             };
 

@@ -64,19 +64,6 @@ namespace Argos.Framework.Input.Extensions
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static bool SetVibration(Vector2 engines)
         {
-            return XInput.SetVibration(engines, Vector2.zero);
-        }
-
-        /// <summary>
-        /// Set vibrators force values.
-        /// </summary>
-        /// <param name="engines">Axis force for engines (x = left engine, y = right engine). Axis values from 0 to 1.</param>
-        /// <param name="triggers">Axis force for triggers (x = left trigger, y = right trigger). Axis values from 0 to 1.</param>
-        /// <returns>Return true if a Xbox360/XBox One controller or compatible is conected and available as first player.</returns>
-        /// <remarks>Triggers vibrators are only available for XBox One controllers and only in UWP builds. Not available from editor.</remarks>
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static bool SetVibration(Vector2 engines, Vector2 triggers)
-        {
 #if ENABLE_XINPUT_SUPPORT // Desktop:
 
             XInput._vibratorsSetup.LeftMotor = (ushort)(XInput.MAX_VIBRATION_LEVEL * Mathf.Abs(engines.x));
@@ -90,8 +77,6 @@ namespace Argos.Framework.Input.Extensions
             {
                 XInput._vibrationSetup.LeftMotor = Mathf.Abs(engines.x);
                 XInput._vibrationSetup.RightMotor = Mathf.Abs(engines.y);
-                XInput._vibrationSetup.LeftTrigger = Mathf.Abs(triggers.x);
-                XInput._vibrationSetup.RightTrigger = Mathf.Abs(triggers.y);
 
                 Windows.Gaming.Input.Gamepad.Gamepads[0].Vibration = XInput._vibrationSetup;
 
@@ -105,6 +90,31 @@ namespace Argos.Framework.Input.Extensions
 #else
             return false;
 #endif
+        }
+
+        /// <summary>
+        /// Set impulse for triggers.
+        /// </summary>
+        /// <param name="impulse">Impulse values for left (x) and right (y) triggers. Axis values from 0 to 1.</param>
+        /// <returns>Return true if a Xbox360/XBox One controller or compatible is conected and available as first player.</returns>
+        /// <remarks>Triggers vibrators are only available for XBox One controllers and only in UWP builds. Not available from editor.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static bool SetTriggerImpulse(Vector2 impulse)
+        {
+#if ENABLE_WINMD_SUPPORT // UWP:
+
+            if (Windows.Gaming.Input.Gamepad.Gamepads.Count > 0)
+            {                
+                XInput._vibrationSetup.LeftTrigger = Mathf.Abs(impulse.x);
+                XInput._vibrationSetup.RightTrigger = Mathf.Abs(impulse.y);
+
+                Windows.Gaming.Input.Gamepad.Gamepads[0].Vibration = XInput._vibrationSetup;
+
+                return true;
+            }
+
+#endif
+            return false;
         }
         #endregion
     }

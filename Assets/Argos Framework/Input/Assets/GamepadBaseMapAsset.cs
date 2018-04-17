@@ -54,40 +54,36 @@ namespace Argos.Framework.Input
             this.Map.DPadInvertY = false;
         } 
         #endregion
-
-        #region Events
-        private void OnEnable()
-        {
-            this.Reset();
-        }
-        #endregion
     }
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(GamepadBaseMapAsset))]
     public class GamepadBaseMapAssetEditor : Editor
     {
+        #region Internal vars
         GamepadBaseMapAsset _target;
+        SerializedProperty _map;
+        #endregion
 
         #region Events
         private void OnEnable()
         {
             this._target = (GamepadBaseMapAsset)this.target;
+            this._map = this.serializedObject.FindProperty("Map");
         }
 
         public override void OnInspectorGUI()
         {
             this.serializedObject.Update();
+            {
+                EditorGUILayout.HelpBox("Use this asset to setup axis and button map for any generic gamepad.", MessageType.Info);
+                EditorGUILayout.HelpBox("This values not affect to XBox, PS4 or Nintendo Switch Pro controller map setup.", MessageType.Warning);
 
-            EditorGUILayout.HelpBox("Use this asset to setup axis and button map for any generic gamepad.", MessageType.Info);
-            EditorGUILayout.HelpBox("This values not affect to XBox, PS4 or Nintendo Switch Pro controller map setup.", MessageType.Warning);
+                this._map.isExpanded = true;
+                EditorGUILayout.PropertyField(this._map, true);
 
-            var serializedProperty = this.serializedObject.FindProperty("Map");
-            serializedProperty.isExpanded = true;
-            EditorGUILayout.PropertyField(serializedProperty, true);
-
-            this.CheckAxisRanges();
-
+                this.CheckAxisRanges();
+            }
             this.serializedObject.ApplyModifiedProperties();
         }
         #endregion

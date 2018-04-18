@@ -99,7 +99,7 @@ namespace Argos.Framework.Input.Extensions
         /// <returns>Return true if a Xbox360/XBox One controller or compatible is conected and available as first player.</returns>
         /// <remarks>Triggers vibrators are only available for XBox One controllers and only in UWP builds. Not available from editor.</remarks>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static bool SetTriggerImpulse(Vector2 impulse)
+        public static bool SetTriggersImpulse(Vector2 impulse)
         {
 #if ENABLE_WINMD_SUPPORT // UWP:
 

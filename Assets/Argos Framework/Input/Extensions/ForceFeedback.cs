@@ -16,7 +16,8 @@ namespace Argos.Framework.Input.Extensions
     /// <summary>
     /// DirectInput8 Force Feedback support via SharpDX wrapper.
     /// </summary>
-    /// <remarks>WARNING: You need to install the joystick driver to enable the force feedback support.</remarks>
+    /// <remarks>SharpDX: http://sharpdx.org/
+    /// WARNING: You need to install the joystick driver to enable the force feedback support.</remarks>
     public static class ForceFeedback
     {
 #if ENABLE_FORCE_FEEDBACK_SUPPORT
@@ -51,63 +52,31 @@ namespace Argos.Framework.Input.Extensions
         #endregion
 #endif
 
-        #region Properties
-        /// <summary>
-        /// Check if the joystick instance need initialized and setup.
-        /// </summary>
-        public static bool IsJoystickNeedSetup
-        {
-            get
-            {
-#if ENABLE_FORCE_FEEDBACK_SUPPORT
-                return (ForceFeedback._joystick == null || ForceFeedback._joystick.GetForceFeedbackState() == ForceFeedbackState.DeviceLost);
-#else
-                return false;
-#endif
-            }
-        }
-
-        /// <summary>
-        /// Has any joystick conected?
-        /// </summary>
-        /// <remarks>Use this to check if the joystick is conected and ready.</remarks>
-        public static bool HasJoystickConected
-        {
-            get
-            {
-#if ENABLE_FORCE_FEEDBACK_SUPPORT
-                return (ForceFeedback._devices != null && ForceFeedback._devices.Count > 0) && !ForceFeedback.IsJoystickNeedSetup;
-#else
-                return false;
-#endif
-            }
-        } 
-        #endregion
-
         #region Methods & Functions
         /// <summary>
         /// Check for available joysticks and setup the first joystick found if is needed.
         /// </summary>
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void CheckForAvailableJoysticks()
+        /// <returns>Return true if a joystick is found and is initialized.</returns>
+        public static bool CheckForAvailableJoystick()
         {
 #if ENABLE_FORCE_FEEDBACK_SUPPORT
-            if (ForceFeedback.IsJoystickNeedSetup)
+            ForceFeedback._devices = ForceFeedback._directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AttachedOnly | DeviceEnumerationFlags.ForceFeedback);
+
+            if (ForceFeedback._devices.Count > 0)
             {
-                ForceFeedback._devices = ForceFeedback._directInput.GetDevices(DeviceClass.GameControl, DeviceEnumerationFlags.AttachedOnly | DeviceEnumerationFlags.ForceFeedback);
+                ForceFeedback.ReleaseJoystick();
 
-                if (ForceFeedback._devices.Count > 0)
-                {
-                    ForceFeedback.ReleaseJoystick();
+                ForceFeedback._joystick = new Joystick(ForceFeedback._directInput, ForceFeedback._devices[0].InstanceGuid);
+                ForceFeedback._joystick.SetCooperativeLevel(ForceFeedback.GetActiveWindow(), CooperativeLevel.Exclusive | CooperativeLevel.Background);
+                ForceFeedback._joystick.Acquire();
 
-                    ForceFeedback._joystick = new Joystick(ForceFeedback._directInput, ForceFeedback._devices[0].InstanceGuid);
-                    ForceFeedback._joystick.SetCooperativeLevel(ForceFeedback.GetActiveWindow(), CooperativeLevel.Exclusive | CooperativeLevel.Background);
-                    ForceFeedback._joystick.Acquire();
+                ForceFeedback._effect = new Effect(ForceFeedback._joystick, EffectGuid.ConstantForce, ForceFeedback._effectParams);
+                ForceFeedback._effect.Start();
 
-                    ForceFeedback._effect = new Effect(ForceFeedback._joystick, EffectGuid.ConstantForce, ForceFeedback._effectParams);
-                    ForceFeedback._effect.Start();
-                }
-            } 
+                return true;
+            }
+
+            return false;
 #endif
         }
 
@@ -137,7 +106,7 @@ namespace Argos.Framework.Input.Extensions
         public static bool SetVibration(Vector2 axes)
         {
 #if ENABLE_FORCE_FEEDBACK_SUPPORT
-            if (ForceFeedback.HasJoystickConected)
+            if (ForceFeedback._joystick != null)
             {
                 int x = (int)(axes.x * ForceFeedback._effectParams.Gain);
                 int y = (int)(axes.y * ForceFeedback._effectParams.Gain);

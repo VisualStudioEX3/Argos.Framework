@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using Argos.Framework.Input.Extensions;
 #if UNITY_EDITOR
 using UnityEditor;
 using UnityEditorInternal;
@@ -264,6 +265,9 @@ namespace Argos.Framework.Input
             Gamepad.Instance.TryToIndentifyGamepad();
             StartCoroutine(this.CheckCurrentInputTypeCoroutine());
 
+            // Check for a generic joystick and initialize it for support Force Feedback:
+            ForceFeedback.CheckForAvailableJoystick();
+
             InputManager.Instance = this;
         }
         #endregion
@@ -286,6 +290,14 @@ namespace Argos.Framework.Input
                 this._inputMaps[i].Data.Update();
             }
         }
+        #endregion
+
+        #region Events
+        private void OnApplicationQuit()
+        {
+            // Release a generic joystick and stop active Force Feedback effect:
+            ForceFeedback.ReleaseJoystick();
+        } 
         #endregion
 
         #region Methods & Functions
@@ -371,6 +383,58 @@ namespace Argos.Framework.Input
 
             return KeyCode.None;
         }
+
+        /// <summary>
+        /// Set gamepad vibration intensity.
+        /// </summary>
+        /// <param name="strongEngine">Strong intensity (left engine).</param>
+        /// <param name="weakEngine">Weak intensity (right engine).</param>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public void SetGamepadVibration(float strongEngine, float weakEngine)
+        {
+            this.SetGamepadVibration(new Vector2(strongEngine, weakEngine));
+        }
+
+        /// <summary>
+        /// Set gamepad vibration intensity.
+        /// </summary>
+        /// <param name="engines">Engines intensity (x = strong/left engine, y = weak/right engine).</param>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public void SetGamepadVibration(Vector2 engines)
+        {
+            switch (Gamepad.Instance.Type)
+            {
+                case Gamepad.GamepadType.XBoxController:
+                    XInput.SetVibration(engines);
+                    break;
+                case Gamepad.GamepadType.Generic:
+                    ForceFeedback.SetVibration(engines);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// Set XBox One controller triggers impulse.
+        /// </summary>
+        /// <param name="left">Left trigger.</param>
+        /// <param name="right">Right trigger.</param>
+        /// <remarks>This method only works on UWP builds. Not take effect from editor.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public void SetGamepadTriggersImpulse(float left, float right)
+        {
+            this.SetGamepadTriggersImpulse(new Vector2(left, right));
+        }
+
+        /// <summary>
+        /// Set XBox One controller triggers impulse.
+        /// </summary>
+        /// <param name="impulse">Triggers impulse values (x = left trigger, y = right trigger).</param>
+        /// <remarks>This method only works on UWP builds. Not take effect from editor.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public void SetGamepadTriggersImpulse(Vector2 impulse)
+        {
+            XInput.SetTriggersImpulse(impulse);
+        }
         #endregion
 
         #region Coroutines
@@ -415,10 +479,12 @@ namespace Argos.Framework.Input
                         this.CurrentInputType = InputType.KeyboardAndMouse;
                     }
 
-                    // Notify the change:
+                    this.SetGamepadVibration(Vector2.zero);
+                    this.SetGamepadTriggersImpulse(Vector2.zero);
+
                     if (current != this.CurrentInputType)
                     {
-                        this.OnInputTypeChange?.Invoke(this.CurrentInputType); 
+                        this.OnInputTypeChange?.Invoke(this.CurrentInputType);
                     }
 
                     if (Application.isEditor && current != this.CurrentInputType)
@@ -429,7 +495,7 @@ namespace Argos.Framework.Input
 
                 yield return wait;
             }
-        } 
+        }
         #endregion
     }
 

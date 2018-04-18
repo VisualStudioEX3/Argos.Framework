@@ -65,7 +65,7 @@ namespace Argos.Framework.Input
         #region Events
         private void OnDestroy()
         {
-            // TODO: Stop vibration effect (mainly for Force Feedback calls).
+            InputManager.Instance?.SetGamepadVibration(Vector2.zero);
         } 
         #endregion
     }
@@ -106,7 +106,7 @@ namespace Argos.Framework.Input
 
         private void OnDisable()
         {
-            // TODO: Stop vibration effect.
+            InputManager.Instance?.SetGamepadVibration(Vector2.zero);
         }
 
         public override void OnInspectorGUI()
@@ -152,7 +152,7 @@ namespace Argos.Framework.Input
                     if (this._target._type == GamepadVibrationEffectAsset.VibratorType.Both || this._target._type == GamepadVibrationEffectAsset.VibratorType.Weak)
                     {
                         EditorGUILayout.PropertyField(this._weakCurve, new GUIContent(this._target._type == GamepadVibrationEffectAsset.VibratorType.Both ?
-                                                                                                            GamepadVibrationEffectAssetEditor.LABEL_STRONG_VALUE :
+                                                                                                            GamepadVibrationEffectAssetEditor.LABEL_WEAK_VALUE :
                                                                                                             GamepadVibrationEffectAssetEditor.LABEL_DEFAULT_VALUE));
                     }
                 }

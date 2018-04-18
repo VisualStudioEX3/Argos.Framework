@@ -15,7 +15,7 @@ public class Test : MonoBehaviour
 
     void Update()
     {
-        XInput.SetVibration(InputManager.Instance.GetAxis("Player", "Movement"));
+        InputManager.Instance.SetGamepadVibration(InputManager.Instance.GetAxis("Player", "Movement"));
     }
 
     void OnEventSubmitTest()

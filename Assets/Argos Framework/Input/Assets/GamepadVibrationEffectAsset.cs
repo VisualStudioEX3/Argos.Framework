@@ -62,6 +62,40 @@ namespace Argos.Framework.Input
         public AnimationCurve _weakCurve;
         #endregion
 
+        #region Methods & Functions
+        /// <summary>
+        /// Start the effect as test.
+        /// </summary>
+        public void Play()
+        {
+
+        }
+
+        /// <summary>
+        /// Pause the effect.
+        /// </summary>
+        public void Pause()
+        {
+
+        }
+
+        /// <summary>
+        /// Restart the effect.
+        /// </summary>
+        public void Restart()
+        {
+
+        }
+
+        /// <summary>
+        /// Stop the effect.
+        /// </summary>
+        public void Stop()
+        {
+
+        } 
+        #endregion
+
         #region Events
         private void OnDestroy()
         {
@@ -113,7 +147,11 @@ namespace Argos.Framework.Input
         {
             this.serializedObject.Update();
             {
+                GUI.enabled = !Application.isPlaying;
+
                 this.PlaybackControls();
+
+                GUI.enabled = !Application.isPlaying && InputManager.Instance.TestVibrationState == InputManager.TestVibrationEffectState.Stoped;
 
                 EditorGUILayout.PropertyField(this._type, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_POPUP_TYPE));
                 EditorGUILayout.PropertyField(this._useCurves, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_TOGGLE_USE_CURVES));

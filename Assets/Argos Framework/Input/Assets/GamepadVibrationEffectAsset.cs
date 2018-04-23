@@ -1,6 +1,9 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
+using System;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -62,40 +65,6 @@ namespace Argos.Framework.Input
         public AnimationCurve _weakCurve;
         #endregion
 
-        #region Methods & Functions
-        /// <summary>
-        /// Start the effect as test.
-        /// </summary>
-        public void Play()
-        {
-
-        }
-
-        /// <summary>
-        /// Pause the effect.
-        /// </summary>
-        public void Pause()
-        {
-
-        }
-
-        /// <summary>
-        /// Restart the effect.
-        /// </summary>
-        public void Restart()
-        {
-
-        }
-
-        /// <summary>
-        /// Stop the effect.
-        /// </summary>
-        public void Stop()
-        {
-
-        } 
-        #endregion
-
         #region Events
         private void OnDestroy()
         {
@@ -118,9 +87,26 @@ namespace Argos.Framework.Input
         const string LABEL_DURATION_VALUE = "Duration";
         #endregion
 
+        #region Enums
+        enum VibrationPlaybackState
+        {
+            Stoped,
+            Playing,
+            Paused
+        } 
+        #endregion
+
         #region Internal vars
         GamepadVibrationEffectAsset _target;
         SerializedProperty _type, _useCurves, _loop, _strongForce, _weakForce, _duration, _strongCurve, _weakCurve;
+        #endregion
+
+        #region Static vars
+        static VibrationPlaybackState _vibrationTestState = VibrationPlaybackState.Stoped;
+        static Task _vibrationPlaybackTest;
+        static CancellationTokenSource _cancellationTokenSource;
+        static CancellationToken _cancellationToken;
+        static GamepadVibrationEffectAsset _testTarget;
         #endregion
 
         #region Events
@@ -151,7 +137,7 @@ namespace Argos.Framework.Input
 
                 this.PlaybackControls();
 
-                GUI.enabled = !Application.isPlaying && InputManager.Instance.TestVibrationState == InputManager.TestVibrationEffectState.Stoped;
+                GUI.enabled = !Application.isPlaying && GamepadVibrationEffectAssetEditor._vibrationTestState == VibrationPlaybackState.Stoped;
 
                 EditorGUILayout.PropertyField(this._type, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_POPUP_TYPE));
                 EditorGUILayout.PropertyField(this._useCurves, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_TOGGLE_USE_CURVES));
@@ -202,19 +188,87 @@ namespace Argos.Framework.Input
         #region Methods & Functions
         void PlaybackControls()
         {
-            switch (GUILayout.Toolbar(-1, new string[] { "Play", "Restart", "Stop" }))
+            switch (GUILayout.Toolbar(-1, new string[] 
+                    {
+                        GamepadVibrationEffectAssetEditor._vibrationTestState == VibrationPlaybackState.Playing ? "Pause" : "Play",
+                        "Restart",
+                        "Stop"
+                    }
+            ))
             {
                 case 0:
-                    Debug.Log("Play");
+
+                    switch (GamepadVibrationEffectAssetEditor._vibrationTestState)
+                    {
+                        case VibrationPlaybackState.Stoped:
+                            
+                            this.PlayVibrationTest();
+                            break;
+
+                        case VibrationPlaybackState.Playing:
+
+                            GamepadVibrationEffectAssetEditor._vibrationTestState = VibrationPlaybackState.Paused;
+                            break;
+
+                        case VibrationPlaybackState.Paused:
+
+                            GamepadVibrationEffectAssetEditor._vibrationTestState = VibrationPlaybackState.Playing;
+                            break;
+
+                    }
                     break;
+
                 case 1:
-                    Debug.Log("Restart");
+
+                    this.PlayVibrationTest();
                     break;
+
                 case 2:
-                    Debug.Log("Stop");
+
+                    this.StopVibrationTest();
                     break;
+
             }
         } 
+
+        void PlayVibrationTest()
+        {
+            this.StopVibrationTest();
+
+            GamepadVibrationEffectAssetEditor._testTarget = this._target;
+
+            GamepadVibrationEffectAssetEditor._cancellationTokenSource = new CancellationTokenSource();
+            GamepadVibrationEffectAssetEditor._cancellationToken = GamepadVibrationEffectAssetEditor._cancellationTokenSource.Token;
+            
+            GamepadVibrationEffectAssetEditor._vibrationPlaybackTest = Task.Run(() =>
+            {
+
+                Debug.Log("Start task...");
+
+                int i = 0;
+
+                while (GamepadVibrationEffectAssetEditor._vibrationTestState != VibrationPlaybackState.Stoped || !GamepadVibrationEffectAssetEditor._cancellationToken.IsCancellationRequested)
+                {
+                    if (GamepadVibrationEffectAssetEditor._vibrationTestState != VibrationPlaybackState.Paused)
+                    {
+                        i++;
+                        Debug.Log(i);
+                    }
+                }
+
+                Debug.Log("Finish task...");
+
+            }, GamepadVibrationEffectAssetEditor._cancellationToken);
+
+            GamepadVibrationEffectAssetEditor._vibrationTestState = VibrationPlaybackState.Playing;
+        }
+
+        void StopVibrationTest()
+        {
+            GamepadVibrationEffectAssetEditor._vibrationTestState = VibrationPlaybackState.Stoped;
+            GamepadVibrationEffectAssetEditor._cancellationTokenSource?.Cancel();
+            GamepadVibrationEffectAssetEditor._cancellationTokenSource?.Dispose();
+        }
         #endregion
     }
 #endif

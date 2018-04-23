@@ -18,7 +18,6 @@ namespace Argos.Framework.Input
     /// </summary>
     /// <remarks>This input manager allow to define input maps for keyboard, mouse & gamepads (XBox360/One, PS4 and Nintendo Switch (Pro) Controllers), input actions, input axis, and allow to change input bindings in runtime.</remarks>
     [AddComponentMenu("Argos.Framework/Input/Input Manager")]
-    [ExecuteInEditMode] // Allow to test gamepad vibration effects from assets.
     public sealed class InputManager : MonoBehaviour
     {
         #region Singleton
@@ -46,13 +45,6 @@ namespace Argos.Framework.Input
             XBoxController,
             PS4Controller,
             NintendoSwitchProController
-        }
-
-        public enum TestVibrationEffectState
-        {
-            Playing,
-            Paused,
-            Stoped = 0
         }
         #endregion
 
@@ -227,7 +219,7 @@ namespace Argos.Framework.Input
         [Space]
         [HideInInspector]
         [SerializeField]
-        List<InputMapData> _inputMaps;        
+        List<InputMapData> _inputMaps;
         #endregion
 
         #region Public vars
@@ -259,16 +251,13 @@ namespace Argos.Framework.Input
         /// Return true if any key from keyboard or button from mouse is pressed down on current frame.
         /// </summary>
         public bool IsAnyKeyDown { get; private set; }
-
-        /// <summary>
-        /// Used by GamepadVibrationEffectAssets to manage the test playback.
-        /// </summary>
-        public TestVibrationEffectState TestVibrationState { get; set; }
         #endregion
 
         #region Initializers
         private void Awake()
         {
+            // TODO: CHECK UNITY INPUT MANAGER MAP AND WARNING IF NOT IS THE ARGOS MAP SETUP
+
             // Check in defined intervals the current active input:
             Gamepad.Instance.TryToIndentifyGamepad();
             StartCoroutine(this.CheckCurrentInputTypeCoroutine());
@@ -278,43 +267,25 @@ namespace Argos.Framework.Input
 
             InputManager.Instance = this;
         }
-
-        private void Start()
-        {
-#if UNITY_EDITOR
-            // Reset all input axes defined in Project Settings/Input Manager:
-            UnityInputManagerAsset.SetupInputAxes();
-#endif
-
-        }
         #endregion
 
         #region Update logic
         private void Update()
         {
-            if (Application.isPlaying) // Normal logic in gameplay:
+            this.IsAnyKeyDown = UnityEngine.Input.anyKeyDown;
+
+            // Process the Gamepad states:
+            Gamepad.Instance.Update();
+
+            this.HasMotionFromMouse = Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_X_NAME)) > InputManager.MIN_MOUSE_X_DELTA ||
+                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Y_NAME)) > InputManager.MIN_MOUSE_Y_DELTA ||
+                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Z_NAME)) > InputManager.MIN_MOUSE_Z_DELTA;
+
+            // Update the input maps:
+            for (int i = 0; i < this._inputMaps.Count; i++)
             {
-                this.IsAnyKeyDown = UnityEngine.Input.anyKeyDown;
-
-                // Process the Gamepad states:
-                Gamepad.Instance.Update();
-
-                this.HasMotionFromMouse = Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_X_NAME)) > InputManager.MIN_MOUSE_X_DELTA ||
-                                          Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Y_NAME)) > InputManager.MIN_MOUSE_Y_DELTA ||
-                                          Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Z_NAME)) > InputManager.MIN_MOUSE_Z_DELTA;
-
-                // Update the input maps:
-                for (int i = 0; i < this._inputMaps.Count; i++)
-                {
-                    this._inputMaps[i].Data.Update();
-                } 
+                this._inputMaps[i].Data.Update();
             }
-#if UNITY_EDITOR
-            else // Specific logic for in editor mode:
-            {
-                // TODO: Implement code for testing GamepadVibrationEffect assets.
-            } 
-#endif
         }
         #endregion
 

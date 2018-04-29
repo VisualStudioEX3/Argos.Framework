@@ -27,6 +27,8 @@ namespace Argos.Framework.Input.Extensions
         static Joystick _joystick;
         static Effect _effect;
         static EffectParameters _effectParams;
+        static Vector2 _cachedForce;
+        static Vector2 _cachedDirection;
         #endregion
 
         #region DLL Imports
@@ -38,6 +40,7 @@ namespace Argos.Framework.Input.Extensions
         static ForceFeedback()
         {
             ForceFeedback._directInput = new DirectInput();
+
             ForceFeedback._effectParams = new EffectParameters
             {
                 Parameters = new SharpDX.DirectInput.ConstantForce(),
@@ -48,6 +51,8 @@ namespace Argos.Framework.Input.Extensions
                 Axes = new int[] { (int)JoystickOffset.X, (int)JoystickOffset.Y },
                 Directions = new int[2]
             };
+
+            ForceFeedback._cachedForce = ForceFeedback._cachedDirection = Vector2.zero;
         }
         #endregion
 #endif
@@ -100,7 +105,7 @@ namespace Argos.Framework.Input.Extensions
         /// <summary>
         /// Set the vibrator forces values.
         /// </summary>
-        /// <param name="axes">Force Feedback axis forces. Values per axis go from 0 to 1.</param>
+        /// <param name="axes">Force Feedback axis forces. Values per axis go from 0 to 1. -1 keeps the current force value.</param>
         /// <remarks>Return true if the joystick has conected.</remarks>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static bool SetVibration(Vector2 axes)
@@ -108,11 +113,21 @@ namespace Argos.Framework.Input.Extensions
 #if ENABLE_FORCE_FEEDBACK_SUPPORT
             if (ForceFeedback._joystick != null)
             {
-                int x = (int)(axes.x * ForceFeedback._effectParams.Gain);
-                int y = (int)(axes.y * ForceFeedback._effectParams.Gain);
+                if (axes.x >= 0)
+                {
+                    ForceFeedback._cachedForce.x = (int)(axes.x * ForceFeedback._effectParams.Gain);
+                    ForceFeedback._cachedDirection.x = axes.x;
+                }
+                if (axes.y >= 0)
+                {
+                    ForceFeedback._cachedForce.y = (int)(axes.y * ForceFeedback._effectParams.Gain);
+                    ForceFeedback._cachedDirection.y = axes.y;
+                }
 
-                (ForceFeedback._effectParams.Parameters as SharpDX.DirectInput.ConstantForce).Magnitude = (int)Mathf.Sqrt(x * x + y * y);
-                ForceFeedback._effectParams.Directions = new int[] { Mathf.CeilToInt(axes.x), Mathf.CeilToInt(axes.y) };
+                (ForceFeedback._effectParams.Parameters as SharpDX.DirectInput.ConstantForce).Magnitude = (int)Mathf.Sqrt(ForceFeedback._cachedForce.x * ForceFeedback._cachedForce.x + 
+                                                                                                                          ForceFeedback._cachedForce.y * ForceFeedback._cachedForce.y);
+
+                ForceFeedback._effectParams.Directions = new int[] { Mathf.CeilToInt(ForceFeedback._cachedDirection.x), Mathf.CeilToInt(ForceFeedback._cachedDirection.y) };
 
                 ForceFeedback._effect.SetParameters(ForceFeedback._effectParams, EffectParameterFlags.Direction | EffectParameterFlags.TypeSpecificParameters | EffectParameterFlags.Start);
 

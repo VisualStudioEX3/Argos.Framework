@@ -59,15 +59,21 @@ namespace Argos.Framework.Input.Extensions
         /// <summary>
         /// Set vibrators force values.
         /// </summary>
-        /// <param name="engines">Axis force for engines (x = left engine, y = right engine). Axis values from 0 to 1.</param>
+        /// <param name="engines">Axis force for engines (x = left engine, y = right engine). Axis values from 0 to 1. -1 keeps the current force value.</param>
         /// <returns>Return true if a Xbox360/XBox One controller or compatible is conected and available as first player.</returns>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static bool SetVibration(Vector2 engines)
         {
 #if ENABLE_XINPUT_SUPPORT // Desktop:
 
-            XInput._vibratorsSetup.LeftMotor = (ushort)(XInput.MAX_VIBRATION_LEVEL * Mathf.Abs(engines.x));
-            XInput._vibratorsSetup.RightMotor = (ushort)(XInput.MAX_VIBRATION_LEVEL * Mathf.Abs(engines.y));
+            if (engines.x >= 0f)
+            {
+                XInput._vibratorsSetup.LeftMotor = (ushort)(XInput.MAX_VIBRATION_LEVEL * Mathf.Abs(engines.x));
+            }
+            if (engines.y >= 0f)
+            {
+                XInput._vibratorsSetup.RightMotor = (ushort)(XInput.MAX_VIBRATION_LEVEL * Mathf.Abs(engines.y));
+            }
 
             return XInput.SetState(0, ref XInput._vibratorsSetup) == XInput.ERROR_SUCCESS;
 
@@ -75,8 +81,14 @@ namespace Argos.Framework.Input.Extensions
 
             if (Windows.Gaming.Input.Gamepad.Gamepads.Count > 0)
             {
-                XInput._vibrationSetup.LeftMotor = Mathf.Abs(engines.x);
-                XInput._vibrationSetup.RightMotor = Mathf.Abs(engines.y);
+                if (engines.x >= 0f)
+                {
+                    XInput._vibrationSetup.LeftMotor = Mathf.Abs(engines.x);
+                }
+                if (engines.y >= 0f)
+                {
+                    XInput._vibrationSetup.RightMotor = Mathf.Abs(engines.y);
+                }
 
                 Windows.Gaming.Input.Gamepad.Gamepads[0].Vibration = XInput._vibrationSetup;
 
@@ -95,18 +107,24 @@ namespace Argos.Framework.Input.Extensions
         /// <summary>
         /// Set impulse for triggers.
         /// </summary>
-        /// <param name="impulse">Impulse values for left (x) and right (y) triggers. Axis values from 0 to 1.</param>
+        /// <param name="impulse">Impulse values for left (x) and right (y) triggers. Axis values from 0 to 1. -1 keeps the current impulse value.</param>
         /// <returns>Return true if a Xbox360/XBox One controller or compatible is conected and available as first player.</returns>
         /// <remarks>Triggers vibrators are only available for XBox One controllers and only in UWP builds. Not available from editor.</remarks>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static bool SetTriggersImpulse(Vector2 impulse)
         {
-#if ENABLE_WINMD_SUPPORT // UWP:
+#if ENABLE_WINMD_SUPPORT // Only UWP:
 
             if (Windows.Gaming.Input.Gamepad.Gamepads.Count > 0)
-            {                
-                XInput._vibrationSetup.LeftTrigger = Mathf.Abs(impulse.x);
-                XInput._vibrationSetup.RightTrigger = Mathf.Abs(impulse.y);
+            {
+                if (impulse.x >= 0f)
+                {
+                    XInput._vibrationSetup.LeftTrigger = Mathf.Abs(impulse.x);
+                }
+                if (impulse.y >= 0f)
+                {
+                    XInput._vibrationSetup.RightTrigger = Mathf.Abs(impulse.y);
+                }
 
                 Windows.Gaming.Input.Gamepad.Gamepads[0].Vibration = XInput._vibrationSetup;
 

@@ -1,10 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
+#if UNITY_EDITOR
 using System.Threading;
 using System.Threading.Tasks;
-using UnityEngine;
-using System;
-#if UNITY_EDITOR
 using UnityEditor;
 #endif
 using Argos.Framework.Input.Extensions;
@@ -44,7 +44,7 @@ namespace Argos.Framework.Input
         [Tooltip("Strong = left engine\nWeak = right engine")]
         public VibratorType _type;
         [SerializeField]
-        [Tooltip("Curves allow to define complex patterns based in time and scale values.")]
+        [Tooltip("Curves allow to define complex patterns.")]
         public bool _useCurves;
         [SerializeField]
         public bool _loop;
@@ -85,15 +85,11 @@ namespace Argos.Framework.Input
         const string LABEL_STRONG_VALUE = "Strong intensity";
         const string LABEL_WEAK_VALUE = "Weak intensity";
         const string LABEL_DURATION_VALUE = "Duration";
-        #endregion
-
-        #region Enums
-        enum VibrationPlaybackState
-        {
-            Stoped,
-            Playing,
-            Paused
-        } 
+        const string LABEL_CONTROL_PLAY = "Play";
+        const string LABEL_CONTROL_PAUSE = "Pause";
+        const string LABEL_CONTROL_RESTART = "Restart";
+        const string LABEL_CONTROL_STOP = "Stop";
+        const string MESSAGE_CANNOT_EDIT_VALUES = "You can't edit values until the effect is finished or stoped.";
         #endregion
 
         #region Internal vars
@@ -102,11 +98,158 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Static vars
-        static VibrationPlaybackState _vibrationTestState = VibrationPlaybackState.Stoped;
         static Task _vibrationPlaybackTest;
         static CancellationTokenSource _cancellationTokenSource;
         static CancellationToken _cancellationToken;
         static GamepadVibrationEffectAsset _testTarget;
+        static bool _isApplicationPlaying;
+        #endregion
+
+        #region Internal class
+        /// <summary>
+        /// Internal static class for manage in editor mode the playback vibration tests in separate thread.
+        /// </summary>
+        static class VibrationTask
+        {
+            #region Enums
+            public enum VibrationPlaybackState
+            {
+                Playing,
+                Paused,
+                Stoped
+            }
+            #endregion
+
+            #region Internal vars
+            static Task _task;
+            static System.Diagnostics.Stopwatch _stopWatch;
+            static int _duration;
+            static float _currentTime;
+            #endregion
+
+            #region Properties
+            public static GamepadVibrationEffectAsset Asset { get; set; }
+            public static VibrationPlaybackState State { get; private set; }
+            #endregion
+
+            #region Constructor
+            static VibrationTask()
+            {
+                VibrationTask._stopWatch = new System.Diagnostics.Stopwatch();
+                VibrationTask.State = VibrationPlaybackState.Stoped;
+            }
+            #endregion
+
+            #region Methods & Functions
+            static float GetIntensityFromCurve(AnimationCurve curve)
+            {
+                return curve.Evaluate((float)(VibrationTask._currentTime / 1000f));
+            }
+
+            public static void Play()
+            {
+                VibrationTask.Stop();
+                VibrationTask.State = VibrationPlaybackState.Playing;
+
+                VibrationTask._task = Task.Run(() =>
+                {
+                    VibrationTask._duration = (int)(VibrationTask.Asset._duration * 1000f);
+                    VibrationTask._stopWatch.Start();
+
+                    while (VibrationTask.State != VibrationPlaybackState.Stoped && !GamepadVibrationEffectAssetEditor._isApplicationPlaying)
+                    {
+                        VibrationTask._currentTime = VibrationTask._stopWatch.ElapsedMilliseconds;
+
+                        if (!VibrationTask.Asset._loop && VibrationTask._currentTime > VibrationTask._duration)
+                        {
+                            VibrationTask.State = VibrationPlaybackState.Stoped;
+                        }
+                        else
+                        {
+                            if (VibrationTask.State == VibrationPlaybackState.Paused)
+                            {
+                                InputManager.Instance?.SetGamepadVibration(Vector2.zero);
+                            }
+                            else
+                            {
+                                Vector2 intensity = Vector2.zero;
+
+                                if (!VibrationTask.Asset._useCurves)
+                                {
+                                    switch (VibrationTask.Asset._type)
+                                    {
+                                        case GamepadVibrationEffectAsset.VibratorType.Strong:
+
+                                            intensity = new Vector2(VibrationTask.Asset._strongForce, -1f);
+                                            break;
+
+                                        case GamepadVibrationEffectAsset.VibratorType.Weak:
+
+                                            intensity = new Vector2(-1f, VibrationTask.Asset._weakForce);
+                                            break;
+
+                                        case GamepadVibrationEffectAsset.VibratorType.Both:
+
+                                            intensity = new Vector2(VibrationTask.Asset._strongForce, VibrationTask.Asset._weakForce);
+                                            break;
+                                    }
+                                }
+                                else
+                                {
+                                    switch (VibrationTask.Asset._type)
+                                    {
+                                        case GamepadVibrationEffectAsset.VibratorType.Strong:
+
+                                            intensity = new Vector2(VibrationTask.GetIntensityFromCurve(VibrationTask.Asset._strongCurve), -1f);
+                                            break;
+
+                                        case GamepadVibrationEffectAsset.VibratorType.Weak:
+
+                                            intensity = new Vector2(-1f, VibrationTask.GetIntensityFromCurve(VibrationTask.Asset._weakCurve));
+                                            break;
+
+                                        case GamepadVibrationEffectAsset.VibratorType.Both:
+
+                                            intensity = new Vector2(VibrationTask.GetIntensityFromCurve(VibrationTask.Asset._strongCurve), 
+                                                                    VibrationTask.GetIntensityFromCurve(VibrationTask.Asset._weakCurve));
+                                            break;
+                                    }
+
+                                    if (VibrationTask.Asset._loop && VibrationTask._currentTime > VibrationTask._duration)
+                                    {
+                                        VibrationTask._stopWatch.Reset();
+                                    }
+                                }
+
+                                InputManager.Instance?.SetGamepadVibration(intensity);
+                            }
+                        }
+                    }
+
+                    InputManager.Instance?.SetGamepadVibration(Vector2.zero);
+                });
+            }
+
+            public static void Pause()
+            {
+                VibrationTask._stopWatch.Stop();
+                VibrationTask.State = VibrationPlaybackState.Paused;
+            }
+
+            public static void Resume()
+            {
+                VibrationTask._stopWatch.Start();
+                VibrationTask.State = VibrationPlaybackState.Playing;
+            }
+
+            public static void Stop()
+            {
+                VibrationTask.State = VibrationPlaybackState.Stoped;
+                VibrationTask._stopWatch.Stop();
+                VibrationTask._stopWatch.Restart();
+            }
+            #endregion
+        } 
         #endregion
 
         #region Events
@@ -126,148 +269,129 @@ namespace Argos.Framework.Input
 
         private void OnDisable()
         {
-            InputManager.Instance?.SetGamepadVibration(Vector2.zero);
+            VibrationTask.Stop();
         }
 
         public override void OnInspectorGUI()
         {
+            bool isMainGUIEnable = !Application.isPlaying && VibrationTask.State == VibrationTask.VibrationPlaybackState.Stoped;
+
+            GamepadVibrationEffectAssetEditor._isApplicationPlaying = Application.isPlaying;
+
             this.serializedObject.Update();
             {
                 GUI.enabled = !Application.isPlaying;
 
                 this.PlaybackControls();
-
-                GUI.enabled = !Application.isPlaying && GamepadVibrationEffectAssetEditor._vibrationTestState == VibrationPlaybackState.Stoped;
-
-                EditorGUILayout.PropertyField(this._type, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_POPUP_TYPE));
-                EditorGUILayout.PropertyField(this._useCurves, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_TOGGLE_USE_CURVES));
-                EditorGUILayout.PropertyField(this._loop, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_TOGGLE_LOOP));
-
-                if (!this._target._useCurves)
+                
+                GUI.enabled = isMainGUIEnable;
+                
+                EditorGUILayout.BeginVertical("helpbox");
                 {
-                    if (this._target._type == GamepadVibrationEffectAsset.VibratorType.Both || this._target._type == GamepadVibrationEffectAsset.VibratorType.Strong)
-                    {
-                        EditorGUILayout.PropertyField(this._strongForce, new GUIContent(this._target._type == GamepadVibrationEffectAsset.VibratorType.Both ?
-                                                                                                              GamepadVibrationEffectAssetEditor.LABEL_STRONG_VALUE :
-                                                                                                              GamepadVibrationEffectAssetEditor.LABEL_DEFAULT_VALUE));
-                    }
+                    EditorGUILayout.PropertyField(this._type, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_POPUP_TYPE));
+                    EditorGUILayout.PropertyField(this._useCurves, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_TOGGLE_USE_CURVES));
+                    EditorGUILayout.PropertyField(this._loop, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_TOGGLE_LOOP));
 
-                    if (this._target._type == GamepadVibrationEffectAsset.VibratorType.Both || this._target._type == GamepadVibrationEffectAsset.VibratorType.Weak)
-                    {
-                        EditorGUILayout.PropertyField(this._weakForce, new GUIContent(this._target._type == GamepadVibrationEffectAsset.VibratorType.Both ?
-                                                                                                            GamepadVibrationEffectAssetEditor.LABEL_WEAK_VALUE :
-                                                                                                            GamepadVibrationEffectAssetEditor.LABEL_DEFAULT_VALUE));
-                    }
-
-                    if (!this._target._loop)
+                    GUI.enabled = (this._target._useCurves || !this._target._loop) && isMainGUIEnable;
                     {
                         EditorGUILayout.PropertyField(this._duration, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_DURATION_VALUE));
+                        if (this._target._duration < 0f)
+                        {
+                            this._target._duration = 0f;
+                        }
                     }
-                }
-                else
-                {
-                    if (this._target._type == GamepadVibrationEffectAsset.VibratorType.Both || this._target._type == GamepadVibrationEffectAsset.VibratorType.Strong)
+                    GUI.enabled = isMainGUIEnable;
+
+                    if (!this._target._useCurves)
                     {
-                        EditorGUILayout.PropertyField(this._strongCurve, new GUIContent(this._target._type == GamepadVibrationEffectAsset.VibratorType.Both ?
-                                                                                                              GamepadVibrationEffectAssetEditor.LABEL_STRONG_VALUE :
-                                                                                                              GamepadVibrationEffectAssetEditor.LABEL_DEFAULT_VALUE));
+                        if (this._target._type == GamepadVibrationEffectAsset.VibratorType.Both || this._target._type == GamepadVibrationEffectAsset.VibratorType.Strong)
+                        {
+                            EditorGUILayout.PropertyField(this._strongForce, new GUIContent(this._target._type == GamepadVibrationEffectAsset.VibratorType.Both ?
+                                                                                                                  GamepadVibrationEffectAssetEditor.LABEL_STRONG_VALUE :
+                                                                                                                  GamepadVibrationEffectAssetEditor.LABEL_DEFAULT_VALUE));
+                        }
+
+                        if (this._target._type == GamepadVibrationEffectAsset.VibratorType.Both || this._target._type == GamepadVibrationEffectAsset.VibratorType.Weak)
+                        {
+                            EditorGUILayout.PropertyField(this._weakForce, new GUIContent(this._target._type == GamepadVibrationEffectAsset.VibratorType.Both ?
+                                                                                                                GamepadVibrationEffectAssetEditor.LABEL_WEAK_VALUE :
+                                                                                                                GamepadVibrationEffectAssetEditor.LABEL_DEFAULT_VALUE));
+                        }
+                    }
+                    else
+                    {
+                        if (this._target._type == GamepadVibrationEffectAsset.VibratorType.Both || this._target._type == GamepadVibrationEffectAsset.VibratorType.Strong)
+                        {
+                            EditorGUILayout.PropertyField(this._strongCurve, new GUIContent(this._target._type == GamepadVibrationEffectAsset.VibratorType.Both ?
+                                                                                                                  GamepadVibrationEffectAssetEditor.LABEL_STRONG_VALUE :
+                                                                                                                  GamepadVibrationEffectAssetEditor.LABEL_DEFAULT_VALUE));
+                        }
+
+                        if (this._target._type == GamepadVibrationEffectAsset.VibratorType.Both || this._target._type == GamepadVibrationEffectAsset.VibratorType.Weak)
+                        {
+                            EditorGUILayout.PropertyField(this._weakCurve, new GUIContent(this._target._type == GamepadVibrationEffectAsset.VibratorType.Both ?
+                                                                                                                GamepadVibrationEffectAssetEditor.LABEL_WEAK_VALUE :
+                                                                                                                GamepadVibrationEffectAssetEditor.LABEL_DEFAULT_VALUE));
+                        }
                     }
 
-                    if (this._target._type == GamepadVibrationEffectAsset.VibratorType.Both || this._target._type == GamepadVibrationEffectAsset.VibratorType.Weak)
+                    GUI.enabled = true;
+
+                    if (VibrationTask.State != VibrationTask.VibrationPlaybackState.Stoped)
                     {
-                        EditorGUILayout.PropertyField(this._weakCurve, new GUIContent(this._target._type == GamepadVibrationEffectAsset.VibratorType.Both ?
-                                                                                                            GamepadVibrationEffectAssetEditor.LABEL_WEAK_VALUE :
-                                                                                                            GamepadVibrationEffectAssetEditor.LABEL_DEFAULT_VALUE));
+                        EditorGUILayout.HelpBox(GamepadVibrationEffectAssetEditor.MESSAGE_CANNOT_EDIT_VALUES, MessageType.Warning);
                     }
                 }
+                EditorGUILayout.EndVertical();
             }
             this.serializedObject.ApplyModifiedProperties();
+
+            // Force to redraw inspector view each frame:
+            EditorUtility.SetDirty(target);
         }
         #endregion
 
         #region Methods & Functions
         void PlaybackControls()
         {
-            switch (GUILayout.Toolbar(-1, new string[] 
-                    {
-                        GamepadVibrationEffectAssetEditor._vibrationTestState == VibrationPlaybackState.Playing ? "Pause" : "Play",
-                        "Restart",
-                        "Stop"
-                    }
-            ))
+            switch (GUILayout.Toolbar(-1, new string[] { (VibrationTask.State == VibrationTask.VibrationPlaybackState.Playing ? 
+                                                                                 GamepadVibrationEffectAssetEditor.LABEL_CONTROL_PAUSE : 
+                                                                                 GamepadVibrationEffectAssetEditor.LABEL_CONTROL_PLAY),
+                                                         GamepadVibrationEffectAssetEditor.LABEL_CONTROL_RESTART,
+                                                         GamepadVibrationEffectAssetEditor.LABEL_CONTROL_STOP }))
             {
-                case 0:
+                case 0: // Play/Pause:
 
-                    switch (GamepadVibrationEffectAssetEditor._vibrationTestState)
+                    switch (VibrationTask.State)
                     {
-                        case VibrationPlaybackState.Stoped:
-                            
-                            this.PlayVibrationTest();
+                        case VibrationTask.VibrationPlaybackState.Playing:
+
+                            VibrationTask.Pause();
                             break;
 
-                        case VibrationPlaybackState.Playing:
+                        case VibrationTask.VibrationPlaybackState.Paused:
 
-                            GamepadVibrationEffectAssetEditor._vibrationTestState = VibrationPlaybackState.Paused;
+                            VibrationTask.Resume();
                             break;
 
-                        case VibrationPlaybackState.Paused:
+                        case VibrationTask.VibrationPlaybackState.Stoped:
 
-                            GamepadVibrationEffectAssetEditor._vibrationTestState = VibrationPlaybackState.Playing;
+                            VibrationTask.Asset = this._target;
+                            VibrationTask.Play();
                             break;
-
                     }
                     break;
 
-                case 1:
+                case 1: // Restart:
 
-                    this.PlayVibrationTest();
+                    VibrationTask.Play();
                     break;
 
-                case 2:
+                case 2: // Stop:
 
-                    this.StopVibrationTest();
+                    VibrationTask.Stop();
                     break;
-
             }
-        } 
-
-        void PlayVibrationTest()
-        {
-            this.StopVibrationTest();
-
-            GamepadVibrationEffectAssetEditor._testTarget = this._target;
-
-            GamepadVibrationEffectAssetEditor._cancellationTokenSource = new CancellationTokenSource();
-            GamepadVibrationEffectAssetEditor._cancellationToken = GamepadVibrationEffectAssetEditor._cancellationTokenSource.Token;
-            
-            GamepadVibrationEffectAssetEditor._vibrationPlaybackTest = Task.Run(() =>
-            {
-
-                Debug.Log("Start task...");
-
-                int i = 0;
-
-                while (GamepadVibrationEffectAssetEditor._vibrationTestState != VibrationPlaybackState.Stoped || !GamepadVibrationEffectAssetEditor._cancellationToken.IsCancellationRequested)
-                {
-                    if (GamepadVibrationEffectAssetEditor._vibrationTestState != VibrationPlaybackState.Paused)
-                    {
-                        i++;
-                        Debug.Log(i);
-                    }
-                }
-
-                Debug.Log("Finish task...");
-
-            }, GamepadVibrationEffectAssetEditor._cancellationToken);
-
-            GamepadVibrationEffectAssetEditor._vibrationTestState = VibrationPlaybackState.Playing;
-        }
-
-        void StopVibrationTest()
-        {
-            GamepadVibrationEffectAssetEditor._vibrationTestState = VibrationPlaybackState.Stoped;
-            GamepadVibrationEffectAssetEditor._cancellationTokenSource?.Cancel();
-            GamepadVibrationEffectAssetEditor._cancellationTokenSource?.Dispose();
         }
         #endregion
     }

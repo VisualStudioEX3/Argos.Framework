@@ -15,7 +15,7 @@ MonoBehaviour:
   - Name: Navigation
     Data:
       AxisType: 2
-      ReadMousePosition: 1
+      AlternativeMouseInput: 0
       IsUIInput: 1
       Sensitivity: 0.5
       InvertYAxis: 0

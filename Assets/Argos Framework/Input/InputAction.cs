@@ -35,16 +35,16 @@ namespace Argos.Framework.Input
         /// Main key input.
         /// </summary>
         [Space]
-        public KeyCode Main;
+        public KeyboardMouseCodes Main;
         /// <summary>
         /// Alternative key input.
         /// </summary>
-        public KeyCode Alternative;
+        public KeyboardMouseCodes Alternative;
         /// <summary>
         /// Gamepad button input.
         /// </summary>
         /// <remarks>Reference the gamepad button map, not a direct KeyCode value.</remarks>
-        public Gamepad.GamepadButtons GamepadButton;
+        public GamepadButtons GamepadButton;
         #endregion
 
         #region Events & delegates
@@ -82,7 +82,7 @@ namespace Argos.Framework.Input
         /// <param name="onKeyPress">Optional. Event listener for key press event.</param>
         /// <param name="onKeyDown">Optional. Event listener for key down event.</param>
         /// <param name="onKeyUp">Optional. Event listener for key up event.</param>
-        public InputAction(KeyCode main, KeyCode alternative, Gamepad.GamepadButtons gamepadButton, InputKeyEvent keyEvent = InputKeyEvent.Pressed, System.Action onKeyPress = null, System.Action onKeyDown = null, System.Action onKeyUp = null)
+        public InputAction(KeyboardMouseCodes main, KeyboardMouseCodes alternative, GamepadButtons gamepadButton, InputKeyEvent keyEvent = InputKeyEvent.Pressed, System.Action onKeyPress = null, System.Action onKeyDown = null, System.Action onKeyUp = null)
         {
             this.Main = main;
             this.Alternative = alternative;
@@ -120,21 +120,21 @@ namespace Argos.Framework.Input
             switch (this.KeyEvent)
             {
                 case InputKeyEvent.Down:
-                    if (UnityEngine.Input.GetKeyDown(this.Main) || UnityEngine.Input.GetKeyDown(this.Alternative) || this.GetGamepadButtonState())
+                    if (UnityEngine.Input.GetKeyDown((KeyCode)this.Main) || UnityEngine.Input.GetKeyDown((KeyCode)this.Alternative) || this.GetGamepadButtonState())
                     {
                         this.State = true;
                         this.OnKeyDown?.Invoke();
                     }
                     break;
                 case InputKeyEvent.Up:
-                    if (UnityEngine.Input.GetKeyUp(this.Main) || UnityEngine.Input.GetKeyUp(this.Alternative) || this.GetGamepadButtonState())
+                    if (UnityEngine.Input.GetKeyUp((KeyCode)this.Main) || UnityEngine.Input.GetKeyUp((KeyCode)this.Alternative) || this.GetGamepadButtonState())
                     {
                         this.State = true;
                         this.OnKeyUp?.Invoke();
                     }
                     break;
                 default:
-                    if (UnityEngine.Input.GetKey(this.Main) || UnityEngine.Input.GetKey(this.Alternative) || this.GetGamepadButtonState())
+                    if (UnityEngine.Input.GetKey((KeyCode)this.Main) || UnityEngine.Input.GetKey((KeyCode)this.Alternative) || this.GetGamepadButtonState())
                     {
                         this.State = true;
                         this.OnKeyPress?.Invoke();
@@ -150,52 +150,52 @@ namespace Argos.Framework.Input
 
             switch (this.GamepadButton)
             {
-                case Gamepad.GamepadButtons.Button1:
+                case GamepadButtons.Button1:
                     state = Gamepad.Instance.Button1;
                     break;
-                case Gamepad.GamepadButtons.Button2:
+                case GamepadButtons.Button2:
                     state = Gamepad.Instance.Button2;
                     break;
-                case Gamepad.GamepadButtons.Button3:
+                case GamepadButtons.Button3:
                     state = Gamepad.Instance.Button3;
                     break;
-                case Gamepad.GamepadButtons.Button4:
+                case GamepadButtons.Button4:
                     state = Gamepad.Instance.Button4;
                     break;
-                case Gamepad.GamepadButtons.Start:
+                case GamepadButtons.Start:
                     state = Gamepad.Instance.Start;
                     break;
-                case Gamepad.GamepadButtons.Select:
+                case GamepadButtons.Select:
                     state = Gamepad.Instance.Select;
                     break;
-                case Gamepad.GamepadButtons.LeftStick:
+                case GamepadButtons.LeftStick:
                     state = Gamepad.Instance.LeftStickButton;
                     break;
-                case Gamepad.GamepadButtons.RightStick:
+                case GamepadButtons.RightStick:
                     state = Gamepad.Instance.RightStickButton;
                     break;
-                case Gamepad.GamepadButtons.LeftBumper:
+                case GamepadButtons.LeftBumper:
                     state = Gamepad.Instance.LeftBumper;
                     break;
-                case Gamepad.GamepadButtons.RightBumper:
+                case GamepadButtons.RightBumper:
                     state = Gamepad.Instance.RightBumper;
                     break;
-                case Gamepad.GamepadButtons.LeftTrigger:
+                case GamepadButtons.LeftTrigger:
                     state = Gamepad.Instance.LeftTrigger;
                     break;
-                case Gamepad.GamepadButtons.RightTrigger:
+                case GamepadButtons.RightTrigger:
                     state = Gamepad.Instance.RightTrigger;
                     break;
-                case Gamepad.GamepadButtons.DPadLeft:
+                case GamepadButtons.DPadLeft:
                     state = Gamepad.Instance.DPadLeft;
                     break;
-                case Gamepad.GamepadButtons.DPadRight:
+                case GamepadButtons.DPadRight:
                     state = Gamepad.Instance.DPadRight;
                     break;
-                case Gamepad.GamepadButtons.DPadUp:
+                case GamepadButtons.DPadUp:
                     state = Gamepad.Instance.DPadUp;
                     break;
-                case Gamepad.GamepadButtons.DPadDown:
+                case GamepadButtons.DPadDown:
                     state = Gamepad.Instance.DPadDown;
                     break;
             }

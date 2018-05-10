@@ -88,7 +88,9 @@ namespace Argos.Framework.Input
     /// <summary>
     /// XBox 360/XBox One Controller button map for Windows and XBox One.
     /// </summary>
-    /// <remarks>Not required driver setup on Windows 8/8.1 and 10. Windows 7 and early required driver setup: https://www.microsoft.com/accessories/en-gb/d/xbox-360-controller-for-windows </remarks>
+    /// <remarks>Not required driver setup on Windows 8/8.1 and 10. Windows 7 and early required driver setup: https://www.microsoft.com/accessories/en-gb/d/xbox-360-controller-for-windows 
+    /// 
+    /// In consoles (XBox One, PS4, Switch) the gamepad use this map.</remarks>
     public enum XBoxControllerButtons
     {
         A = KeyCode.JoystickButton0,
@@ -106,7 +108,9 @@ namespace Argos.Framework.Input
     /// <summary>
     /// XBox 360/XBox One Controller axis map for Windows and XBox One.
     /// </summary>
-    /// <remarks>LeftStick always is the X and Y axis on Unity Input Manager asset.</remarks>
+    /// <remarks>LeftStick always is the X and Y axis on Unity Input Manager asset.
+    /// 
+    /// In consoles (XBox One, PS4, Switch) the gamepad use this map.</remarks>
     public enum XboxControllerAxes
     {
         LeftStickX = 1,
@@ -120,6 +124,7 @@ namespace Argos.Framework.Input
     }
 #endif
 
+#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
     /// <summary>
     /// PS4 Controller button map.
     /// </summary>
@@ -156,7 +161,9 @@ namespace Argos.Framework.Input
         DPadX = 7,
         DPadY = 8
     }
+#endif
 
+#if UNITY_STANDALONE_WIN
     /// <summary>
     /// Nintendo Switch Pro Controller button map.
     /// </summary>
@@ -189,5 +196,6 @@ namespace Argos.Framework.Input
         RightStickY = 8,
         DPadX = 9,
         DPadY = 10
-    }
+    } 
+#endif
 }

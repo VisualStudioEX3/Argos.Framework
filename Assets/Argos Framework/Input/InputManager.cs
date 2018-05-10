@@ -1,4 +1,12 @@
-﻿using System;
+﻿#if UNITY_STANDALONE || UNITY_EDITOR
+#define UNITY_DESKTOP
+#endif
+
+#if UNITY_XBOX || UNITY_PS4 || UNITY_SWITCH
+#define UNITY_CONSOLE
+#endif
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -210,10 +218,16 @@ namespace Argos.Framework.Input
                 
         #region Inspector fields
         [SerializeField]
+#if UNITY_CONSOLE
+        [HideInInspector] 
+#endif
         bool _hideMouseCursorInGamepadMode = true;
 
         [SerializeField]
         [Tooltip("Interval between input type identification checks.")]
+#if UNITY_CONSOLE
+        [HideInInspector] 
+#endif
         public float _checkInputTypeInterval = 0.02f;
 
         [Space]
@@ -226,8 +240,14 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Time for double click detection on UI controls.
         /// </summary>
+#if UNITY_CONSOLE
+        [HideInInspector] 
+#endif
         public float DoubleClickTime = 0.25f;
 
+#if UNITY_CONSOLE
+        [HideInInspector] 
+#endif
         public GamepadBaseMapAsset GenericGamepadSetup;
 
         /// <summary>
@@ -258,12 +278,15 @@ namespace Argos.Framework.Input
         {
             // TODO: CHECK UNITY INPUT MANAGER MAP AND WARNING IF NOT IS THE ARGOS MAP SETUP
 
-            // Check in defined intervals the current active input:
             Gamepad.Instance.TryToIndentifyGamepad();
-            StartCoroutine(this.CheckCurrentInputTypeCoroutine());
+
+#if UNITY_DESKTOP
+            // Check in defined intervals the current active input:
+            StartCoroutine(this.CheckCurrentInputTypeCoroutine()); 
 
             // Check for a generic joystick and initialize it for support Force Feedback:
             ForceFeedback.CheckForAvailableJoystick();
+#endif
 
             InputManager.Instance = this;
         }
@@ -277,9 +300,11 @@ namespace Argos.Framework.Input
             // Process the Gamepad states:
             Gamepad.Instance.Update();
 
+#if UNITY_DESKTOP
             this.HasMotionFromMouse = Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_X_NAME)) > InputManager.MIN_MOUSE_X_DELTA ||
                                       Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Y_NAME)) > InputManager.MIN_MOUSE_Y_DELTA ||
-                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Z_NAME)) > InputManager.MIN_MOUSE_Z_DELTA;
+                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Z_NAME)) > InputManager.MIN_MOUSE_Z_DELTA; 
+#endif
 
             // Update the input maps:
             for (int i = 0; i < this._inputMaps.Count; i++)
@@ -290,11 +315,13 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Events
+#if UNITY_DESKTOP
         private void OnApplicationQuit()
         {
             // Release a generic joystick and stop active Force Feedback effect:
             ForceFeedback.ReleaseJoystick();
         } 
+#endif
         #endregion
 
         #region Methods & Functions
@@ -356,7 +383,7 @@ namespace Argos.Framework.Input
                     {
                         case InputType.KeyboardAndMouse:
 
-                            return InputManager.NOT_ASSIGNABLE_KEYS.Contains(keyCode) ? KeyCode.None : keyCode;
+                            return InputManager.NOT_ASSIGNABLE_KEYS.Contains(keyCode) ? KeyCode.None : keyCode; 
 
                         case InputType.XBoxController:
 
@@ -401,10 +428,10 @@ namespace Argos.Framework.Input
         {
             switch (Gamepad.Instance.Type)
             {
-                case Gamepad.GamepadType.XBoxController:
+                case GamepadType.XBoxController:
                     XInput.SetVibration(engines);
                     break;
-                case Gamepad.GamepadType.Generic:
+                case GamepadType.Generic:
                     ForceFeedback.SetVibration(engines);
                     break;
             }
@@ -448,17 +475,17 @@ namespace Argos.Framework.Input
                 {
                     if (Gamepad.Instance.IsAnyButtonDown || Gamepad.Instance.HasMotionFromAnyAxis)
                     {
-                        Gamepad.Instance.Type = Gamepad.Instance.TryToIndentifyGamepad();
+                        Gamepad.Instance.TryToIndentifyGamepad();
 
                         switch (Gamepad.Instance.Type)
                         {
-                            case Gamepad.GamepadType.XBoxController:
+                            case GamepadType.XBoxController:
                                 this.CurrentInputType = InputType.XBoxController;
                                 break;
-                            case Gamepad.GamepadType.PS4Controller:
+                            case GamepadType.PS4Controller:
                                 this.CurrentInputType = InputType.PS4Controller;
                                 break;
-                            case Gamepad.GamepadType.NintendoSwitchProController:
+                            case GamepadType.NintendoSwitchProController:
                                 this.CurrentInputType = InputType.NintendoSwitchProController;
                                 break;
                             default:

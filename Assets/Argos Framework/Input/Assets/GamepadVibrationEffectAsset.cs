@@ -71,6 +71,8 @@ namespace Argos.Framework.Input
     public class GamepadVibrationEffectAssetEditor : Editor
     {
         #region Constants
+        const float MIN_DURATION = 0.01f;
+
         const string LABEL_POPUP_TYPE = "Vibration type";
         const string LABEL_TOGGLE_USE_CURVES = "Use curves";
         const string LABEL_TOGGLE_LOOP = "Loop";
@@ -303,9 +305,9 @@ namespace Argos.Framework.Input
                     GUI.enabled = (this._target._useCurves || !this._target._loop) && isMainGUIEnable;
                     {
                         EditorGUILayout.PropertyField(this._duration, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_DURATION_VALUE));
-                        if (this._target._duration < 0f)
+                        if (this._target._duration < GamepadVibrationEffectAssetEditor.MIN_DURATION)
                         {
-                            this._target._duration = 0f;
+                            this._target._duration = GamepadVibrationEffectAssetEditor.MIN_DURATION;
                         }
                     }
                     GUI.enabled = isMainGUIEnable;

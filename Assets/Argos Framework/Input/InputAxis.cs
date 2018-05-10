@@ -74,8 +74,8 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Indicate if this axis uses the mouse input (axis or position) when the gamepad is not is the active input.
         /// </summary>
-        /// <remarks>When this property is not setup as none, this axis ignore all InputActions.</remarks>
-        [Tooltip("Indicate if this axis uses the mouse input (axis or position) when the gamepad is not is the active input.\n\nWhen this property is not setup as none, this axis ignore all InputActions.")]
+        /// <remarks>When this property is not setup as None, this axis ignore all Keys fields (InputActions) configured.</remarks>
+        [Tooltip("Indicate if this axis uses the mouse input (axis or position) when the gamepad is not is the active input.\n\nWhen this property is not setup as None, this axis ignore all Keys fields (InputActions) configured.")]
         public MouseInputMode AlternativeMouseInput = MouseInputMode.None;
 
         /// <summary>

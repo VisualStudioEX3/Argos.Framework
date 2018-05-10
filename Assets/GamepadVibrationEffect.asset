@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Name: GamepadVibrationEffect
   m_EditorClassIdentifier: 
   _type: 2
-  _useCurves: 0
+  _useCurves: 1
   _loop: 0
   _strongForce: 1
   _weakForce: 0.75

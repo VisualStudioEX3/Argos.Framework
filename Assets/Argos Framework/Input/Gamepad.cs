@@ -6,6 +6,55 @@ using Argos.Framework;
 
 namespace Argos.Framework.Input
 {
+    #region Enums
+    /// <summary>
+    /// Gamepad controller type.
+    /// </summary>
+    public enum GamepadType
+    {
+        /// <summary>
+        /// Generic gamepad or joystick.
+        /// </summary>
+        Generic,
+        /// <summary>
+        /// Xbox360 / Xbox One game controller.
+        /// </summary>
+        XBoxController,
+        /// <summary>
+        /// PS4 game controller.
+        /// </summary>
+        PS4Controller,
+        /// <summary>
+        /// Nintendo Switch Pro controller.
+        /// </summary>
+        NintendoSwitchProController
+    }
+
+    /// <summary>
+    /// Unique gamepad map buttons.
+    /// </summary>
+    public enum GamepadButtons
+    {
+        None = -1,
+        Button1,
+        Button2,
+        Button3,
+        Button4,
+        Start,
+        Select,
+        LeftStick,
+        RightStick,
+        LeftBumper,
+        RightBumper,
+        LeftTrigger,
+        RightTrigger,
+        DPadLeft,
+        DPadRight,
+        DPadUp,
+        DPadDown
+    }
+    #endregion
+
     /// <summary>
     /// Gamepad button states.
     /// </summary>
@@ -16,7 +65,7 @@ namespace Argos.Framework.Input
         #region Internal vars
         bool _isPressed;
         bool _isDown;
-        bool _isUp; 
+        bool _isUp;
         #endregion
 
         #region Public vars
@@ -71,7 +120,7 @@ namespace Argos.Framework.Input
             JoystickButton17 = KeyCode.JoystickButton17,
             JoystickButton18 = KeyCode.JoystickButton18,
             JoystickButton19 = KeyCode.JoystickButton19
-        } 
+        }
         #endregion
 
         #region Public vars
@@ -138,7 +187,7 @@ namespace Argos.Framework.Input
         [Tooltip("XBox RB, PS4 R1 or Nintendo Switch R button.")]
         public UnityJoystickButtons RightBumper;
 
-        [Space]        
+        [Space]
         public UnityJoystickButtons LeftStick;
         public UnityJoystickButtons RightStick;
 
@@ -160,7 +209,7 @@ namespace Argos.Framework.Input
     /// Gamepad mapper.
     /// </summary>
     /// <remarks>
-    /// Multiplatform single player gamepad mapper for works natively with the XBox 360/One and PS4 controllers maps on PC (Windows, Linux & Mac), and support for manual setup any generic gamepad or joystick.
+    /// Multiplatform single player gamepad mapper for works natively with the XBox 360/One, PS4 controllers and Nintendo Switch Pro controller maps on PC (Windows, Linux & Mac), and support for manual setup of any generic gamepad or joystick.
     /// FYI: The PS4 Controller is not supported natively on Linux, and the XBox 360 controller (and wired XBox One 1º Gen) not supported on OSX. Maybe add support for third party drivers for these cases in the future.
     /// </remarks>
     public sealed class Gamepad
@@ -179,7 +228,7 @@ namespace Argos.Framework.Input
 
                 return Gamepad._instance;
             }
-        } 
+        }
         #endregion
 
         #region Constants
@@ -195,68 +244,17 @@ namespace Argos.Framework.Input
         static readonly string[] NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES = new string[] { "pro controller", "wireless gamepad" };                    // Only bluetooth, and at least, only on Windows.
         #endregion
 
-        #region Enums
-        /// <summary>
-        /// Gamepad controller type.
-        /// </summary>
-        public enum GamepadType
-        {
-            /// <summary>
-            /// Generic gamepad or joystick.
-            /// </summary>
-            Generic,
-            /// <summary>
-            /// Xbox360 / Xbox One game controller.
-            /// </summary>
-            XBoxController,
-            /// <summary>
-            /// PS4 game controller.
-            /// </summary>
-            PS4Controller,
-            /// <summary>
-            /// Nintendo Switch Pro controller.
-            /// </summary>
-            NintendoSwitchProController
-        }
-
-        /// <summary>
-        /// Unique gamepad map buttons.
-        /// </summary>
-        public enum GamepadButtons
-        {
-            None = -1,
-            Button1,
-            Button2,
-            Button3,
-            Button4,
-            Start,
-            Select,
-            LeftStick,
-            RightStick,
-            LeftBumper,
-            RightBumper,
-            LeftTrigger,
-            RightTrigger,
-            DPadLeft,
-            DPadRight,
-            DPadUp,
-            DPadDown
-        }
-        #endregion
-
         #region Internal vars
-        string[] _axisNames; 
+        string[] _axisNames;
         #endregion
 
-        #region Public vars
+        #region Properties
         /// <summary>
         /// Gamepad type.
         /// </summary>
         /// <remarks>Set the predefined map for XBox360/One or PS4 controller, or set as unknown gamepad for manual setup.</remarks>
-        public GamepadType Type;
-        #endregion
+        public GamepadType Type { get; private set; }
 
-        #region Properties
         /// <summary>
         /// Generic gamepad setup shortcut.
         /// </summary>
@@ -358,7 +356,7 @@ namespace Argos.Framework.Input
             {
                 this._axisNames[i] = $"Gamepad {i + 1} Axis";
             }
-        } 
+        }
         #endregion
 
         #region Update logic
@@ -382,19 +380,19 @@ namespace Argos.Framework.Input
         {
             GamepadButtonStates state;
 
-            KeyCode button1, 
-                    button2, 
-                    button3, 
-                    button4, 
-                    start, 
-                    select, 
-                    leftBumper, 
-                    rightBumper, 
-                    leftStickButton, 
+            KeyCode button1,
+                    button2,
+                    button3,
+                    button4,
+                    start,
+                    select,
+                    leftBumper,
+                    rightBumper,
+                    leftStickButton,
                     rightStickButton;
 
             switch (this.Type)
-            {                
+            {
                 case GamepadType.XBoxController:
 
                     button1 = (KeyCode)XBoxControllerButtons.A;
@@ -809,27 +807,39 @@ namespace Argos.Framework.Input
         /// </summary>
         /// <returns>Return the type of gamepad (if can identify it, if not, return as generic).</returns>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public GamepadType TryToIndentifyGamepad()
+        public void TryToIndentifyGamepad()
         {
+#if UNITY_STANDALONE || UNITY_EDITOR
+
             foreach (var name in UnityEngine.Input.GetJoystickNames())
             {
                 if (!string.IsNullOrEmpty(name))
                 {
                     if (Helper.IsInString(name.ToLower(), Gamepad.XBOX_CONTROLLER_CHECK_NAMES))
                     {
-                        return GamepadType.XBoxController;
+                        this.Type = GamepadType.XBoxController;
+                        return;
                     }
                     else if (Helper.IsInString(name.ToLower(), Gamepad.PS4_CONTROLLER_CHECK_NAMES))
                     {
-                        return GamepadType.PS4Controller;
+                        this.Type = GamepadType.PS4Controller;
+                        return;
                     }
                     else if (Helper.IsInString(name.ToLower(), Gamepad.NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES))
                     {
-                        return GamepadType.NintendoSwitchProController;
+                        this.Type = GamepadType.NintendoSwitchProController;
+                        return;
                     }
                 }
             }
-            return GamepadType.Generic;
+
+            this.Type = GamepadType.Generic;
+
+#elif UNITY_XBOX || UNITY_PS4 || UNITY_SWITCH
+
+        this.Type = GamepadType.XBoxController;
+
+#endif
         }
         #endregion
     }

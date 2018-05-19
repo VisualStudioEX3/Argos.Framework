@@ -216,27 +216,30 @@ namespace Argos.Framework.Input
         static readonly KeyCode[] ASSIGNABLE_NINTENDO_SWITCH_BUTTONS = (KeyCode[])Enum.GetValues(typeof(NintendoSwitchProControllerButtons));
         #endregion
                 
-        #region Inspector fields
-        [SerializeField]
-#if UNITY_CONSOLE
-        [HideInInspector] 
-#endif
-        bool _hideMouseCursorInGamepadMode = true;
-
-        [SerializeField]
-        [Tooltip("Interval between input type identification checks.")]
-#if UNITY_CONSOLE
-        [HideInInspector] 
-#endif
-        public float _checkInputTypeInterval = 0.02f;
-
-        [Space]
-        [HideInInspector]
-        [SerializeField]
+        #region Internal vars
+        [SerializeField, HideInInspector]
         List<InputMapData> _inputMaps;
         #endregion
 
         #region Public vars
+        [Header("General settings:")]
+#if UNITY_CONSOLE
+        [HideInInspector]
+#endif
+        public bool HideMouseCursorInGamepadMode = true;
+
+        [Tooltip("Interval between input type identification checks.")]
+#if UNITY_CONSOLE
+        [HideInInspector] 
+#endif
+        public float CheckInputTypeInterval = 0.02f;
+
+#if UNITY_CONSOLE
+        [HideInInspector] 
+#endif
+        public GamepadBaseMapAsset GenericGamepadSetup;
+
+        [Header("UI settings:")]
         /// <summary>
         /// Time for double click detection on UI controls.
         /// </summary>
@@ -248,7 +251,9 @@ namespace Argos.Framework.Input
 #if UNITY_CONSOLE
         [HideInInspector] 
 #endif
-        public GamepadBaseMapAsset GenericGamepadSetup;
+        [Header("Nintendo Switch Pro controller (PC only):")]
+        [Tooltip("Use the Nintendo Switch Pro controller button layout or XBox button layout.\n\nWhen the Nintendo Switch Pro controller is active, this setting allow to use the Nintendo button layout. If this setting is false, uses the XBox button layout (swtich A B buttons, and X Y buttons to match the XBox controller button layout).\n\nThis setting not affect to XBox360/One, PS4 or generic controllers.")]
+        public bool UseNintendoButtonLayout = true;
 
         /// <summary>
         /// Event raised when the input type is changed.
@@ -276,8 +281,6 @@ namespace Argos.Framework.Input
         #region Initializers
         private void Awake()
         {
-            // TODO: CHECK UNITY INPUT MANAGER MAP AND WARNING IF NOT IS THE ARGOS MAP SETUP
-
             Gamepad.Instance.TryToIndentifyGamepad();
 
 #if UNITY_DESKTOP
@@ -289,22 +292,34 @@ namespace Argos.Framework.Input
 #endif
 
             InputManager.Instance = this;
+
+            DontDestroyOnLoad(this);
         }
         #endregion
 
         #region Update logic
         private void Update()
         {
+#if UNITY_DESKTOP
+            if (this.CheckInputTypeInterval < 0.01f)
+            {
+                this.CheckInputTypeInterval = 0.01f;
+            }
+
+            if (Gamepad.Instance.UseNintendoButtonLayout != this.UseNintendoButtonLayout)
+            {
+                Gamepad.Instance.UseNintendoButtonLayout = this.UseNintendoButtonLayout;
+            }
+
+            this.HasMotionFromMouse = Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_X_NAME)) > InputManager.MIN_MOUSE_X_DELTA ||
+                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Y_NAME)) > InputManager.MIN_MOUSE_Y_DELTA ||
+                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Z_NAME)) > InputManager.MIN_MOUSE_Z_DELTA;
+#endif
+
             this.IsAnyKeyDown = UnityEngine.Input.anyKeyDown;
 
             // Process the Gamepad states:
             Gamepad.Instance.Update();
-
-#if UNITY_DESKTOP
-            this.HasMotionFromMouse = Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_X_NAME)) > InputManager.MIN_MOUSE_X_DELTA ||
-                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Y_NAME)) > InputManager.MIN_MOUSE_Y_DELTA ||
-                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Z_NAME)) > InputManager.MIN_MOUSE_Z_DELTA; 
-#endif
 
             // Update the input maps:
             for (int i = 0; i < this._inputMaps.Count; i++)
@@ -466,7 +481,7 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         IEnumerator CheckCurrentInputTypeCoroutine()
         {
-            var wait = new WaitForSecondsRealtime(this._checkInputTypeInterval);
+            var wait = new WaitForSecondsRealtime(this.CheckInputTypeInterval);
             while (true)
             {
                 var current = this.CurrentInputType;
@@ -493,8 +508,8 @@ namespace Argos.Framework.Input
                                 break;
                         }
 
-                        Cursor.visible = !this._hideMouseCursorInGamepadMode;
-                        Cursor.lockState = this._hideMouseCursorInGamepadMode ? CursorLockMode.Locked : CursorLockMode.None;
+                        Cursor.visible = !this.HideMouseCursorInGamepadMode;
+                        Cursor.lockState = this.HideMouseCursorInGamepadMode ? CursorLockMode.Locked : CursorLockMode.None;
                     }
                     else
                     {
@@ -530,7 +545,15 @@ namespace Argos.Framework.Input
         #region Constants
         const string HEADER_NAME = "Input Maps";
         const string PROPERTY_NAME = "_inputMaps";
-        const string PREFIX_NAME = "Input Map"; 
+        const string PREFIX_NAME = "Input Map";
+
+        const string HELPBOX_MESSAGE = "For the right behaviour of the Argos Input Manager, the Unity input settings must be setup first with the Argos input axes predefined values.";
+        const string BUTTON_LABEL = "Setup Unity input settings";
+
+        const string DIALOG_TITLE = "Warning!";
+        const string DIALOG_MESSAGE = "This action will delete the current Unity input settings axes values. Are you sure?";
+        const string DIALOG_OK = "Yes, proceed";
+        const string DIALOG_CANCEL = "No, cancel";
         #endregion
 
         #region Internal vars
@@ -547,9 +570,25 @@ namespace Argos.Framework.Input
         {
             this.DrawDefaultInspector();
 
+            EditorGUILayout.Space();
+
+            EditorGUILayout.HelpBox(InputManagerEditor.HELPBOX_MESSAGE, MessageType.Info);
+            GUI.enabled = !Application.isPlaying;
+            if (GUILayout.Button(InputManagerEditor.BUTTON_LABEL))
+            {
+                if (EditorUtility.DisplayDialog(InputManagerEditor.DIALOG_TITLE, InputManagerEditor.DIALOG_MESSAGE, InputManagerEditor.DIALOG_OK, InputManagerEditor.DIALOG_CANCEL))
+                {
+                    UnityInputManagerAsset.SetupInputAxes();
+                }
+            }
+
+            EditorGUILayout.Space();
+
             this.serializedObject.Update();
             this._inputMapList.DoLayoutList();
             this.serializedObject.ApplyModifiedProperties();
+
+            EditorGUILayout.Space();
         }
         #endregion
     } 

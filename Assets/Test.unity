@@ -3789,7 +3789,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &828722534
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3923,6 +3923,7 @@ MonoBehaviour:
   DoubleClickTime: 0.25
   GenericGamepadSetup: {fileID: 11400000, guid: a80f2a4c4bc854c48ba60695b1452c5f,
     type: 2}
+  UseNintendoButtonLayout: 1
 --- !u!4 &1892997795
 Transform:
   m_ObjectHideFlags: 0

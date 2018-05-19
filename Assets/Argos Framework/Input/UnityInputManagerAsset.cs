@@ -60,7 +60,7 @@ namespace Argos.Framework.Input
         /// <remarks>Access the Unity Input Manager asset, from Project Settings folder, clear the existing axes definitions, and add the Argos axes definitions.</remarks>
         public static void SetupInputAxes()
         {
-            Debug.Log("Access Project Settings/Input Manager asset...");
+            Debug.Log("Access /ProjectSettings/InputManager.asset...");
             UnityInputManagerAsset._serializedObject = new SerializedObject(AssetDatabase.LoadAllAssetsAtPath("ProjectSettings/InputManager.asset")[0]);
             UnityInputManagerAsset._axesProperty = UnityInputManagerAsset._serializedObject.FindProperty("m_Axes");
 
@@ -72,7 +72,7 @@ namespace Argos.Framework.Input
 
             UnityInputManagerAsset._serializedObject.ApplyModifiedProperties();
 
-            Debug.Log("Project Settings/Input Manager asset is updated!");
+            Debug.Log("/ProjectSettings/InputManager.asset is updated!");
         }
 
         static void AddAxis(UnityInputAxis axis)

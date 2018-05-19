@@ -5,46 +5,7 @@ using Argos.Framework;
 
 namespace Argos.Framework.Input
 {
-#if UNITY_STANDALONE_OSX
-    /// <summary>
-    /// XBox 360/XBox One Controller map for OSX.
-    /// </summary>
-    /// <remarks>OSX support via third party driver: https://github.com/360Controller/360Controller 
-    /// On OSX, the DPad are buttons.</remarks>
-    public enum XBoxControllerButtons
-    {
-       A = KeyCode.JoystickButton16,
-       B = KeyCode.JoystickButton17,
-       X = KeyCode.JoystickButton18,
-       Y = KeyCode.JoystickButton19,
-       LeftBumper = KeyCode.JoystickButton13,
-       RightBumper = KeyCode.JoystickButton14,
-       Back = KeyCode.JoystickButton10,
-       Start = KeyCode.JoystickButton9,
-       LeftStick = KeyCode.JoystickButton11,
-       RightStick = KeyCode.JoystickButton12,
-       DPadLeft = KeyCode.JoystickButton7,
-       DPadRight = KeyCode.JoystickButton8,
-       DPadUp = KeyCode.JoystickButton5,
-       DPadDown = KeyCode.JoystickButton6
-    }
-
-    /// <summary>
-    /// XBox 360/XBox One Controller axis map for OSX.
-    /// </summary>
-    /// <remarks>LeftStick always is the X and Y axis.
-    /// OSX support via third party driver: https://github.com/360Controller/360Controller 
-    /// On OSX, the DPad are buttons.</remarks>
-    public enum XboxControllerAxes
-    {
-        LeftStickX = 1,
-        LeftStickY = 2,
-        RightStickX = 3,
-        RightStickY = 4,
-        LeftTrigger = 5, // -1 to 1 range, unpressed is 0
-        RightTrigger = 6, // -1 to 1 range, unpressed is 0
-    }
-#elif UNITY_STANDALONE_LINUX
+#if UNITY_STANDALONE_LINUX
     /// <summary>
     /// XBox 360/XBox One Controller map for Linux.
     /// </summary>
@@ -124,7 +85,6 @@ namespace Argos.Framework.Input
     }
 #endif
 
-#if UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX
     /// <summary>
     /// PS4 Controller button map.
     /// </summary>
@@ -161,9 +121,7 @@ namespace Argos.Framework.Input
         DPadX = 7,
         DPadY = 8
     }
-#endif
 
-#if UNITY_STANDALONE_WIN
     /// <summary>
     /// Nintendo Switch Pro Controller button map.
     /// </summary>
@@ -196,6 +154,5 @@ namespace Argos.Framework.Input
         RightStickY = 8,
         DPadX = 9,
         DPadY = 10
-    } 
-#endif
+    }
 }

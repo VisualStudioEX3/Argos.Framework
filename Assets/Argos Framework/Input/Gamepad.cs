@@ -149,7 +149,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Some gamepads and joysticks defined the triggers as separated axes.
         /// </summary>
-        /// <remarks>X = Left trigger axis, Y = Right trigger axis.</remarks>        
+        /// <remarks>X = Left trigger axis, Y = Right trigger axis.</remarks>
         [Tooltip("Some gamepads and joysticks defined the triggers as separated axes:\n\nX = Left trigger axis, Y = Right trigger axis.")]
         [Space]
         public Vector2Int TriggersAxes;
@@ -166,13 +166,13 @@ namespace Argos.Framework.Input
         public bool DPadInvertY;
 
         [Header("Buttons:")]
-        [Tooltip("XBox A, PS4 Equis or Nintendo Switch B button.")]
+        [Tooltip("XBox A, PS4 Equis or Nintendo Switch A button.")]
         public UnityJoystickButtons Button1;
-        [Tooltip("XBox B, PS4 Circle or Nintendo Switch A button.")]
+        [Tooltip("XBox B, PS4 Circle or Nintendo Switch B button.")]
         public UnityJoystickButtons Button2;
-        [Tooltip("XBox X, PS4 Square or Nintendo Switch Y button.")]
+        [Tooltip("XBox X, PS4 Square or Nintendo Switch X button.")]
         public UnityJoystickButtons Button3;
-        [Tooltip("XBox Y, PS4 Triangle or Nintendo Switch X button.")]
+        [Tooltip("XBox Y, PS4 Triangle or Nintendo Switch Y button.")]
         public UnityJoystickButtons Button4;
 
         [Space]
@@ -239,9 +239,9 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Static members
-        static readonly string[] XBOX_CONTROLLER_CHECK_NAMES = new string[] { "xbox", "xinput" };                                                   // Windows and Linux (OSX via third party driver).
+        static readonly string[] XBOX_CONTROLLER_CHECK_NAMES = new string[] { "xbox", "xinput" };                                                   // Windows and Linux.
         static readonly string[] PS4_CONTROLLER_CHECK_NAMES = new string[] { "wireless controller", "sony" };                                       // Windows and OSX.
-        static readonly string[] NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES = new string[] { "pro controller", "wireless gamepad" };                    // Only bluetooth, and at least, only on Windows.
+        static readonly string[] NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES = new string[] { "pro controller", "wireless gamepad" };                    // Windows (bluetooth only).
         #endregion
 
         #region Internal vars
@@ -259,6 +259,13 @@ namespace Argos.Framework.Input
         /// Generic gamepad setup shortcut.
         /// </summary>
         public GamepadBaseMap GenericGamepadSetup { get { return InputManager.Instance.GenericGamepadSetup.Map; } }
+
+        /// <summary>
+        /// Use the Nintendo Switch Pro controller button layout or XBox button layout.
+        /// </summary>
+        /// <remarks>When the Nintendo Switch Pro controller is active, this setting allow to use the Nintendo button layout. If this setting is false, uses the XBox button layout (swtich A B buttons, and X Y buttons to match the XBox controller button layout).
+        /// This setting not affect to XBox360/One, PS4 or generic controllers.</remarks>
+        public bool UseNintendoButtonLayout = true;
 
         /// <summary>
         /// Read the left stick.
@@ -349,7 +356,7 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Constructors
-        private Gamepad()
+        Gamepad()
         {
             this._axisNames = new string[Gamepad.MAX_AXIS_INDEX];
             for (int i = 0; i < this._axisNames.Length; i++)
@@ -423,10 +430,10 @@ namespace Argos.Framework.Input
 
                 case GamepadType.NintendoSwitchProController:
 
-                    button1 = (KeyCode)NintendoSwitchProControllerButtons.B;
-                    button2 = (KeyCode)NintendoSwitchProControllerButtons.A;
-                    button3 = (KeyCode)NintendoSwitchProControllerButtons.Y;
-                    button4 = (KeyCode)NintendoSwitchProControllerButtons.X;
+                    button1 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.A : (KeyCode)NintendoSwitchProControllerButtons.B;
+                    button2 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.B : (KeyCode)NintendoSwitchProControllerButtons.A;
+                    button3 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.X : (KeyCode)NintendoSwitchProControllerButtons.Y;
+                    button4 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.Y : (KeyCode)NintendoSwitchProControllerButtons.X;
                     start = (KeyCode)NintendoSwitchProControllerButtons.Plus;
                     select = (KeyCode)NintendoSwitchProControllerButtons.Minus;
                     leftBumper = (KeyCode)NintendoSwitchProControllerButtons.ZL;
@@ -592,8 +599,7 @@ namespace Argos.Framework.Input
                     this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
                                             UnityEngine.Input.GetAxis(yAxis) * invertY);
 
-#if UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-                    
+#if UNITY_STANDALONE_LINUX
                     // OSX always. In Linux, if axes not return values (maybe is a wireless controller), check buttons:
                     if (this.DPad == Vector2.zero)
                     {
@@ -614,7 +620,6 @@ namespace Argos.Framework.Input
                             this.DPad = Vector2.down;
                         }
                     }
-                    
 #endif
                     break;
 

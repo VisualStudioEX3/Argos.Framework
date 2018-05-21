@@ -11,15 +11,15 @@ public class Test : MonoBehaviour
     [MinMaxSlider(0f, 5f)]
     public MinMaxSlider ActionRange;
 
-    [VectorRename("L", "R")]
-    public Vector2 RenameVector2;
+    //[VectorRename("L", "R")]
+    //public Vector2 RenameVector2;
 
-    public Vector2 NormalVector2;
+    //public Vector2 NormalVector2;
 
-    [VectorRename("L", "R", "H")]
-    public Vector3 RenameVector3;
+    //[VectorRename("L", "R", "H")]
+    //public Vector3 RenameVector3;
 
-    public Vector3 NormalVector3;
+    //public Vector3 NormalVector3;
 
     [Button]
     public void TestButton()

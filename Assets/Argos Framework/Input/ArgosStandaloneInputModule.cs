@@ -35,6 +35,7 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Inspector fields
+        [Header("Input Map setup:")]
         [SerializeField]
         string _inputMap;
 

@@ -3917,10 +3917,11 @@ MonoBehaviour:
   ActionRange:
     Min: 1
     Max: 3
-  RenameVector2: {x: 0, y: 0}
-  NormalVector2: {x: 0, y: 0}
-  RenameVector3: {x: 0, y: 0, z: 0}
-  NormalVector3: {x: 0, y: 0, z: 0}
+  Test2:
+    Field1: 0
+    Field2:
+      Min: 0.39
+      Max: 1.61
 --- !u!114 &1892997794
 MonoBehaviour:
   m_ObjectHideFlags: 0

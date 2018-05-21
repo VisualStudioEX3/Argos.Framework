@@ -4,22 +4,26 @@ using UnityEngine;
 using Argos.Framework;
 using Argos.Framework.Input;
 using Argos.Framework.Input.Extensions;
+using System;
 
 public class Test : MonoBehaviour
 {
-    [HelpBox("Argos \nHelpbox \ntest adsfasdfasdfasdf", HelpBoxMessageType.Warning)]
+    [Serializable]
+    public struct TestStruct
+    {
+        [HelpBox("Struct element helpbox", HelpBoxMessageType.Info)]
+        public int Field1;
+
+        [HelpBox("Simple helpbox\ntest 2")]
+        [MinMaxSlider(0f, 5f)]
+        public MinMaxSlider Field2;
+    }
+
+    [HelpBox("Argos Helpbox\nThis is a large text to test the line wrap content in this helpbox for the lulz!", HelpBoxMessageType.Warning)]
     [MinMaxSlider(0f, 5f)]
     public MinMaxSlider ActionRange;
 
-    //[VectorRename("L", "R")]
-    //public Vector2 RenameVector2;
-
-    //public Vector2 NormalVector2;
-
-    //[VectorRename("L", "R", "H")]
-    //public Vector3 RenameVector3;
-
-    //public Vector3 NormalVector3;
+    public TestStruct Test2;
 
     [Button]
     public void TestButton()

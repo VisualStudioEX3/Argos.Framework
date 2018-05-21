@@ -9,17 +9,17 @@ namespace Argos.Framework
     [CustomPropertyDrawer(typeof(MinMaxSliderAttribute))]
     public class MinMaxSliderDrawer : PropertyDrawer
     {
-        #region Consts
-        const float LABEL_MIN_WIDTH = 24f;
-        const float LABEL_MAX_WIDTH = 26F;
-        const float FIELD_WIDTH = 40f;
-        const float MARGIN = 10f;
+        #region Constants
+        const float FIELD_WIDTH = 50f;
+        const float SEPARATOR = 5f;
+        const float MIN_FIELD_X_CORRECTION = 14f;
+        const float SLIDER_WIDTH_CORRECTION = 130f;
         #endregion
 
         #region Methods & Functions
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            return EditorGUIUtility.standardVerticalSpacing + EditorGUIUtility.singleLineHeight * 2;
+            return EditorGUIUtility.singleLineHeight;
         }
         #endregion
 
@@ -30,55 +30,42 @@ namespace Argos.Framework
 
             var minProperty = property.FindPropertyRelative("Min");
             var maxProperty = property.FindPropertyRelative("Max");
-            var minMax = attribute as MinMaxSliderAttribute ?? new MinMaxSliderAttribute(0f, 1f);
+            var minMax = (MinMaxSliderAttribute)attribute ?? new MinMaxSliderAttribute(0f, 1f);
 
             float min = minProperty.floatValue;
             float max = maxProperty.floatValue;
 
-            var copy = position;
-            copy.height = EditorGUIUtility.singleLineHeight;
-            position = copy;
+            int currentIndent = EditorGUI.indentLevel;
+            
+            Rect labelRect = position;
+            labelRect.width = EditorGUIUtility.labelWidth;
+            labelRect.height = EditorGUIUtility.singleLineHeight;
+            EditorGUI.PrefixLabel(labelRect, new GUIContent(label.text));
 
-            // Property label:
-            {
-                EditorGUI.LabelField(position, string.Format("{0}", label.text));
-            }
+            EditorGUI.indentLevel = 0;
 
-            position.x += MARGIN;
-            position.y += EditorGUIUtility.standardVerticalSpacing + EditorGUIUtility.singleLineHeight;
+            Rect minFieldRect = position;
+            minFieldRect.width = MinMaxSliderDrawer.FIELD_WIDTH;
+            minFieldRect.height = EditorGUIUtility.singleLineHeight;
+            minFieldRect.x = EditorGUIUtility.labelWidth + MinMaxSliderDrawer.MIN_FIELD_X_CORRECTION;
+            min = Mathf.Clamp(EditorGUI.FloatField(minFieldRect, min), minMax.Min, minMax.Max);
 
-            // Min field:
-            {
-                position.width = MinMaxSliderDrawer.LABEL_MIN_WIDTH;
-                EditorGUI.LabelField(position, new GUIContent("Min"));
+            Rect maxFieldRect = position;
+            maxFieldRect.width = MinMaxSliderDrawer.FIELD_WIDTH;
+            maxFieldRect.height = EditorGUIUtility.singleLineHeight;
+            maxFieldRect.x = EditorGUIUtility.currentViewWidth - maxFieldRect.width - MinMaxSliderDrawer.SEPARATOR;
+            max = Mathf.Clamp(EditorGUI.FloatField(maxFieldRect, max), minMax.Min, minMax.Max);
 
-                position.x += position.width + EditorGUIUtility.standardVerticalSpacing;
-                position.width = MinMaxSliderDrawer.FIELD_WIDTH;
-                min = Mathf.Clamp(EditorGUI.FloatField(position, min), minMax.Min, minMax.Max);
-            }
+            Rect minMaxSliderRect = position;
+            minMaxSliderRect.x = minFieldRect.x + minFieldRect.width + MinMaxSliderDrawer.SEPARATOR;
+            minMaxSliderRect.width = EditorGUIUtility.currentViewWidth - EditorGUIUtility.labelWidth - SLIDER_WIDTH_CORRECTION;
+            minMaxSliderRect.height = EditorGUIUtility.singleLineHeight;
+            EditorGUI.MinMaxSlider(minMaxSliderRect, ref min, ref max, minMax.Min, minMax.Max);
 
-            // Max field:
-            {
-                position.x = copy.xMax - MinMaxSliderDrawer.LABEL_MAX_WIDTH;
-                position.width = MinMaxSliderDrawer.LABEL_MAX_WIDTH;
-                EditorGUI.LabelField(position, new GUIContent("Max"));
-            }
+            EditorGUI.indentLevel = currentIndent;
 
-            // MinMaxSlider field:
-            {
-                position.x -= MinMaxSliderDrawer.FIELD_WIDTH + EditorGUIUtility.standardVerticalSpacing;
-                position.width = MinMaxSliderDrawer.FIELD_WIDTH;
-                max = Mathf.Clamp(EditorGUI.FloatField(position, max), minMax.Min, minMax.Max);
-
-                position.x = copy.xMin + MinMaxSliderDrawer.MARGIN + MinMaxSliderDrawer.LABEL_MIN_WIDTH + MinMaxSliderDrawer.FIELD_WIDTH + (EditorGUIUtility.standardVerticalSpacing * 4);
-                position.y -= 1f;
-                position.width = copy.xMax - position.x - (MinMaxSliderDrawer.LABEL_MAX_WIDTH + MinMaxSliderDrawer.FIELD_WIDTH + (EditorGUIUtility.standardVerticalSpacing * 4));
-
-                EditorGUI.MinMaxSlider(position, ref min, ref max, minMax.Min, minMax.Max);
-            }
-
-            minProperty.floatValue = min;
-            maxProperty.floatValue = max;
+            minProperty.floatValue = (float)System.Math.Round((double)min, 2);
+            maxProperty.floatValue = (float)System.Math.Round((double)max, 2);
         }
         #endregion
     }

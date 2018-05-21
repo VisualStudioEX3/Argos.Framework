@@ -19,33 +19,26 @@ namespace Argos.Framework
         #region Methods & Functions
         public override float GetHeight()
         {
-            var helpBoxAttribute = (HelpBoxAttribute)attribute;
-            var helpBoxStyle = GUI.skin.GetStyle("helpbox");
-            var content = new GUIContent(helpBoxAttribute.text);
+            var helpBox = (HelpBoxAttribute)attribute;
+            var style = GUI.skin.GetStyle("helpbox");
+            var content = new GUIContent(helpBox.text);
 
             float width = EditorGUIUtility.currentViewWidth - EditorGUI.indentLevel;
-            float height = helpBoxStyle.CalcHeight(content, width) + (EditorGUIUtility.standardVerticalSpacing * 2f);
+            float height = style.CalcHeight(content, width) + EditorGUIUtility.standardVerticalSpacing;
 
-            if (helpBoxAttribute.messageType == HelpBoxMessageType.None)
-            {
-                return height;
-            }
-            else
-            {
-                return height < HelpBoxAttributeDrawer.MIN_HEIGHT_WITH_ICON ? HelpBoxAttributeDrawer.MIN_HEIGHT_WITH_ICON : height;
-            }
+            return helpBox.messageType == HelpBoxMessageType.None ? height : Mathf.Max(HelpBoxAttributeDrawer.MIN_HEIGHT_WITH_ICON, height);
         } 
         #endregion
 
         #region Events
         public override void OnGUI(Rect position)
         {
-            var helpBoxAttribute = (HelpBoxAttribute)attribute;
+            var helpBox = (HelpBoxAttribute)attribute;
 
             position.height -= EditorGUIUtility.standardVerticalSpacing;
             position = EditorGUI.IndentedRect(position);
 
-            EditorGUI.HelpBox(position, helpBoxAttribute.text, (MessageType)helpBoxAttribute.messageType);
+            EditorGUI.HelpBox(position, helpBox.text, (MessageType)helpBox.messageType);
         } 
         #endregion
     }

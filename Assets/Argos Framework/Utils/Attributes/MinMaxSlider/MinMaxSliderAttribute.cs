@@ -12,7 +12,7 @@ namespace Argos.Framework
         #endregion
 
         #region Constructor
-        public MinMaxSliderAttribute(float min, float max)
+        public MinMaxSliderAttribute(float min = 0f, float max = 1f)
         {
             this.Min = min;
             this.Max = max;
@@ -20,6 +20,10 @@ namespace Argos.Framework
         #endregion
     }
 
+    /// <summary>
+    /// MinMaxSlider type struct.
+    /// </summary>
+    /// <remarks>Use this to create MinMaxSlider variables.</remarks>
     [Serializable]
     public struct MinMaxSlider
     {

@@ -38,11 +38,11 @@ namespace Argos.Framework.Input
         [SerializeField]
         string _inputMap;
 
-        [Header("Axes")]
+        [Header("Axes:")]
         [SerializeField]
         string _navigation;
 
-        [Header("Actions")]
+        [Header("Actions:")]
         [SerializeField]
         string _submit;
         [SerializeField]
@@ -52,7 +52,7 @@ namespace Argos.Framework.Input
         [SerializeField]
         string _delete;
 
-        [Header("Input Events")]
+        [Header("Input Events:")]
         [SerializeField]
         UnityEvent _onSubmit;
         [SerializeField]

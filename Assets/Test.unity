@@ -309,7 +309,7 @@ ParticleSystem:
   moveWithTransform: 0
   moveWithCustomTransform: {fileID: 0}
   scalingMode: 1
-  randomSeed: -1917773683
+  randomSeed: -1605587554
   InitialModule:
     serializedVersion: 3
     enabled: 1
@@ -3895,6 +3895,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1892997795}
   - component: {fileID: 1892997794}
+  - component: {fileID: 1892997793}
   m_Layer: 0
   m_Name: GameManager
   m_TagString: GameController
@@ -3902,6 +3903,24 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
+--- !u!114 &1892997793
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1892997792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3edd79acfed61d4bac57936c9e660be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActionRange:
+    Min: 1
+    Max: 3
+  RenameVector2: {x: 0, y: 0}
+  NormalVector2: {x: 0, y: 0}
+  RenameVector3: {x: 0, y: 0, z: 0}
+  NormalVector3: {x: 0, y: 0, z: 0}
 --- !u!114 &1892997794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3913,16 +3932,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a24ba39fea6b248429cec52ca23d52af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _hideMouseCursorInGamepadMode: 1
-  _checkInputTypeInterval: 0.02
   _inputMaps:
   - Name: UI
     Data: {fileID: 11400000, guid: 91002079750e7c347b5708fd6771ea17, type: 2}
   - Name: Player
     Data: {fileID: 11400000, guid: ef6ab9da010499c48b4ccda2f9863895, type: 2}
-  DoubleClickTime: 0.25
+  HideMouseCursorInGamepadMode: 1
+  CheckInputTypeInterval: 0.02
   GenericGamepadSetup: {fileID: 11400000, guid: a80f2a4c4bc854c48ba60695b1452c5f,
     type: 2}
+  DoubleClickTime: 0.25
   UseNintendoButtonLayout: 1
 --- !u!4 &1892997795
 Transform:
@@ -3948,7 +3967,6 @@ GameObject:
   - component: {fileID: 2092326314}
   - component: {fileID: 2092326313}
   - component: {fileID: 2092326312}
-  - component: {fileID: 2092326317}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -4019,14 +4037,3 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &2092326317
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 2092326311}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a3edd79acfed61d4bac57936c9e660be, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 

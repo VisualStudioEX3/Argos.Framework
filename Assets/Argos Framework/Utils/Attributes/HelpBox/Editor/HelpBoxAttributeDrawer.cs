@@ -4,59 +4,49 @@ using UnityEditor;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Decorator drawer for HelpBox attribute
+    /// Decorator drawer for HelpBox attribute.
     /// </summary>
     /// <remarks>
-    /// Modified from code at https://forum.unity.com/threads/helpattribute-allows-you-to-use-helpbox-in-the-unity-inspector-window.462768/#post-3014998
+    /// Based on code at https://forum.unity.com/threads/helpattribute-allows-you-to-use-helpbox-in-the-unity-inspector-window.462768/#post-3014998
     /// </remarks>
     [CustomPropertyDrawer(typeof(HelpBoxAttribute))]
     public class HelpBoxAttributeDrawer : DecoratorDrawer
     {
-
+        #region Constants
+        const float MIN_HEIGHT_WITH_ICON = 40f;
+        #endregion
+        
+        #region Methods & Functions
         public override float GetHeight()
         {
-            var helpBoxAttribute = attribute as HelpBoxAttribute;
-            if (helpBoxAttribute == null)
-                return base.GetHeight();
-            var helpBoxStyle = (GUI.skin != null) ? GUI.skin.GetStyle("helpbox") : null;
-            if (helpBoxStyle == null)
-                return base.GetHeight();
-
+            var helpBoxAttribute = (HelpBoxAttribute)attribute;
+            var helpBoxStyle = GUI.skin.GetStyle("helpbox");
             var content = new GUIContent(helpBoxAttribute.text);
-            float minW, maxW;
 
-            helpBoxStyle.CalcMinMaxWidth(content, out minW, out maxW);
-            float width = EditorGUIUtility.currentViewWidth - EditorGUI.indentLevel * 30f;
-            if (helpBoxAttribute.messageType != HelpBoxMessageType.None)
-                width *= 0.85f;
-            float height = helpBoxStyle.CalcHeight(new GUIContent(helpBoxAttribute.text), width);
-            return height + 4 + EditorGUIUtility.standardVerticalSpacing;
-        }
+            float width = EditorGUIUtility.currentViewWidth - EditorGUI.indentLevel;
+            float height = helpBoxStyle.CalcHeight(content, width) + (EditorGUIUtility.standardVerticalSpacing * 2f);
 
+            if (helpBoxAttribute.messageType == HelpBoxMessageType.None)
+            {
+                return height;
+            }
+            else
+            {
+                return height < HelpBoxAttributeDrawer.MIN_HEIGHT_WITH_ICON ? HelpBoxAttributeDrawer.MIN_HEIGHT_WITH_ICON : height;
+            }
+        } 
+        #endregion
+
+        #region Events
         public override void OnGUI(Rect position)
         {
-            var helpBoxAttribute = attribute as HelpBoxAttribute;
-            if (helpBoxAttribute == null)
-                return;
+            var helpBoxAttribute = (HelpBoxAttribute)attribute;
+
             position.height -= EditorGUIUtility.standardVerticalSpacing;
             position = EditorGUI.IndentedRect(position);
-            EditorGUI.HelpBox(position, helpBoxAttribute.text, GetMessageType(helpBoxAttribute.messageType));
-        }
 
-        private MessageType GetMessageType(HelpBoxMessageType helpBoxMessageType)
-        {
-            switch (helpBoxMessageType)
-            {
-                default:
-                case HelpBoxMessageType.None:
-                    return MessageType.None;
-                case HelpBoxMessageType.Info:
-                    return MessageType.Info;
-                case HelpBoxMessageType.Warning:
-                    return MessageType.Warning;
-                case HelpBoxMessageType.Error:
-                    return MessageType.Error;
-            }
-        }
+            EditorGUI.HelpBox(position, helpBoxAttribute.text, (MessageType)helpBoxAttribute.messageType);
+        } 
+        #endregion
     }
 }

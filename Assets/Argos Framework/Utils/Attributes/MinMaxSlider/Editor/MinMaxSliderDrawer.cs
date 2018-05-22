@@ -10,9 +10,7 @@ namespace Argos.Framework
     {
         #region Constants
         const float FIELD_WIDTH = 50f;
-        const float SEPARATOR = 5f;
-        const float MIN_FIELD_X_CORRECTION = 14f;
-        const float SLIDER_WIDTH_CORRECTION = 130f;
+        const float FIELD_SEPARATOR = 5f;
         #endregion
 
         #region Events
@@ -37,7 +35,7 @@ namespace Argos.Framework
             {
                 minFieldRect.width = MinMaxSliderDrawer.FIELD_WIDTH;
                 minFieldRect.height = EditorGUIUtility.singleLineHeight;
-                minFieldRect.x = EditorGUIUtility.labelWidth + MinMaxSliderDrawer.MIN_FIELD_X_CORRECTION;
+                minFieldRect.x = position.x + EditorGUIUtility.labelWidth;
             }
             vector.x = Mathf.Clamp(EditorGUI.FloatField(minFieldRect, vector.x), minMax.Range.x, minMax.Range.y);
 
@@ -45,14 +43,14 @@ namespace Argos.Framework
             {
                 maxFieldRect.width = MinMaxSliderDrawer.FIELD_WIDTH;
                 maxFieldRect.height = EditorGUIUtility.singleLineHeight;
-                maxFieldRect.x = EditorGUIUtility.currentViewWidth - maxFieldRect.width - MinMaxSliderDrawer.SEPARATOR;
+                maxFieldRect.x = position.xMax - maxFieldRect.width;
             }
             vector.y = Mathf.Clamp(EditorGUI.FloatField(maxFieldRect, vector.y), minMax.Range.x, minMax.Range.y);
 
             Rect minMaxSliderRect = position;
             {
-                minMaxSliderRect.x = minFieldRect.x + minFieldRect.width + MinMaxSliderDrawer.SEPARATOR;
-                minMaxSliderRect.width = EditorGUIUtility.currentViewWidth - EditorGUIUtility.labelWidth - SLIDER_WIDTH_CORRECTION;
+                minMaxSliderRect.x = minFieldRect.x + minFieldRect.width + MinMaxSliderDrawer.FIELD_SEPARATOR;
+                minMaxSliderRect.width = (maxFieldRect.xMin - minFieldRect.xMax) - (MinMaxSliderDrawer.FIELD_SEPARATOR * 2f);
                 minMaxSliderRect.height = EditorGUIUtility.singleLineHeight;
             }
             EditorGUI.MinMaxSlider(minMaxSliderRect, ref vector.x, ref vector.y, minMax.Range.x, minMax.Range.y);

@@ -31,6 +31,9 @@ public class Test : MonoBehaviour
     [MinMaxSlider(0f, 5f)]
     public Vector2 ActionRange;
 
+    [Range(0f, 1f)]
+    public float Testf;
+
     [Scene]
     public string SceneField;
 

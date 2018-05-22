@@ -5,38 +5,25 @@ using UnityEngine;
 
 namespace Argos.Framework
 {
+    /// <summary>
+    /// Attribute used to make a Vector2 or Vector2Int variable in a script be restricted to a specific range.
+    /// </summary>
     public class MinMaxSliderAttribute : PropertyAttribute
     {
         #region Public vars
-        public float Min, Max;
+        public readonly Vector2 Range;
         #endregion
 
         #region Constructor
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="min">The minimum allowed value.</param>
+        /// <param name="max">The maximum allowed value.</param>
         public MinMaxSliderAttribute(float min = 0f, float max = 1f)
         {
-            this.Min = min;
-            this.Max = max;
+            this.Range = new Vector2(min, max);
         }
         #endregion
     }
-
-    /// <summary>
-    /// MinMaxSlider type struct.
-    /// </summary>
-    /// <remarks>Use this to create MinMaxSlider variables.</remarks>
-    [Serializable]
-    public struct MinMaxSlider
-    {
-        #region Public vars
-        public float Min, Max;
-        #endregion
-
-        #region Constructor
-        public MinMaxSlider(float min, float max)
-        {
-            this.Min = min;
-            this.Max = max;
-        }
-        #endregion
-    } 
 }

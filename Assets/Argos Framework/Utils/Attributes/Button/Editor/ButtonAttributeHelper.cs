@@ -6,22 +6,24 @@ using UnityEngine;
 
 namespace Argos.Framework
 {
-    /// Author: (Twitter) @matheuslrod
     /// Source: https://gist.github.com/matheuslessarodrigues/13d08f49977a828b6565a76a2e8967e5
     /// 
     /// Searches through a target class in order to find all button attributes (<see cref="ButtonAttribute"/>).
     /// 
-    /// Modification:
-    /// Author: José Miguel Sánchez Fernandez (Twitter) @ex3_tlsa
-    /// 
+    /// Modification and extras:
     /// Adapted for admit custom labels (if the label is empty, uses method name) and tooltip messages (if the tooltip message is empty, not tooltip box showed).
     public class ButtonAttributeHelper
     {
-        private static object[] emptyParamList = new object[0];
+        #region Static members
+        static object[] emptyParamList = new object[0];
+        #endregion
 
-        private IList<MethodInfo> methods = new List<MethodInfo>();
-        private Object targetObject;
+        #region Internal vars
+        IList<MethodInfo> methods = new List<MethodInfo>();
+        Object targetObject;
+        #endregion
 
+        #region Methods & Functions
         public void Init(Object targetObject)
         {
             this.targetObject = targetObject;
@@ -43,7 +45,7 @@ namespace Argos.Framework
             }
         }
 
-        private void ShowMethodButtons()
+        void ShowMethodButtons()
         {
             foreach (MethodInfo method in methods)
             {
@@ -58,5 +60,6 @@ namespace Argos.Framework
                 }
             }
         }
+        #endregion
     }
 }

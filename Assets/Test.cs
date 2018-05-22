@@ -14,17 +14,39 @@ public class Test : MonoBehaviour
         [HelpBox("Struct element helpbox", HelpBoxMessageType.Info)]
         public int Field1;
 
-        [HelpBox("Simple helpbox\ntest 2")]
         [MinMaxSlider(0f, 5f)]
-        public MinMaxSlider Field2;
+        public Vector2Int Field2;
+
+        [ReadOnly]
+        public float Field3;
+
+        [Scene]
+        public string Field4;
+
+        [ProgressBar("ProgressBar field!")]
+        public float Field5;
     }
 
     [HelpBox("Argos Helpbox\nThis is a large text to test the line wrap content in this helpbox for the lulz!", HelpBoxMessageType.Warning)]
     [MinMaxSlider(0f, 5f)]
-    public MinMaxSlider ActionRange;
+    public Vector2 ActionRange;
+
+    [Scene]
+    public string SceneField;
+
+    [ProgressBar("ProgressBar test!")]
+    public float ProgressBar = 0.3f;
+
+    [Tag]
+    public string TagField;
+
+    [Layer]
+    public int LayerField;
+
+    public LayerMask LayerMaskField;
 
     public TestStruct Test2;
-
+    
     [Button]
     public void TestButton()
     {

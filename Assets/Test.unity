@@ -3914,14 +3914,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3edd79acfed61d4bac57936c9e660be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ActionRange:
-    Min: 1
-    Max: 3
+  ActionRange: {x: 1.82, y: 3.88}
+  SceneField: Assets/Test.unity
+  ProgressBar: 0.3
+  TagField: Untagged
+  LayerField: 0
+  LayerMaskField:
+    serializedVersion: 2
+    m_Bits: 0
   Test2:
     Field1: 0
-    Field2:
-      Min: 0.39
-      Max: 1.61
+    Field2: {x: 2, y: 3}
+    Field3: 0
+    Field4: 
+    Field5: 0
 --- !u!114 &1892997794
 MonoBehaviour:
   m_ObjectHideFlags: 0

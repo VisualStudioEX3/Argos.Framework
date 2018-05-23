@@ -13,51 +13,72 @@ namespace Argos.Framework
         const float FIELD_SEPARATOR = 5f;
         #endregion
 
-        #region Events
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
-        {
-            if (property.serializedObject.isEditingMultipleObjects) return;
+        #region Internal vars
+        Rect labelRect, minFieldRect, maxFieldRect, minMaxSliderRect;
+        #endregion
 
-            Vector2 vector = property.type == "Vector2Int" ? property.vector2IntValue : property.vector2Value;
-            var minMax = (MinMaxSliderAttribute)attribute ?? new MinMaxSliderAttribute(0f, 1f);
-            int currentIndent = EditorGUI.indentLevel;
-            
-            Rect labelRect = position;
+        #region Methods & Functions
+        void CalculateControlRects(Rect position)
+        {
+            Rect indentedPosition = EditorGUI.IndentedRect(position);
+
+            this.labelRect = indentedPosition;
             {
-                labelRect.width = EditorGUIUtility.labelWidth;
-                labelRect.height = EditorGUIUtility.singleLineHeight;
+                this.labelRect.x = indentedPosition.xMin;
+                this.labelRect.width = EditorGUIUtility.labelWidth;
             }
-            EditorGUI.PrefixLabel(labelRect, label);
 
             EditorGUI.indentLevel = 0;
 
-            Rect minFieldRect = position;
+            this.minFieldRect = position;
             {
-                minFieldRect.width = MinMaxSliderDrawer.FIELD_WIDTH;
-                minFieldRect.height = EditorGUIUtility.singleLineHeight;
-                minFieldRect.x = position.x + EditorGUIUtility.labelWidth;
+                this.minFieldRect.width = MinMaxSliderDrawer.FIELD_WIDTH;
+                this.minFieldRect.x = position.xMin + EditorGUIUtility.labelWidth;
             }
-            vector.x = Mathf.Clamp(EditorGUI.FloatField(minFieldRect, vector.x), minMax.Range.x, minMax.Range.y);
 
-            Rect maxFieldRect = position;
+            this.maxFieldRect = position;
             {
-                maxFieldRect.width = MinMaxSliderDrawer.FIELD_WIDTH;
-                maxFieldRect.height = EditorGUIUtility.singleLineHeight;
-                maxFieldRect.x = position.xMax - maxFieldRect.width;
+                this.maxFieldRect.width = MinMaxSliderDrawer.FIELD_WIDTH;
+                this.maxFieldRect.x = position.xMax - this.maxFieldRect.width;
             }
-            vector.y = Mathf.Clamp(EditorGUI.FloatField(maxFieldRect, vector.y), minMax.Range.x, minMax.Range.y);
 
-            Rect minMaxSliderRect = position;
+            this.minMaxSliderRect = position;
             {
-                minMaxSliderRect.x = minFieldRect.x + minFieldRect.width + MinMaxSliderDrawer.FIELD_SEPARATOR;
-                minMaxSliderRect.width = (maxFieldRect.xMin - minFieldRect.xMax) - (MinMaxSliderDrawer.FIELD_SEPARATOR * 2f);
-                minMaxSliderRect.height = EditorGUIUtility.singleLineHeight;
+                this.minMaxSliderRect.x = this.minFieldRect.x + this.minFieldRect.width + MinMaxSliderDrawer.FIELD_SEPARATOR;
+                this.minMaxSliderRect.width = (this.maxFieldRect.xMin - this.minFieldRect.xMax) - (MinMaxSliderDrawer.FIELD_SEPARATOR * 2f);
             }
-            EditorGUI.MinMaxSlider(minMaxSliderRect, ref vector.x, ref vector.y, minMax.Range.x, minMax.Range.y);
+        }
 
-            EditorGUI.indentLevel = currentIndent;
+        void DrawControls(MinMaxSliderAttribute attribute, GUIContent label, ref Vector2 value)
+        {
+            EditorGUI.PrefixLabel(labelRect, label);
 
-            if (property.type == "Vector2Int")
+            EditorGUI.BeginChangeCheck();
+            {
+                EditorGUI.MinMaxSlider(this.minMaxSliderRect, ref value.x, ref value.y, attribute.Range.x, attribute.Range.y);
+            }
+
+            if (EditorGUI.EndChangeCheck())
+            {
+                EditorGUI.FocusTextInControl(string.Empty);
+            }
+
+            value.x = Mathf.Clamp(EditorGUI.FloatField(this.minFieldRect, value.x), attribute.Range.x, attribute.Range.y);
+            value.y = Mathf.Clamp(EditorGUI.FloatField(this.maxFieldRect, value.y), attribute.Range.x, attribute.Range.y);
+        }
+        #endregion
+
+        #region Events
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            bool isVector2Int = (property.propertyType == SerializedPropertyType.Vector2Int);
+            Vector2 vector = isVector2Int ? property.vector2IntValue : property.vector2Value;
+            var minMax = (MinMaxSliderAttribute)attribute;
+
+            this.CalculateControlRects(position);
+            this.DrawControls(minMax, label, ref vector);
+
+            if (isVector2Int)
             {
                 property.vector2IntValue = new Vector2Int((int)vector.x, (int)vector.y);
             }

@@ -20,14 +20,14 @@ namespace Argos.Framework
         public override float GetHeight()
         {
             var helpBox = (HelpBoxAttribute)attribute;
-            var style = GUI.skin.GetStyle("helpbox");
+            var style = EditorStyles.helpBox;
             var content = new GUIContent(helpBox.text);
 
             float width = EditorGUIUtility.currentViewWidth - EditorGUI.indentLevel;
             float height = style.CalcHeight(content, width) + EditorGUIUtility.standardVerticalSpacing;
 
             return helpBox.messageType == HelpBoxMessageType.None ? height : Mathf.Max(HelpBoxAttributeDrawer.MIN_HEIGHT_WITH_ICON, height);
-        } 
+        }
         #endregion
 
         #region Events

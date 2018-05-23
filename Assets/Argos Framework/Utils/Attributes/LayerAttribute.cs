@@ -5,22 +5,25 @@ using UnityEngine;
 using UnityEditor;
 #endif
 
-/// <summary>
-/// Attribute used to make a int variable in a script be restricted to layer values.
-/// </summary>
-public class LayerAttribute : PropertyAttribute
+namespace Argos.Framework
 {
-}
+    /// <summary>
+    /// Attribute used to make a int variable in a script be restricted to layer values.
+    /// </summary>
+    public class LayerAttribute : PropertyAttribute
+    {
+    }
 
 #if UNITY_EDITOR
-[CustomPropertyDrawer(typeof(LayerAttribute))]
-public class LayerDrawer : PropertyDrawer
-{
-    #region Events
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+    [CustomPropertyDrawer(typeof(LayerAttribute))]
+    public class LayerDrawer : PropertyDrawer
     {
-        property.intValue = EditorGUI.LayerField(position, label, property.intValue);
+        #region Events
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            property.intValue = EditorGUI.LayerField(position, label, property.intValue);
+        }
+        #endregion
     }
-    #endregion
+#endif 
 }
-#endif

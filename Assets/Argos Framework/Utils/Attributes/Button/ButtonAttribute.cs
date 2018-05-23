@@ -12,8 +12,8 @@
     public class ButtonAttribute : System.Attribute
     {
         #region Public vars
-        public string Label;
-        public string TooltipMessage;
+        public readonly string Label;
+        public readonly string TooltipMessage;
         #endregion
 
         #region Constructors

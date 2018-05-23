@@ -12,11 +12,11 @@ namespace Argos.Framework
         Info,
         Warning,
         Error
-    } 
+    }
     #endregion
 
     /// <summary>
-    /// Shows a help box before the field on the inspector
+    /// Use this PropertyAttribute to add a helpbox above some fields in the Inspector.
     /// </summary>
     /// <remarks>
     /// Based on code at https://forum.unity.com/threads/helpattribute-allows-you-to-use-helpbox-in-the-unity-inspector-window.462768/#post-3014998

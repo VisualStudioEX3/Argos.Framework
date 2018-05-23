@@ -48,6 +48,25 @@ public class Test : MonoBehaviour
 
     public LayerMask LayerMaskField;
 
+    public Vector2 NormalVector2;
+
+    [CustomVector("L", "R")]
+    public Vector2 CustomVector2;
+
+    [CustomVector("W", "H")]
+    public Vector2Int CustomVector2Int;
+
+    public Vector3 NormalVector3;
+
+    [CustomVector("L", "R", "U")]
+    public Vector3 CustomVector3;
+
+    [CustomVector("L", "R", "U")]
+    public Vector3Int CustomVector3Int;
+
+    [CustomVector("L", "R", "U", "W")]
+    public Vector4 CustomVector4;
+
     public TestStruct Test2;
     
     [Button]

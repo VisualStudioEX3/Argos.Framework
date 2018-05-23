@@ -3923,6 +3923,13 @@ MonoBehaviour:
   LayerMaskField:
     serializedVersion: 2
     m_Bits: 7
+  NormalVector2: {x: 0, y: 0}
+  CustomVector2: {x: 14.8, y: 8.11}
+  CustomVector2Int: {x: 410, y: 25}
+  NormalVector3: {x: 0, y: 0, z: 0}
+  CustomVector3: {x: 2.38, y: -4.56, z: 2.43}
+  CustomVector3Int: {x: 113, y: -128, z: 64}
+  CustomVector4: {x: -2.24, y: 2.19, z: 3.12, w: -2.63}
   Test2:
     Field1: 0
     Field2: {x: 2, y: 3}

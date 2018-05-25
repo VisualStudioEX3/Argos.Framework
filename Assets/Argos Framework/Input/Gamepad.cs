@@ -149,15 +149,14 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Some gamepads and joysticks defined the triggers as separated axes.
         /// </summary>
-        /// <remarks>X = Left trigger axis, Y = Right trigger axis.</remarks>
-        [Tooltip("Some gamepads and joysticks defined the triggers as separated axes:\n\nX = Left trigger axis, Y = Right trigger axis.")]
-        [Space]
+        [HelpBox("Some gamepads and joysticks defined the triggers as separated axes:"), Space]
+        [CustomVector("L", "R")]
         public Vector2Int TriggersAxes;
 
         /// <summary>
         /// Some gamepads and joysticks defined the DPad as separated axes.
         /// </summary>
-        [Space]
+        [HelpBox("Some gamepads and joysticks defined the DPad as separated axes:"), Space]
         public Vector2Int DPadAxes;
 
         /// <summary>
@@ -165,39 +164,36 @@ namespace Argos.Framework.Input
         /// </summary>
         public bool DPadInvertY;
 
-        [Header("Buttons:")]
-        [Tooltip("XBox A, PS4 Equis or Nintendo Switch A button.")]
+        [Tooltip("XBox A, PS4 Equis or Nintendo Switch A\n(B inverted layout) button."), Header("Buttons:")]
         public UnityJoystickButtons Button1;
-        [Tooltip("XBox B, PS4 Circle or Nintendo Switch B button.")]
+        [Tooltip("XBox B, PS4 Circle or Nintendo Switch B\n(A inverted layout) button.")]
         public UnityJoystickButtons Button2;
-        [Tooltip("XBox X, PS4 Square or Nintendo Switch X button.")]
+        [Tooltip("XBox X, PS4 Square or Nintendo Switch X\n(Y inverted layout) button.")]
         public UnityJoystickButtons Button3;
-        [Tooltip("XBox Y, PS4 Triangle or Nintendo Switch Y button.")]
+        [Tooltip("XBox Y, PS4 Triangle or Nintendo Switch Y\n(X inverted layout) button.")]
         public UnityJoystickButtons Button4;
 
-        [Space]
-        [Tooltip("XBox Start/Menu, PS4 Options or Nintendo Switch + button.")]
+        [Tooltip("XBox Start/Menu, PS4 Options or Nintendo Switch + button."), Space]
         public UnityJoystickButtons Start;
         [Tooltip("XBox Back/View, PS4 Share or Nintendo Switch - button.")]
         public UnityJoystickButtons Select;
 
-        [Space]
-        [Tooltip("XBox LB, PS4 L1 or Nintendo Switch L button.")]
+        [Tooltip("XBox LB, PS4 L1 or Nintendo Switch L button."), Space]
         public UnityJoystickButtons LeftBumper;
         [Tooltip("XBox RB, PS4 R1 or Nintendo Switch R button.")]
         public UnityJoystickButtons RightBumper;
 
-        [Space]
+        [Tooltip("XBox Left Stick, PS4 L3 or Nintendo Switch Left Stick button."), Space]
         public UnityJoystickButtons LeftStick;
+        [Tooltip("XBox Right Stick, PS4 R3 or Nintendo Switch Right Stick button.")]
         public UnityJoystickButtons RightStick;
 
-        [Space]
-        [Tooltip("XBox LT, PS4 L2 or Nintendo Switch ZL button.")]
+        [HelpBox("Some gamepads and joysticks defined the triggers as buttons:"), Tooltip("XBox LT, PS4 L2 or Nintendo Switch ZL button."), Space]
         public UnityJoystickButtons LeftTrigger;
         [Tooltip("XBox RT, PS4 R2 or Nintendo Switch ZR button.")]
         public UnityJoystickButtons RightTrigger;
 
-        [Space]
+        [HelpBox("Some gamepads and joysticks defined the DPad as buttons:"), Space]
         public UnityJoystickButtons DPadLeft;
         public UnityJoystickButtons DPadRight;
         public UnityJoystickButtons DPadUp;

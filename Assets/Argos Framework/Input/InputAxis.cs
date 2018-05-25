@@ -72,18 +72,10 @@ namespace Argos.Framework.Input
         public InputAxisType AxisType;
 
         /// <summary>
-        /// Indicate if this axis uses the mouse input (axis or position) when the gamepad is not is the active input.
+        /// Invert Y axis.
         /// </summary>
-        /// <remarks>When this property is not setup as None, this axis ignore all Keys fields (InputActions) configured.</remarks>
-        [Tooltip("Indicate if this axis uses the mouse input (axis or position) when the gamepad is not is the active input.\n\nWhen this property is not setup as None, this axis ignore all Keys fields (InputActions) configured.")]
-        public MouseInputMode AlternativeMouseInput = MouseInputMode.None;
+        public bool InvertYAxis;
 
-        /// <summary>
-        /// Indicate if this input is using in UI.
-        /// </summary>
-        /// <remarks>This uses the absolute value of the axis, without applying sensivity.</remarks>
-        public bool IsUIInput;
-        
         /// <summary>
         /// Axis sensitivity factor.
         /// </summary>
@@ -92,15 +84,24 @@ namespace Argos.Framework.Input
         public float Sensitivity = InputAxis.DEFAULT_SENSITIVITY;
 
         /// <summary>
-        /// Invert Y axis.
+        /// Indicate if this axis uses the mouse input (axis or position) when the gamepad is not is the active input.
         /// </summary>
-        public bool InvertYAxis;
+        /// <remarks>When this property is not setup as None, this axis ignore all Keys fields (InputActions) configured.</remarks>
+        [HelpBox("Use mouse input when the gamepad is not the active input:"), Space]
+        public MouseInputMode AlternativeMouseInput = MouseInputMode.None;
 
+        /// <summary>
+        /// Indicate if this input is using in UI.
+        /// </summary>
+        /// <remarks>This uses the absolute value of the axis, without applying sensivity.</remarks>
+        [HelpBox("Uses the absolute value of the axis, without applying sensivity:"), Space]
+        public bool IsUIInput;
+        
         /// <summary>
         /// Normalize axis.
         /// </summary>
         /// <remarks>Use this property to fix the diagonal ranges on 360º/free movements.</remarks>
-        [Tooltip("Use this property to fix the diagonal ranges on 360º/free movements.")]
+        [HelpBox("Normalize the diagonal ranges:"), Space]
         public bool Normalize;
 
         /// <summary>

@@ -7,7 +7,6 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEditor;
 using UnityEditorInternal;
-using Argos.Framework;
 
 namespace Argos.Framework
 {

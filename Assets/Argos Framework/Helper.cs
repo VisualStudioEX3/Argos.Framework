@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using UnityEngine;
 
@@ -14,6 +15,18 @@ namespace Argos.Framework
     {
         #region Constants
         const float DELTA_COMPARER_TOLERANCE = 0.000001f;
+        const string DEBUG_COLOR_STRING_TEMPLATE = "<color={0}>{1}</color>";
+        static readonly string[] DEBUG_COLORS = new string[] { "white", "orange", "red", "lime" };
+        #endregion
+
+        #region Enums
+        public enum DebugLevel
+        {
+            Default,
+            Warning,
+            Error,
+            Success
+        }
         #endregion
 
         #region Methods & Functions
@@ -268,7 +281,59 @@ namespace Argos.Framework
             }
 
             return false;
-        } 
+        }
+
+        /// <summary>
+        /// Force value to the next even number.
+        /// </summary>
+        /// <param name="value">Value to evaluate and force.</param>
+        /// <returns>The next even number.</returns>
+        public static int ForceEvenValue(int value)
+        {
+            return (value % 2 != 0) ? value + 1 : value;
+        }
+
+        /// <summary>
+        /// Force value to the next even number.
+        /// </summary>
+        /// <param name="value">Value to evaluate and force.</param>
+        /// <returns>The next even number.</returns>
+        public static float ForceEvenValue(float value)
+        {
+            return ForceEvenValue((int)value);
+        }
+
+        /// <summary>
+        /// Force value to the next odd number.
+        /// </summary>
+        /// <param name="value">Value to evaluate and force.</param>
+        /// <returns>The next odd number.</returns>
+        public static int ForceOddValue(int value)
+        {
+            return (value % 2 == 0) ? value + 1 : value;
+        }
+
+        /// <summary>
+        /// Force value to the next odd number.
+        /// </summary>
+        /// <param name="value">Value to evaluate and force.</param>
+        /// <returns>The next odd number.</returns>
+        public static float ForceOddValue(float value)
+        {
+            return ForceOddValue((int)value);
+        }
+
+        /// <summary>
+        /// Helper to print colored debug messages.
+        /// </summary>
+        /// <param name="message">Message to log.</param>
+        /// <param name="level">Debug level (Normal as default).</param>
+        /// <remarks>This messages appear on the builtin scene debug console when the game is compiled in development mode.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static void Log(string message, DebugLevel level = DebugLevel.Default)
+        {
+            UnityEngine.Debug.LogErrorFormat(Helper.DEBUG_COLOR_STRING_TEMPLATE, Helper.DEBUG_COLORS[(int)level], message);
+        }
         #endregion
     }
 }

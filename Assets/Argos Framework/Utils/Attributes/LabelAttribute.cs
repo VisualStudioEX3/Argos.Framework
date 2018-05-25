@@ -8,7 +8,7 @@ using UnityEditor;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Use this PropertyAttribute to add a multi-label above some fields in the Inspector.
+    /// Use this PropertyAttribute to add a multi-line richtext label above some fields in the Inspector.
     /// </summary>
     public class LabelAttribute : PropertyAttribute
     {
@@ -38,29 +38,32 @@ namespace Argos.Framework
     [CustomPropertyDrawer(typeof(LabelAttribute))]
     public class LabelDrawer : DecoratorDrawer
     {
+        #region Internal vars
+        LabelAttribute _attribute;
+        GUIStyle _style; 
+        #endregion
+
         #region Methods & Functions
         public override float GetHeight()
         {
-            var label = (LabelAttribute)attribute;
-            GUIStyle style = label.MiniLabel ? EditorStyles.wordWrappedMiniLabel : EditorStyles.wordWrappedLabel;
+            this._attribute = (LabelAttribute)attribute;
+            this._style = this._attribute.MiniLabel ? EditorStyles.wordWrappedMiniLabel : EditorStyles.wordWrappedLabel;
+            this._style.richText = true;
 
-            return style.CalcHeight(new GUIContent(label.Text), EditorGUIUtility.currentViewWidth);
+            return this._style.CalcHeight(new GUIContent(this._attribute.Text), EditorGUIUtility.currentViewWidth);
         }
         #endregion
 
         #region Events
         public override void OnGUI(Rect position)
         {
-            var label = (LabelAttribute)attribute;
-            GUIStyle style = label.MiniLabel ? EditorStyles.wordWrappedMiniLabel : EditorStyles.wordWrappedLabel;
-
-            if (label.Selectable)
+            if (this._attribute.Selectable)
             {
-                EditorGUI.SelectableLabel(position, label.Text, style);
+                EditorGUI.SelectableLabel(position, this._attribute.Text, this._style);
             }
             else
             { 
-                EditorGUI.LabelField(position, label.Text, style); 
+                EditorGUI.LabelField(position, this._attribute.Text, this._style); 
             }
         }
         #endregion

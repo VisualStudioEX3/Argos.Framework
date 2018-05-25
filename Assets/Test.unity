@@ -3914,25 +3914,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3edd79acfed61d4bac57936c9e660be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ActionRange: {x: 1.82, y: 3.88}
-  Testf: 0
+  Vector2MinMaxSliderField: {x: 1.5, y: 4.47}
+  Vector2IntMinMaxSliderField: {x: 2, y: 4}
+  ReadOnlyField: Read only textbox.
   SceneField: Assets/Test.unity
-  ProgressBar: 0.3
   TagField: Untagged
   LayerField: 0
-  LayerMaskField:
-    serializedVersion: 2
-    m_Bits: 7
-  NormalVector2: {x: 0, y: 0}
   CustomVector2: {x: 14.8, y: 8.11}
   CustomVector2Int: {x: 410, y: 25}
-  NormalVector3: {x: 0, y: 0, z: 0}
   CustomVector3: {x: 2.38, y: -4.56, z: 2.43}
   CustomVector3Int: {x: 113, y: -128, z: 64}
   CustomVector4: {x: -2.24, y: 2.19, z: 3.12, w: -2.63}
+  ProgressBarField: 0
+  ProgressBarFieldWithMessage: 0
+  LabeledProgressBarField: 0
+  LabeledProgressBarFieldWithMessage: 0
+  DinamicLabel: Dinamic label.
+  DinamicMiniLabel: Dinamic mini label.
+  DinamicSelectableLabel: Dinamic selectable label.
+  DinamicSelectableMiniLabel: Dinamic selectable mini label.
   Test2:
     Field1: 0
-    Field2: {x: 2, y: 3}
+    Field2: {x: 2, y: 4}
     Field3: 0
     Field4: 
     Field5: 0

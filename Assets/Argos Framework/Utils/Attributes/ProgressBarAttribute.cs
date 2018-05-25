@@ -13,17 +13,20 @@ namespace Argos.Framework
     public class ProgressBarAttribute : PropertyAttribute
     {
         #region Public vars
-        public readonly string Label;
+        public readonly string Message;
+        public readonly bool ShowLabel;
         #endregion
 
         #region Constructors
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="label">Label show into the progressbar.</param>
-        public ProgressBarAttribute(string label = "")
+        /// <param name="message">Message show into the progressbar.</param>
+        /// <param name="showLabel">Show field prefix label.</param>
+        public ProgressBarAttribute(string message = "", bool showLabel = false)
         {
-            this.Label = label;
+            this.Message = message;
+            this.ShowLabel = showLabel;
         }
         #endregion
     }
@@ -35,7 +38,10 @@ namespace Argos.Framework
         #region Events
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            EditorGUI.ProgressBar(EditorGUI.IndentedRect(position), property.floatValue, (attribute as ProgressBarAttribute).Label);
+            var progressBarAttribute = (ProgressBarAttribute)attribute;
+            Rect rect = progressBarAttribute.ShowLabel ? EditorGUI.PrefixLabel(position, label) : EditorGUI.IndentedRect(position);
+
+            EditorGUI.ProgressBar(rect, property.floatValue, progressBarAttribute.Message);
         }
         #endregion
     }

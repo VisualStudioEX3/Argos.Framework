@@ -92,7 +92,7 @@ namespace Argos.Framework.Input
     public enum PS4ControllerButtons
     {
         Square = KeyCode.JoystickButton0,
-        Equis = KeyCode.JoystickButton1,
+        Cross = KeyCode.JoystickButton1,
         Circle = KeyCode.JoystickButton2,
         Triangle = KeyCode.JoystickButton3,
         L1 = KeyCode.JoystickButton4,

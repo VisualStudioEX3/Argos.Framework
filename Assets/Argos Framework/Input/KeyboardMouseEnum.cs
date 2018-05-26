@@ -498,6 +498,14 @@ namespace Argos.Framework.Input
         /// </summary>
         MiddleMouseButton = KeyCode.Mouse2,
         /// <summary>
+        /// Mouse wheel up scroll step.
+        /// </summary>
+        MouseWheelUp = 1000,
+        /// <summary>
+        /// Mouse wheel down scroll step.
+        /// </summary>
+        MouseWheelDown = 1001,
+        /// <summary>
         /// Additional (fourth) mouse button.
         /// </summary>
         AdditionalMouseButton4 = KeyCode.Mouse3,

@@ -151,7 +151,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Cast to Vector2.
         /// </summary>
-        public static explicit operator Vector2(InputAxis value)
+        public static implicit operator Vector2(InputAxis value)
         {
             return new Vector2(value.X, value.Y);
         }

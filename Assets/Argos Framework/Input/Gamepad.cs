@@ -56,11 +56,11 @@ namespace Argos.Framework.Input
     #endregion
 
     /// <summary>
-    /// Gamepad button states.
+    /// Button states.
     /// </summary>
     /// <remarks>Uses to virtualize axis states (triggers, DPad) as button states.</remarks>
     [System.Serializable]
-    public struct GamepadButtonStates
+    public struct ButtonStates
     {
         #region Internal vars
         bool _isPressed;
@@ -164,13 +164,13 @@ namespace Argos.Framework.Input
         /// </summary>
         public bool DPadInvertY;
 
-        [Tooltip("XBox A, PS4 Equis or Nintendo Switch A\n(B inverted layout) button."), Header("Buttons:")]
+        [Tooltip("XBox A, PS4 Cross or Nintendo Switch A\n(B on inverted layout) button."), Header("Buttons:")]
         public UnityJoystickButtons Button1;
-        [Tooltip("XBox B, PS4 Circle or Nintendo Switch B\n(A inverted layout) button.")]
+        [Tooltip("XBox B, PS4 Circle or Nintendo Switch B\n(A on inverted layout) button.")]
         public UnityJoystickButtons Button2;
-        [Tooltip("XBox X, PS4 Square or Nintendo Switch X\n(Y inverted layout) button.")]
+        [Tooltip("XBox X, PS4 Square or Nintendo Switch X\n(Y on inverted layout) button.")]
         public UnityJoystickButtons Button3;
-        [Tooltip("XBox Y, PS4 Triangle or Nintendo Switch Y\n(X inverted layout) button.")]
+        [Tooltip("XBox Y, PS4 Triangle or Nintendo Switch Y\n(X on inverted layout) button.")]
         public UnityJoystickButtons Button4;
 
         [Tooltip("XBox Start/Menu, PS4 Options or Nintendo Switch + button."), Space]
@@ -280,27 +280,27 @@ namespace Argos.Framework.Input
         /// </summary>
         public Vector2 DPad { get; private set; }
 
-        public GamepadButtonStates Button1 { get; private set; }
-        public GamepadButtonStates Button2 { get; private set; }
-        public GamepadButtonStates Button3 { get; private set; }
-        public GamepadButtonStates Button4 { get; private set; }
+        public ButtonStates Button1 { get; private set; }
+        public ButtonStates Button2 { get; private set; }
+        public ButtonStates Button3 { get; private set; }
+        public ButtonStates Button4 { get; private set; }
 
-        public GamepadButtonStates Start { get; private set; }
-        public GamepadButtonStates Select { get; private set; }
+        public ButtonStates Start { get; private set; }
+        public ButtonStates Select { get; private set; }
 
-        public GamepadButtonStates LeftBumper { get; private set; }
-        public GamepadButtonStates RightBumper { get; private set; }
+        public ButtonStates LeftBumper { get; private set; }
+        public ButtonStates RightBumper { get; private set; }
 
-        public GamepadButtonStates LeftTrigger { get; private set; }
-        public GamepadButtonStates RightTrigger { get; private set; }
+        public ButtonStates LeftTrigger { get; private set; }
+        public ButtonStates RightTrigger { get; private set; }
 
-        public GamepadButtonStates LeftStickButton { get; private set; }
-        public GamepadButtonStates RightStickButton { get; private set; }
+        public ButtonStates LeftStickButton { get; private set; }
+        public ButtonStates RightStickButton { get; private set; }
 
-        public GamepadButtonStates DPadLeft { get; private set; }
-        public GamepadButtonStates DPadRight { get; private set; }
-        public GamepadButtonStates DPadUp { get; private set; }
-        public GamepadButtonStates DPadDown { get; private set; }
+        public ButtonStates DPadLeft { get; private set; }
+        public ButtonStates DPadRight { get; private set; }
+        public ButtonStates DPadUp { get; private set; }
+        public ButtonStates DPadDown { get; private set; }
 
         public bool IsAnyButtonPressed
         {
@@ -381,7 +381,7 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         void ReadButtons()
         {
-            GamepadButtonStates state;
+            ButtonStates state;
 
             KeyCode button1,
                     button2,
@@ -412,7 +412,7 @@ namespace Argos.Framework.Input
 
                 case GamepadType.PS4Controller:
 
-                    button1 = (KeyCode)PS4ControllerButtons.Equis;
+                    button1 = (KeyCode)PS4ControllerButtons.Cross;
                     button2 = (KeyCode)PS4ControllerButtons.Circle;
                     button3 = (KeyCode)PS4ControllerButtons.Square;
                     button4 = (KeyCode)PS4ControllerButtons.Triangle;
@@ -673,25 +673,25 @@ namespace Argos.Framework.Input
             }
 
             // Process button states:
-            GamepadButtonStates left = this.DPadLeft;
+            ButtonStates left = this.DPadLeft;
             {
                 left.IsPressed = this.DPad.x < -Gamepad.AXIS_DELTA;
             }
             this.DPadLeft = left;
 
-            GamepadButtonStates right = this.DPadRight;
+            ButtonStates right = this.DPadRight;
             {
                 right.IsPressed = this.DPad.x > Gamepad.AXIS_DELTA;
             }
             this.DPadRight = right;
 
-            GamepadButtonStates up = this.DPadUp;
+            ButtonStates up = this.DPadUp;
             {
                 up.IsPressed = this.DPad.y > Gamepad.AXIS_DELTA;
             }
             this.DPadUp = up;
 
-            GamepadButtonStates down = this.DPadDown;
+            ButtonStates down = this.DPadDown;
             {
                 down.IsPressed = this.DPad.y < -Gamepad.AXIS_DELTA;
             }
@@ -701,8 +701,8 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         void ReadTriggers()
         {
-            GamepadButtonStates left = this.LeftTrigger;
-            GamepadButtonStates right = this.RightTrigger;
+            ButtonStates left = this.LeftTrigger;
+            ButtonStates right = this.RightTrigger;
 
             switch (this.Type)
             {
@@ -753,7 +753,7 @@ namespace Argos.Framework.Input
         /// <param name="states">States variable reference.</param>
         /// <returns>Return true if any state are true.</returns>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        bool ReadAxisTriggerState(int axis, ref GamepadButtonStates states)
+        bool ReadAxisTriggerState(int axis, ref ButtonStates states)
         {
             if (!Helper.IsValueInRange(axis, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX)) return false;
 
@@ -769,7 +769,7 @@ namespace Argos.Framework.Input
         /// <param name="button">Gamepad button to read.</param>
         /// <param name="states">States variable reference.</param>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        void ReadButtonState(KeyCode button, ref GamepadButtonStates states)
+        void ReadButtonState(KeyCode button, ref ButtonStates states)
         {
             if (!Helper.IsValueInRange((int)button, (int)KeyCode.JoystickButton0, (int)KeyCode.JoystickButton19)) return;
 

@@ -71,6 +71,17 @@ namespace Argos.Framework.Input
         public bool State { get; private set; }
         #endregion
 
+        #region Operators
+        /// <summary>
+        /// Cast to bool.
+        /// </summary>
+        /// <param name="value"></param>
+        public static implicit operator bool(InputAction value)
+        {
+            return value.State;
+        }
+        #endregion
+
         #region Constructors
         /// <summary>
         /// Constructor.
@@ -103,7 +114,6 @@ namespace Argos.Framework.Input
         /// <remarks>Use this to fast clone struct.</remarks>
         public InputAction(InputAction instance) : this(instance.Main, instance.Alternative, instance.GamepadButton, instance.KeyEvent, instance.OnKeyPress, instance.OnKeyDown, instance.OnKeyUp)
         {
-
         }
         #endregion
 
@@ -115,38 +125,68 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public void Update()
         {
-            this.State = false;
+            this.State = (GetKeyState(this.Main) || GetKeyState(this.Alternative) || this.GetGamepadButtonState());
 
-            switch (this.KeyEvent)
+            if (this.State)
             {
-                case InputKeyEvent.Down:
-                    if (UnityEngine.Input.GetKeyDown((KeyCode)this.Main) || UnityEngine.Input.GetKeyDown((KeyCode)this.Alternative) || this.GetGamepadButtonState())
-                    {
-                        this.State = true;
-                        this.OnKeyDown?.Invoke();
-                    }
-                    break;
-                case InputKeyEvent.Up:
-                    if (UnityEngine.Input.GetKeyUp((KeyCode)this.Main) || UnityEngine.Input.GetKeyUp((KeyCode)this.Alternative) || this.GetGamepadButtonState())
-                    {
-                        this.State = true;
-                        this.OnKeyUp?.Invoke();
-                    }
-                    break;
-                default:
-                    if (UnityEngine.Input.GetKey((KeyCode)this.Main) || UnityEngine.Input.GetKey((KeyCode)this.Alternative) || this.GetGamepadButtonState())
-                    {
-                        this.State = true;
+                switch (this.KeyEvent)
+                {
+                    case InputKeyEvent.Pressed:
+
                         this.OnKeyPress?.Invoke();
+                        break;
+
+                    case InputKeyEvent.Down:
+
+                        this.OnKeyDown?.Invoke();
+                        break;
+
+                    case InputKeyEvent.Up:
+
+                        this.OnKeyUp?.Invoke();
+                        break;
+                }
+            }
+        }
+        #endregion
+
+        #region Methods & Functions
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        bool GetKeyState(KeyboardMouseCodes code)
+        {
+            switch (code)
+            {
+                case KeyboardMouseCodes.MouseWheelUp:
+
+                    return UnityEngine.Input.mouseScrollDelta.y > 0f;
+
+                case KeyboardMouseCodes.MouseWheelDown:
+
+                    return UnityEngine.Input.mouseScrollDelta.y < 0f;
+
+                default:
+
+                    switch (this.KeyEvent)
+                    {
+                        case InputKeyEvent.Down:
+
+                            return UnityEngine.Input.GetKeyDown((KeyCode)code);
+
+                        case InputKeyEvent.Up:
+
+                            return UnityEngine.Input.GetKeyUp((KeyCode)code);
+
+                        default:
+
+                            return UnityEngine.Input.GetKey((KeyCode)code);
                     }
-                    break;
             }
         }
 
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         bool GetGamepadButtonState()
         {
-            GamepadButtonStates state = new GamepadButtonStates();
+            ButtonStates state = new ButtonStates();
 
             switch (this.GamepadButton)
             {
@@ -204,9 +244,7 @@ namespace Argos.Framework.Input
                    this.KeyEvent == InputKeyEvent.Down && state.IsDown ||
                    this.KeyEvent == InputKeyEvent.Up && state.IsUp;
         }
-        #endregion
 
-        #region Methods & Functions
         public override string ToString()
         {
             return $"KeyEvent: {this.KeyEvent}, Main key: {this.Main}, Alternative key: {this.Alternative}, Gamepad button: {this.GamepadButton}, State: {this.State}";

@@ -15,10 +15,10 @@ MonoBehaviour:
   - Name: Movement
     Data:
       AxisType: 2
+      InvertYAxis: 0
+      Sensitivity: 10
       AlternativeMouseInput: 0
       IsUIInput: 0
-      Sensitivity: 10
-      InvertYAxis: 0
       Normalize: 1
       Left:
         KeyEvent: 0
@@ -44,10 +44,10 @@ MonoBehaviour:
   - Name: Aim
     Data:
       AxisType: 3
+      InvertYAxis: 0
+      Sensitivity: 10
       AlternativeMouseInput: 1
       IsUIInput: 0
-      Sensitivity: 10
-      InvertYAxis: 0
       Normalize: 0
       Left:
         KeyEvent: 0
@@ -131,3 +131,15 @@ MonoBehaviour:
       Main: 102
       Alternative: 0
       GamepadButton: 3
+  - Name: NextWeapon
+    Data:
+      KeyEvent: 1
+      Main: 1000
+      Alternative: 93
+      GamepadButton: 13
+  - Name: PreviousWeapon
+    Data:
+      KeyEvent: 1
+      Main: 1001
+      Alternative: 91
+      GamepadButton: 12

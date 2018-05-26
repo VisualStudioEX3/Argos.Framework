@@ -3920,7 +3920,7 @@ MonoBehaviour:
   SceneField: Assets/Test.unity
   TagField: Untagged
   LayerField: 0
-  CustomVector2: {x: 14.8, y: 8.11}
+  CustomVector2: {x: 43.6, y: 5}
   CustomVector2Int: {x: 410, y: 25}
   CustomVector3: {x: 2.38, y: -4.56, z: 2.43}
   CustomVector3Int: {x: 113, y: -128, z: 64}

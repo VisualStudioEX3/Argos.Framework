@@ -45,7 +45,7 @@ public class Test : MonoBehaviour
 
     [Layer]
     public int LayerField;
-
+    
     [CustomVector("L", "R")]
     public Vector2 CustomVector2;
 
@@ -122,13 +122,27 @@ public class Test : MonoBehaviour
 
     void Start()
     {
-        InputManager.Instance.GetInputMap("UI").GetAction("Submit").OnKeyDown += this.OnEventSubmitTest;
-        InputManager.Instance.GetInputMap("UI").GetAction("Cancel").OnKeyDown += this.OnEventCancelTest;
+        var ui = InputManager.Instance.GetInputMap("UI");
+
+        ui.GetAction("Submit").OnKeyDown += this.OnEventSubmitTest;
+        ui.GetAction("Cancel").OnKeyDown += this.OnEventCancelTest;
     }
 
     void Update()
     {
-        InputManager.Instance.SetGamepadVibration(InputManager.Instance.GetAxis("Player", "Movement"));
+        var player = InputManager.Instance.GetInputMap("Player");
+
+        InputManager.Instance.SetGamepadVibration(player.GetAxis("Movement"));
+
+        if (player.GetAction("NextWeapon"))
+        {
+            print("Next weapon.");
+        }
+
+        if (player.GetAction("PreviousWeapon"))
+        {
+            print("Previous weapon.");
+        }
     }
 
     void OnEventSubmitTest()

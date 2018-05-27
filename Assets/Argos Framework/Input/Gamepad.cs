@@ -88,11 +88,11 @@ namespace Argos.Framework.Input
     }
 
     /// <summary>
-    /// Gamepad base map struct.
+    /// Generic Gamepad Input Layout struct.
     /// </summary>
-    /// <remarks>This is the map reference for gamepad input values. Also use this to setup a generic gamepad inputs.</remarks>
+    /// <remarks>This is the layout reference for generic gamepad input values.</remarks>
     [System.Serializable]
-    public struct GamepadBaseMap
+    public struct GenericGamepadInputLayout
     {
         #region Enums
         /// <summary>
@@ -254,7 +254,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Generic gamepad setup shortcut.
         /// </summary>
-        public GamepadBaseMap GenericGamepadSetup { get { return InputManager.Instance.GenericGamepadSetup.Map; } }
+        public GenericGamepadInputLayout GenericGamepadSetup { get { return InputManager.Instance.GenericGamepadSetup.Map; } }
 
         /// <summary>
         /// Use the Nintendo Switch Pro controller button layout or XBox button layout.

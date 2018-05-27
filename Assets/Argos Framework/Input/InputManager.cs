@@ -237,7 +237,7 @@ namespace Argos.Framework.Input
 #if UNITY_CONSOLE
         [HideInInspector] 
 #endif
-        public GamepadBaseMapAsset GenericGamepadSetup;
+        public GenericGamepadInputLayoutAsset GenericGamepadSetup;
 
         [Header("UI settings:")]
         /// <summary>

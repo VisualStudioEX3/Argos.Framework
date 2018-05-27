@@ -122,6 +122,8 @@ namespace Argos.Framework.Input
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.LabelField("Input Map", EditorStyles.centeredGreyMiniLabel);
+
             this.serializedObject.Update();
             {
                 this._axisList.DoLayoutList();

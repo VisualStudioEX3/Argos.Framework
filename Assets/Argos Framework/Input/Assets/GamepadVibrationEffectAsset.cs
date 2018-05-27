@@ -281,6 +281,8 @@ namespace Argos.Framework.Input
 
         public override void OnInspectorGUI()
         {
+            EditorGUILayout.LabelField("Gamepad Vibration Effect", EditorStyles.centeredGreyMiniLabel);
+
             bool isMainGUIEnable = !Application.isPlaying && EditorVibrationTask.State == EditorVibrationTask.VibrationPlaybackState.Stoped;
 
             GamepadVibrationEffectAssetEditor._isApplicationPlaying = Application.isPlaying;
@@ -291,7 +293,7 @@ namespace Argos.Framework.Input
 
                 this.DrawPlaybackControls();
 
-                EditorGUILayout.BeginVertical("helpbox");
+                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
                 {
                     this.DrawProgressBar();
                     EditorGUILayout.Space();

@@ -49,7 +49,7 @@ namespace Argos.Framework
             }
         }
 
-        void DrawControls(MinMaxSliderAttribute attribute, GUIContent label, ref Vector2 value)
+        void DrawControls(MinMaxSliderAttribute attribute, GUIContent label, ref Vector2 value, bool isVector2Int)
         {
             EditorGUI.PrefixLabel(labelRect, label);
 
@@ -63,8 +63,26 @@ namespace Argos.Framework
                 EditorGUI.FocusTextInControl(string.Empty);
             }
 
-            value.x = Mathf.Clamp(EditorGUI.FloatField(this.minFieldRect, value.x), attribute.Range.x, attribute.Range.y);
-            value.y = Mathf.Clamp(EditorGUI.FloatField(this.maxFieldRect, value.y), attribute.Range.x, attribute.Range.y);
+            if (isVector2Int)
+            {
+                value.x = this.DrawField(this.minFieldRect, (int)value.x, (int)attribute.Range.x, (int)attribute.Range.y);
+                value.y = this.DrawField(this.maxFieldRect, (int)value.y, (int)attribute.Range.x, (int)attribute.Range.y);
+            }
+            else
+            {
+                value.x = this.DrawField(this.minFieldRect, value.x, attribute.Range.x, attribute.Range.y);
+                value.y = this.DrawField(this.maxFieldRect, value.y, attribute.Range.x, attribute.Range.y);
+            }
+        }
+
+        float DrawField(Rect position, float value, float min, float max)
+        {
+            return Mathf.Clamp(EditorGUI.FloatField(position, value), min, max);
+        }
+
+        int DrawField(Rect position, int value, int min, int max)
+        {
+            return Mathf.Clamp(EditorGUI.IntField(position, value), min, max);
         }
         #endregion
 
@@ -76,7 +94,7 @@ namespace Argos.Framework
             var minMax = (MinMaxSliderAttribute)attribute;
 
             this.CalculateControlRects(position);
-            this.DrawControls(minMax, label, ref vector);
+            this.DrawControls(minMax, label, ref vector, isVector2Int);
 
             if (isVector2Int)
             {

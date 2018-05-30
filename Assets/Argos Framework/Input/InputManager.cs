@@ -25,7 +25,7 @@ namespace Argos.Framework.Input
     /// Multiplatform Input Manager.
     /// </summary>
     /// <remarks>This input manager allow to define input maps for keyboard, mouse & gamepads (XBox360/One, PS4 and Nintendo Switch (Pro) Controllers), input actions, input axis, and allow to change input bindings in runtime.</remarks>
-    [AddComponentMenu("Argos.Framework/Input/Input Manager")]
+    [AddComponentMenu("Argos.Framework/Input/Input Manager"), DisallowMultipleComponent]
     public sealed class InputManager : MonoBehaviour
     {
         #region Singleton

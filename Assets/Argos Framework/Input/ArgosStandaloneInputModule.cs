@@ -17,7 +17,7 @@ namespace Argos.Framework.Input
     /// Based on Unity StandaloneInputModule.cs, version 5.3:
     /// https://bitbucket.org/Unity-Technologies/ui/src/b5f9aae6ff7c2c63a521a1cb8b3e3da6939b191b/UnityEngine.UI/EventSystem/InputModules?at=5.3
     /// </remarks>
-    [AddComponentMenu("Argos.Framework/Input/Standalone Input Module")]
+    [AddComponentMenu("Argos.Framework/Input/Standalone Input Module"), DisallowMultipleComponent]
     public class ArgosStandaloneInputModule : PointerInputModule
     {
         #region Internal vars

@@ -3914,11 +3914,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3edd79acfed61d4bac57936c9e660be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Vector2MinMaxSliderField: {x: 1.5, y: 4.47}
-  Vector2IntMinMaxSliderField: {x: 2, y: 4}
-  ReadOnlyField: Read only textbox.
+  Vector2MinMaxSliderField: {x: 1.5, y: 4.35}
+  Vector2IntMinMaxSliderField: {x: 1, y: 3}
   SceneField: Assets/Test.unity
-  TagField: Untagged
+  TagField: Player
   LayerField: 0
   CustomVector2: {x: 43.6, y: 5}
   CustomVector2Int: {x: 410, y: 25}
@@ -3936,9 +3935,8 @@ MonoBehaviour:
   Test2:
     Field1: 0
     Field2: {x: 2, y: 4}
-    Field3: 0
-    Field4: 
-    Field5: 0
+    Field3: 
+    Field4: 0
 --- !u!114 &1892997794
 MonoBehaviour:
   m_ObjectHideFlags: 0

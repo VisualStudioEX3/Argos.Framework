@@ -4,7 +4,7 @@ using Argos.Framework;
 
 namespace Argos.Framework.Utils.Debug
 {
-    [AddComponentMenu("Argos.Framework/Utils/Debug/Screen Shotter")]
+    [AddComponentMenu("Argos.Framework/Utils/Debug/Screen Shotter"), DisallowMultipleComponent]
     [ExecuteInEditMode]
     public class Screenshotter : MonoBehaviour
     {
@@ -19,7 +19,7 @@ namespace Argos.Framework.Utils.Debug
         #region Public vars
         public KeyCode screenshotKey = KeyCode.F12;
         public string Name = DEFAULT_NAME;
-        [ReadOnly]
+        [DinamicLabel(false, true)]
         public string FinalName;
         #endregion
 

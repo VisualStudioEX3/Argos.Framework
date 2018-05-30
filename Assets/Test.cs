@@ -17,14 +17,11 @@ public class Test : MonoBehaviour
         [MinMaxSlider(0f, 5f)]
         public Vector2Int Field2;
 
-        [ReadOnly]
-        public float Field3;
-
         [Scene]
-        public string Field4;
+        public string Field3;
 
-        [ProgressBar("Field5", true)]
-        public float Field5;
+        [ProgressBar("Field4", true)]
+        public float Field4;
     }
 
     [HelpBox("Argos Helpbox", HelpBoxMessageType.Warning)]
@@ -33,10 +30,7 @@ public class Test : MonoBehaviour
 
     [MinMaxSlider(0f, 5f)]
     public Vector2Int Vector2IntMinMaxSliderField;
-
-    [ReadOnly]
-    public string ReadOnlyField = "Read only textbox.";
-
+    
     [Scene]
     public string SceneField;
 

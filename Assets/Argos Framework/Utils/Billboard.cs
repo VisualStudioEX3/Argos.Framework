@@ -9,7 +9,7 @@ namespace Argos.Framework.Utils
     /// Billboard effect.
     /// </summary>
     [ExecuteInEditMode]
-    [AddComponentMenu("Argos.Framework/Utils/Billboard")]
+    [AddComponentMenu("Argos.Framework/Utils/Billboard"), DisallowMultipleComponent]
     public class Billboard : MonoBehaviour
     {
         #region Inspector fields

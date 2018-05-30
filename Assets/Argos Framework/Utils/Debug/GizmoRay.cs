@@ -9,7 +9,7 @@ namespace Argos.Framework.Utils.Debug
     /// Gizmo Ray.
     /// </summary>
     /// <remarks>Draws a gizmo ray, with the selected color, from the current game object position in the local forward direction multiply by the length parameter.</remarks>
-    [AddComponentMenu("Argos.Framework/Utils/Debug/Gizmo Ray")]
+    [AddComponentMenu("Argos.Framework/Utils/Debug/Gizmo Ray"), DisallowMultipleComponent]
     public class GizmoRay : MonoBehaviour
     {
         #region Public vars

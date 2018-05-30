@@ -9,7 +9,7 @@ namespace Argos.Framework.Utils
     /// Ragdoll Controller.
     /// </summary>
     /// <remarks>This component allow to enable or disabled all RigidBodies attached to this game object childs (as result to apply a ragdoll configuration).</remarks>
-    [AddComponentMenu("Argos.Framework/Utils/Ragdoll Controller")]
+    [AddComponentMenu("Argos.Framework/Utils/Ragdoll Controller"), DisallowMultipleComponent]
     public class RagdollController : MonoBehaviour
     {
         #region Internal vars

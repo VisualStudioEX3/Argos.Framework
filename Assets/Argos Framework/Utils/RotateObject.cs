@@ -4,7 +4,7 @@ using Argos.Framework;
 
 namespace Argos.Framework.Utils
 {
-    [AddComponentMenu("Argos.Framework/Utils/Rotate Object")]
+    [AddComponentMenu("Argos.Framework/Utils/Rotate Object"), DisallowMultipleComponent]
     public class RotateObject : MonoBehaviour
     {
         #region Enums

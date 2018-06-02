@@ -11,7 +11,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 614056499b0e6cf4bbcc83cf61aaa32c, type: 3}
   m_Name: Universal Windows Platform File Slot
   m_EditorClassIdentifier: 
-  _title: New file slot
-  _details: 
-  _icon: {fileID: 0}
-  _serializeMode: 0
+  _title: UWP test
+  _description: 
+  _serializeMode: 1

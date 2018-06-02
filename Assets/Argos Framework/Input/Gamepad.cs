@@ -836,7 +836,7 @@ namespace Argos.Framework.Input
 
             this.Type = GamepadType.Generic;
 
-#elif UNITY_XBOX || UNITY_PS4 || UNITY_SWITCH
+#elif UNITY_XBOXONE || UNITY_PS4 || UNITY_SWITCH
 
         this.Type = GamepadType.XBoxController;
 

@@ -2,7 +2,7 @@
 #define UNITY_DESKTOP
 #endif
 
-#if UNITY_XBOX || UNITY_PS4 || UNITY_SWITCH
+#if UNITY_XBOXONE || UNITY_PS4 || UNITY_SWITCH
 #define UNITY_CONSOLE
 #endif
 
@@ -215,7 +215,7 @@ namespace Argos.Framework.Input
         /// </summary>
         static readonly KeyCode[] ASSIGNABLE_NINTENDO_SWITCH_BUTTONS = (KeyCode[])Enum.GetValues(typeof(NintendoSwitchProControllerButtons));
         #endregion
-                
+
         #region Internal vars
         [SerializeField, HideInInspector]
         List<InputMapData> _inputMaps;

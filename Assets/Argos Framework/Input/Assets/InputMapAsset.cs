@@ -106,7 +106,7 @@ namespace Argos.Framework.Input
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(InputMapAsset))]
-    public class InputMapAssetEditor : Editor
+    public class InputMapAssetEditor : ArgosCustomEditorBase
     {
         #region Internal vars
         private ReorderableList _axisList;
@@ -118,12 +118,11 @@ namespace Argos.Framework.Input
         {
             this._axisList = EditorHelper.CreateNamedList(this, this._axisList, "Axes", "_axes", "Axis Setup");
             this._actionList = EditorHelper.CreateNamedList(this, this._actionList, "Actions", "_actions", "Keys");
+            this.HeaderTitle = "Input Map";
         }
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.LabelField("Input Map", EditorStyles.centeredGreyMiniLabel);
-
             this.serializedObject.Update();
             {
                 this._axisList.DoLayoutList();

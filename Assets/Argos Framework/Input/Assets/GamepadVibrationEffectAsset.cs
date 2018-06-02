@@ -68,7 +68,7 @@ namespace Argos.Framework.Input
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(GamepadVibrationEffectAsset))]
-    public class GamepadVibrationEffectAssetEditor : Editor
+    public class GamepadVibrationEffectAssetEditor : ArgosCustomEditorBase
     {
         #region Constants
         const float MIN_DURATION = 0.01f;
@@ -272,6 +272,8 @@ namespace Argos.Framework.Input
             this._duration = this.serializedObject.FindProperty("_duration");
             this._strongCurve = this.serializedObject.FindProperty("_strongCurve");
             this._weakCurve = this.serializedObject.FindProperty("_weakCurve");
+
+            this.HeaderTitle = "Gamepad Vibration Effect";
         }
 
         private void OnDisable()
@@ -281,8 +283,6 @@ namespace Argos.Framework.Input
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.LabelField("Gamepad Vibration Effect", EditorStyles.centeredGreyMiniLabel);
-
             bool isMainGUIEnable = !Application.isPlaying && EditorVibrationTask.State == EditorVibrationTask.VibrationPlaybackState.Stoped;
 
             GamepadVibrationEffectAssetEditor._isApplicationPlaying = Application.isPlaying;

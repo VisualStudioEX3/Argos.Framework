@@ -58,7 +58,7 @@ namespace Argos.Framework.Input
 
 #if UNITY_EDITOR
     [CustomEditor(typeof(GenericGamepadInputLayoutAsset))]
-    public class GenericGamepadInputLayoutAssetEditor : Editor
+    public class GenericGamepadInputLayoutAssetEditor : ArgosCustomEditorBase
     {
         #region Internal vars
         GenericGamepadInputLayoutAsset _target;
@@ -70,12 +70,11 @@ namespace Argos.Framework.Input
         {
             this._target = (GenericGamepadInputLayoutAsset)this.target;
             this._map = this.serializedObject.FindProperty("Map");
+            this.HeaderTitle = "Generic Gamepad Layout";
         }
 
         public override void OnInspectorGUI()
         {
-            EditorGUILayout.LabelField("Generic Gamepad Layout", EditorStyles.centeredGreyMiniLabel);
-
             this.serializedObject.Update();
             {
                 EditorGUILayout.HelpBox("Use this asset to setup axis and button layout for any generic gamepad. This setup is used by Input Manager to tell to Input Map assets what are they the right axes and buttons they be read.", MessageType.Info);

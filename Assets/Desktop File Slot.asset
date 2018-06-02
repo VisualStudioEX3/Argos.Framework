@@ -11,7 +11,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d37cfd235c4ea35408adcfe01ee3e2b3, type: 3}
   m_Name: Desktop File Slot
   m_EditorClassIdentifier: 
-  _title: New file slot
-  _details: 
-  _icon: {fileID: 0}
+  _title: Desktop test
+  _description: 
   _serializeMode: 0

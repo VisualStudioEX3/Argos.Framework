@@ -3894,6 +3894,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 1892997795}
+  - component: {fileID: 1892997796}
   - component: {fileID: 1892997794}
   - component: {fileID: 1892997793}
   m_Layer: 0
@@ -3914,6 +3915,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3edd79acfed61d4bac57936c9e660be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  File: {fileID: 11400000, guid: 2a2492d3bd9a4724895010921c47fe40, type: 2}
   Vector2MinMaxSliderField: {x: 1.5, y: 4.35}
   Vector2IntMinMaxSliderField: {x: 1, y: 3}
   SceneField: Assets/Test.unity
@@ -3972,6 +3974,20 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1892997796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 1892997792}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7a2a67e4d64c1b142a2d2997e0e4b143, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  Alignment: 2
+  Size: 14
 --- !u!1 &2092326311
 GameObject:
   m_ObjectHideFlags: 0

@@ -11,23 +11,39 @@ namespace Argos.Framework.FileSystem
 {
     #region Enums
     /// <summary>
-    /// Serialization modes.
+    /// File Slot type.
     /// </summary>
-    public enum SerializationModes
+    public enum FileSlotType
     {
-        Json,
+        /// <summary>
+        /// Dictionary type, like the Unity PlayerPrefs.
+        /// </summary>
+        Dictionary,
+        /// <summary>
+        /// Binary RAW data. Use this for store custom data.
+        /// </summary>
+        CustomData
+    }
+
+    /// <summary>
+    /// Serialization modes for custom data.
+    /// </summary>
+    public enum FileSlotSerializationMode
+    {
+        JSON,
         Binary
     }
 
     /// <summary>
-    /// File operation error codes.
+    /// Error codes.
     /// </summary>
-    public enum FileOperationErrorCodes
+    public enum FileSlotErrorCodes
     {
         NO_DATA_TO_LOAD,
         DATA_CORRUPTED,
         NOT_ENOUGH_SPACE,
         NOT_MOUNTED,
+        USER_REQUIRED,
         CLOUD_STORAGE_UNAVAILABLE,
         GENERIC_ERROR
     }
@@ -38,6 +54,12 @@ namespace Argos.Framework.FileSystem
     /// </summary>
     public abstract class FileSlot : ScriptableObject
     {
+        #region Internal vars
+        FileDictionary _dictionary;
+        byte[] _binaryBuffer;
+        string _jsonBuffer;
+        #endregion
+
         #region Serialized fields
         /// <summary>
         /// File title.
@@ -70,10 +92,16 @@ namespace Argos.Framework.FileSystem
         DateTime _lastReadDateTime = DateTime.MinValue;
 
         /// <summary>
+        /// File Slot type.
+        /// </summary>
+        [SerializeField]
+        FileSlotType _type = FileSlotType.Dictionary;
+
+        /// <summary>
         /// Serialization mode.
         /// </summary>
         [SerializeField]
-        SerializationModes _serializeMode = SerializationModes.Json;
+        FileSlotSerializationMode _serializeMode = FileSlotSerializationMode.JSON;
         #endregion
 
         #region Properties
@@ -103,9 +131,138 @@ namespace Argos.Framework.FileSystem
         public DateTime LastReadDateTime { get { return this._creationDateTime; } }
 
         /// <summary>
+        /// File Slot type.
+        /// </summary>
+        public FileSlotType Type { get { return this._type; } }
+
+        /// <summary>
+        /// Serialization mode (only for custom data).
+        /// </summary>
+        public FileSlotSerializationMode SerializationMode { get { return this._serializeMode; } }
+
+        /// <summary>
         /// File size.
         /// </summary>
         public int Size { get { return 0; } }
+
+        /// <summary>
+        /// Dictionary of values.
+        /// </summary>
+        public FileDictionary Dictionary
+        {
+            get
+            {
+                if (this._type == FileSlotType.Dictionary)
+                {
+                    return this._dictionary;
+                }
+                else
+                {
+                    throw new InvalidOperationException("The File Slot not is setup as dictionary.");
+                }
+            }
+        }
+        #endregion
+
+        #region Events
+        private void OnEnable()
+        {
+            if (this._dictionary == null)
+            {
+                this._dictionary = new FileDictionary();
+            }
+        } 
+        #endregion
+
+        #region Event delegates
+        public Action OnSaveSuccess;
+        public Action<FileSlotErrorCodes> OnSaveFailed;
+        public Action OnLoadSuccess;
+        public Action<FileSlotErrorCodes> OnLoadFailed;
+        public Action OnDeleteSuccess;
+        public Action<FileSlotErrorCodes> OnDeleteFailed;
+        #endregion
+
+        #region Methods & Functions
+        /// <summary>
+        /// Serialize custom data.
+        /// </summary>
+        /// <param name="data">Object to serialize.</param>
+        public void Serialize(object data)
+        {
+            if (this._type == FileSlotType.CustomData)
+            {
+                if (this._serializeMode == FileSlotSerializationMode.JSON)
+                {
+                    this._jsonBuffer = JsonUtility.ToJson(data, true);
+                }
+                else
+                {
+                    this._binaryBuffer = BinarySerializer.Serialize(data);
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("The File Slot not is setup as custom data.");
+            }
+        }
+
+        /// <summary>
+        /// Deserialize custom data.
+        /// </summary>
+        /// <typeparam name="T">Type of the object to deserialize.</typeparam>
+        /// <returns>Returns a copy of the serialized object.</returns>
+        public T Deserialize<T>()
+        {
+            if (this._type == FileSlotType.CustomData)
+            {
+                if (this._serializeMode == FileSlotSerializationMode.JSON)
+                {
+                    return JsonUtility.FromJson<T>(this._jsonBuffer);
+                }
+                else
+                {
+                    return BinarySerializer.Deserialize<T>(this._binaryBuffer);
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("The File Slot not is setup as custom data.");
+            }
+        }
+
+        /// <summary>
+        /// Save data to file.
+        /// </summary>
+        public virtual void Save()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Load data from file.
+        /// </summary>
+        public virtual void Load()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Delete file.
+        /// </summary>
+        public virtual void Delete()
+        {
+            throw new NotImplementedException();
+        }
+
+        /// <summary>
+        /// Exists file.
+        /// </summary>
+        /// <returns>Return true if the file exists.</returns>
+        public virtual bool Exists()
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 
@@ -118,10 +275,10 @@ namespace Argos.Framework.FileSystem
     {
         #region Internal vars
         FileSlot _target;
-        SerializedProperty _title, _details, _creationDateTime, _lastWriteDateTime, _lastReadDateTime, _serializeMode;
-        bool _previewFoldOut; 
+        SerializedProperty _title, _details, _creationDateTime, _lastWriteDateTime, _lastReadDateTime, _type, _serializeMode;
+        bool _previewFoldOut;
         #endregion
-        
+
         private void OnEnable()
         {
             this._target = (FileSlot)target;
@@ -131,17 +288,11 @@ namespace Argos.Framework.FileSystem
             this._creationDateTime = this.serializedObject.FindProperty("_creationDateTime");
             this._lastReadDateTime = this.serializedObject.FindProperty("_lastReadDateTime");
             this._lastWriteDateTime = this.serializedObject.FindProperty("_lastWriteDateTime");
+            this._type = this.serializedObject.FindProperty("_type");
             this._serializeMode = this.serializedObject.FindProperty("_serializeMode");
 
             this.HeaderTitle = "File Slot";
         }
-
-        //protected override void OnHeaderGUI()
-        //{
-        //    base.OnHeaderGUI();
-        //    var rect = new Rect(44f, 24f, EditorGUIUtility.currentViewWidth, EditorGUIUtility.singleLineHeight);
-        //    EditorGUI.LabelField(rect, target.GetType().Name, EditorStyles.miniLabel);
-        //}
 
         public override void OnInspectorGUI()
         {
@@ -152,7 +303,11 @@ namespace Argos.Framework.FileSystem
             {
                 EditorGUILayout.PropertyField(this._title);
                 EditorGUILayout.PropertyField(this._details);
-                EditorGUILayout.PropertyField(this._serializeMode);
+                EditorGUILayout.PropertyField(this._type);
+                if (this._target.Type == FileSlotType.CustomData)
+                {
+                    EditorGUILayout.PropertyField(this._serializeMode);
+                }
             }
             EditorGUILayout.EndVertical();
 

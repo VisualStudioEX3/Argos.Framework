@@ -5,6 +5,7 @@ using Argos.Framework;
 using Argos.Framework.Input;
 using Argos.Framework.Input.Extensions;
 using System;
+using Argos.Framework.FileSystem;
 
 public class Test : MonoBehaviour
 {
@@ -23,6 +24,8 @@ public class Test : MonoBehaviour
         [ProgressBar("Field4", true)]
         public float Field4;
     }
+
+    public FileSlot File;
 
     [HelpBox("Argos Helpbox", HelpBoxMessageType.Warning)]
     [MinMaxSlider(0f, 5f)]
@@ -100,6 +103,11 @@ public class Test : MonoBehaviour
     [Button("Test Button with custom label and tooltip", "Tooltip message test")]
     public void TestButton3()
     {
+        this.File.Dictionary["Name"] = "John Deckard";
+        print(this.File.Dictionary["Name"]);
+
+        this.File.Dictionary["Name"] = "Espinete";
+        print(this.File.Dictionary["Name"]);
     }
 
     IEnumerator TestProgressBarCoroutine()

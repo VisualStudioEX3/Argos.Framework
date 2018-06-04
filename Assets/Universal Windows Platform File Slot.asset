@@ -13,4 +13,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _title: UWP test
   _description: 
+  _type: 1
   _serializeMode: 1

@@ -20,7 +20,7 @@ namespace Argos.Framework.FileSystem
         /// </summary>
         Dictionary,
         /// <summary>
-        /// Binary RAW data. Use this for store custom data.
+        /// Custom data. Use this for store custom data structures.
         /// </summary>
         CustomData
     }
@@ -30,7 +30,13 @@ namespace Argos.Framework.FileSystem
     /// </summary>
     public enum FileSlotSerializationMode
     {
+        /// <summary>
+        /// Text data in JSON format.
+        /// </summary>
         JSON,
+        /// <summary>
+        /// Binary format.
+        /// </summary>
         Binary
     }
 

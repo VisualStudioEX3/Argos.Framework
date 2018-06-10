@@ -25,7 +25,7 @@ public class Test : MonoBehaviour
         public float Field4;
     }
 
-    public FileSlot File;
+    public FileSlotAsset File;
 
     [HelpBox("Argos Helpbox", HelpBoxMessageType.Warning)]
     [MinMaxSlider(0f, 5f)]
@@ -103,11 +103,11 @@ public class Test : MonoBehaviour
     [Button("Test Button with custom label and tooltip", "Tooltip message test")]
     public void TestButton3()
     {
-        this.File.Dictionary["Name"] = "John Deckard";
-        print(this.File.Dictionary["Name"]);
+        this.File.Data["Name"] = "John Deckard";
+        print(this.File.Data["Name"]);
 
-        this.File.Dictionary["Name"] = "Espinete";
-        print(this.File.Dictionary["Name"]);
+        this.File.Data["Name"] = "Espinete";
+        print(this.File.Data["Name"]);
     }
 
     IEnumerator TestProgressBarCoroutine()

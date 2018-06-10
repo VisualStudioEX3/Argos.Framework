@@ -58,7 +58,8 @@ namespace Argos.Framework.FileSystem
     /// <summary>
     /// Base class for implementing file slots in each platform.
     /// </summary>
-    public abstract class FileSlot : ScriptableObject
+    [CreateAssetMenu(fileName = "File Slot", menuName = "Argos.Framework/File System/File Slot definition")]
+    public sealed class FileSlotAsset : ScriptableObject
     {
         #region Internal vars
         FileDictionary _dictionary;
@@ -149,12 +150,12 @@ namespace Argos.Framework.FileSystem
         /// <summary>
         /// File size.
         /// </summary>
-        public int Size { get { return 0; } }
+        public int Size { get; private set; }
 
         /// <summary>
         /// Dictionary of values.
         /// </summary>
-        public FileDictionary Dictionary
+        public FileDictionary Data
         {
             get
             {
@@ -171,21 +172,57 @@ namespace Argos.Framework.FileSystem
         #endregion
 
         #region Events
+        /// <summary>
+        /// Event executed after the custom data is serialized in binary mode.
+        /// </summary>
+        /// <param name="buffer">Byte array with the serialized data (in/out param).</param>
+        /// <remarks>Usefull for encrypt the binary result.</remarks>
+        public BinarySerializer.BinarySerializationHandler OnBinaryDataSerialized;
+
+        /// <summary>
+        /// Event executed before the custom data is deserialized in binary mode.
+        /// </summary>
+        /// <param name="buffer">Byte array with the serialized data (in/out param)</param>
+        public BinarySerializer.BinarySerializationHandler OnBinaryDataDeserializing;
+
         private void OnEnable()
         {
             if (this._dictionary == null)
             {
                 this._dictionary = new FileDictionary();
             }
-        } 
+        }
         #endregion
 
         #region Event delegates
+        /// <summary>
+        /// Event for notify the save success operation.
+        /// </summary>
         public Action OnSaveSuccess;
+
+        /// <summary>
+        /// Event for notify the save failed operation.
+        /// </summary>
         public Action<FileSlotErrorCodes> OnSaveFailed;
+
+        /// <summary>
+        /// Event for notify the load success operation.
+        /// </summary>
         public Action OnLoadSuccess;
+
+        /// <summary>
+        /// Event for notify the load failed operation.
+        /// </summary>
         public Action<FileSlotErrorCodes> OnLoadFailed;
+
+        /// <summary>
+        /// Event for notify the delete success operation.
+        /// </summary>
         public Action OnDeleteSuccess;
+
+        /// <summary>
+        /// Event for notify the delete failed operation.
+        /// </summary>
         public Action<FileSlotErrorCodes> OnDeleteFailed;
         #endregion
 
@@ -204,7 +241,7 @@ namespace Argos.Framework.FileSystem
                 }
                 else
                 {
-                    this._binaryBuffer = BinarySerializer.Serialize(data);
+                    this._binaryBuffer = BinarySerializer.Serialize(data, this.OnBinaryDataSerialized);
                 }
             }
             else
@@ -228,7 +265,7 @@ namespace Argos.Framework.FileSystem
                 }
                 else
                 {
-                    return BinarySerializer.Deserialize<T>(this._binaryBuffer);
+                    return BinarySerializer.Deserialize<T>(this._binaryBuffer, this.OnBinaryDataDeserializing);
                 }
             }
             else
@@ -240,7 +277,7 @@ namespace Argos.Framework.FileSystem
         /// <summary>
         /// Save data to file.
         /// </summary>
-        public virtual void Save()
+        public void Save()
         {
             throw new NotImplementedException();
         }
@@ -248,7 +285,7 @@ namespace Argos.Framework.FileSystem
         /// <summary>
         /// Load data from file.
         /// </summary>
-        public virtual void Load()
+        public void Load()
         {
             throw new NotImplementedException();
         }
@@ -256,7 +293,7 @@ namespace Argos.Framework.FileSystem
         /// <summary>
         /// Delete file.
         /// </summary>
-        public virtual void Delete()
+        public void Delete()
         {
             throw new NotImplementedException();
         }
@@ -265,7 +302,7 @@ namespace Argos.Framework.FileSystem
         /// Exists file.
         /// </summary>
         /// <returns>Return true if the file exists.</returns>
-        public virtual bool Exists()
+        public bool Exists()
         {
             throw new NotImplementedException();
         }
@@ -276,18 +313,19 @@ namespace Argos.Framework.FileSystem
     /// <summary>
     /// Base editor class implementation for FileSlots.
     /// </summary>
-    [CustomEditor(typeof(FileSlot))]
-    public abstract class FileSlotEditor : ArgosCustomEditorBase
+    [CustomEditor(typeof(FileSlotAsset))]
+    public sealed class FileSlotAssetEditor : ArgosCustomEditorBase
     {
         #region Internal vars
-        FileSlot _target;
+        FileSlotAsset _baseTarget;
         SerializedProperty _title, _details, _creationDateTime, _lastWriteDateTime, _lastReadDateTime, _type, _serializeMode;
         bool _previewFoldOut;
         #endregion
 
-        private void OnEnable()
+        #region Events
+        public void OnEnable()
         {
-            this._target = (FileSlot)target;
+            this._baseTarget = (FileSlotAsset)target;
 
             this._title = this.serializedObject.FindProperty("_title");
             this._details = this.serializedObject.FindProperty("_description");
@@ -310,7 +348,7 @@ namespace Argos.Framework.FileSystem
                 EditorGUILayout.PropertyField(this._title);
                 EditorGUILayout.PropertyField(this._details);
                 EditorGUILayout.PropertyField(this._type);
-                if (this._target.Type == FileSlotType.CustomData)
+                if (this._baseTarget.Type == FileSlotType.CustomData)
                 {
                     EditorGUILayout.PropertyField(this._serializeMode);
                 }
@@ -322,14 +360,23 @@ namespace Argos.Framework.FileSystem
             EditorGUILayout.LabelField("File information:", EditorStyles.boldLabel);
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             {
-                this.DrawTextField("Size", $"{this._target.Size} Bytes");
-                this.DrawTextField("Creation", this.FormatDateTime(this._target.CreationDateTime));
-                this.DrawTextField("Last read access", this.FormatDateTime(this._target.LastReadDateTime));
-                this.DrawTextField("Last write access", this.FormatDateTime(this._target.LastWriteDateTime));
+                this.DrawTextField("Size", $"{this._baseTarget.Size} Bytes");
+                this.DrawTextField("Creation", this.FormatDateTime(this._baseTarget.CreationDateTime));
+                this.DrawTextField("Last read access", this.FormatDateTime(this._baseTarget.LastReadDateTime));
+                this.DrawTextField("Last write access", this.FormatDateTime(this._baseTarget.LastWriteDateTime));
+            }
+            EditorGUILayout.EndVertical();
+
+            EditorGUILayout.LabelField("Platform modules:", EditorStyles.boldLabel);
+            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            {
+                EditorGUILayout.Space();
             }
             EditorGUILayout.EndVertical();
         }
+        #endregion
 
+        #region Methods & Functions
         string FormatDateTime(DateTime dateTime)
         {
             return dateTime == DateTime.MinValue ? "None" : $"{dateTime.ToLongDateString()} - {dateTime.ToLongTimeString()}";
@@ -344,6 +391,7 @@ namespace Argos.Framework.FileSystem
             }
             EditorGUILayout.EndHorizontal();
         }
+        #endregion
     }
 #endif
 }

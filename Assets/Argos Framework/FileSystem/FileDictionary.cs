@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Argos.Framework;
 using System;
+using System.Runtime.CompilerServices;
 
 namespace Argos.Framework.FileSystem
 {
@@ -61,6 +62,7 @@ namespace Argos.Framework.FileSystem
         #endregion
 
         #region Methods & Functions
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         void SetValue(string key, dynamic value)
         {
             if (this._dictionary.ContainsKey(key))
@@ -78,6 +80,7 @@ namespace Argos.Framework.FileSystem
         /// </summary>
         /// <param name="key">Key value.</param>
         /// <returns>Return the desired value.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public dynamic Get(string key)
         {
             if (this._dictionary.Count > 0)

@@ -18,10 +18,10 @@ namespace Argos.Framework.Utils
 
         #region Serialized fields
         [Header("This field help to set a Tag in all parts of the ragdoll:")]
-        [SerializeField]
+        [SerializeField, Tag]
         string _collidersTag;
         [Header("This field help to set a Layer in all parts of the ragdoll:")]
-        [SerializeField]
+        [SerializeField, Layer]
         int _collidersLayer;
         #endregion
 
@@ -46,10 +46,12 @@ namespace Argos.Framework.Utils
         void Awake()
         {
             this._rigidBodies = GetComponentsInChildren<Rigidbody>();
+
             foreach (var rigidBody in this._rigidBodies)
             {
                 rigidBody.tag = this._collidersTag;
                 rigidBody.gameObject.layer = this._collidersLayer;
+
                 var characterJoint = rigidBody.GetComponent<CharacterJoint>();
                 if (characterJoint)
                 {

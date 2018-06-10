@@ -3915,7 +3915,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a3edd79acfed61d4bac57936c9e660be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  File: {fileID: 11400000, guid: 2a2492d3bd9a4724895010921c47fe40, type: 2}
+  File: {fileID: 11400000, guid: f0b1e116445f4c34699fd0fe37dc7040, type: 2}
   Vector2MinMaxSliderField: {x: 1.5, y: 4.35}
   Vector2IntMinMaxSliderField: {x: 1, y: 3}
   SceneField: Assets/Test.unity

@@ -12,9 +12,20 @@ namespace Argos.Framework.Utils
     [AddComponentMenu("Argos.Framework/Utils/Billboard"), DisallowMultipleComponent]
     public class Billboard : MonoBehaviour
     {
+        #region Internal vars
+        Camera _mainCamera; 
+        #endregion
+
         #region Inspector fields
         [SerializeField]
         bool InvertDirection = false;
+        #endregion
+
+        #region Initializers
+        void Start()
+        {
+            this._mainCamera = Camera.main;
+        } 
         #endregion
 
         #region Update logic
@@ -22,11 +33,11 @@ namespace Argos.Framework.Utils
         {
             if (this.InvertDirection)
             {
-                this.transform.forward = Camera.main.transform.forward;
+                this.transform.forward = this._mainCamera.transform.forward;
             }
             else
             {
-                this.transform.LookAt(Camera.main.transform);
+                this.transform.LookAt(this._mainCamera.transform);
             }
         } 
         #endregion

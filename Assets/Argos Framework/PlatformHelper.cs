@@ -12,18 +12,18 @@ namespace Argos.Framework
     [Flags]
     public enum ArgosSupportedPlatforms
     {
-        Windows = 1,
-        Linux = 2,
-        OSX = 4,
+        Windows = 0,
+        Linux = 1,
+        OSX = 2,
         Desktop = Windows | Linux | OSX,
 
-        UWPDesktop = 8,
-        UWPXBoxOne = 16,
+        UWPDesktop = 4,
+        UWPXBoxOne = 8,
         UniversalWindowsPlatform = UWPDesktop | UWPXBoxOne,
 
-        XBoxOne = 32,
-        PS4 = 64,
-        NintendoSwitch = 128,
+        XBoxOne = 16,
+        PS4 = 32,
+        NintendoSwitch = 64,
         Console = XBoxOne | PS4 | NintendoSwitch
     } 
     #endregion
@@ -95,5 +95,4 @@ namespace Argos.Framework
             }
         }
     }
-
 }

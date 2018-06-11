@@ -413,7 +413,9 @@ namespace Argos.Framework.Input
                                 (EditorVibrationTask.State == EditorVibrationTask.VibrationPlaybackState.Stoped ? 0f : 1f) : 
                                 (EditorVibrationTask.CurrentTime / 1000f);
 
-            EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), currentTime / this._target._duration, $"Playback time: {(condition ? "∞" : currentTime.ToString("0.00"))} / {this._target._duration.ToString("0.00")}");
+            EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(),
+                                  (condition ? currentTime : currentTime / this._target._duration),
+                                  $"Playback time: {(condition ? "∞" : currentTime.ToString("0.00"))} / {this._target._duration.ToString("0.00")}");
         }
         #endregion
     }

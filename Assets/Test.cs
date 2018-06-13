@@ -103,11 +103,7 @@ public class Test : MonoBehaviour
     [Button("Test Button with custom label and tooltip", "Tooltip message test")]
     public void TestButton3()
     {
-        this.File.Data["Name"] = "John Deckard";
-        print(this.File.Data["Name"]);
 
-        this.File.Data["Name"] = "Espinete";
-        print(this.File.Data["Name"]);
     }
 
     IEnumerator TestProgressBarCoroutine()

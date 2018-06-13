@@ -62,7 +62,7 @@ namespace Argos.Framework.FileSystem
     public sealed class FileSlotAsset : ScriptableObject
     {
         #region Internal vars
-        FileDictionary _dictionary;
+        Storage _dictionary;
         byte[] _binaryBuffer;
         string _jsonBuffer;
         #endregion
@@ -155,7 +155,7 @@ namespace Argos.Framework.FileSystem
         /// <summary>
         /// Dictionary of values.
         /// </summary>
-        public FileDictionary Data
+        public Storage Data
         {
             get
             {
@@ -189,7 +189,7 @@ namespace Argos.Framework.FileSystem
         {
             if (this._dictionary == null)
             {
-                this._dictionary = new FileDictionary();
+                this._dictionary = new Storage();
             }
         }
         #endregion
@@ -227,50 +227,27 @@ namespace Argos.Framework.FileSystem
         #endregion
 
         #region Methods & Functions
-        /// <summary>
-        /// Serialize custom data.
-        /// </summary>
-        /// <param name="data">Object to serialize.</param>
-        public void Serialize(object data)
+        void Serialize(object data)
         {
-            if (this._type == FileSlotType.CustomData)
+            if (this._serializeMode == FileSlotSerializationMode.JSON)
             {
-                if (this._serializeMode == FileSlotSerializationMode.JSON)
-                {
-                    this._jsonBuffer = JsonUtility.ToJson(data, true);
-                }
-                else
-                {
-                    this._binaryBuffer = BinarySerializer.Serialize(data, this.OnBinaryDataSerialized);
-                }
+                this._jsonBuffer = JsonUtility.ToJson(data, true);
             }
             else
             {
-                throw new InvalidOperationException("The File Slot not is setup as custom data.");
+                this._binaryBuffer = BinarySerializer.Serialize(data, this.OnBinaryDataSerialized);
             }
         }
 
-        /// <summary>
-        /// Deserialize custom data.
-        /// </summary>
-        /// <typeparam name="T">Type of the object to deserialize.</typeparam>
-        /// <returns>Returns a copy of the serialized object.</returns>
-        public T Deserialize<T>()
+        T Deserialize<T>()
         {
-            if (this._type == FileSlotType.CustomData)
+            if (this._serializeMode == FileSlotSerializationMode.JSON)
             {
-                if (this._serializeMode == FileSlotSerializationMode.JSON)
-                {
-                    return JsonUtility.FromJson<T>(this._jsonBuffer);
-                }
-                else
-                {
-                    return BinarySerializer.Deserialize<T>(this._binaryBuffer, this.OnBinaryDataDeserializing);
-                }
+                return JsonUtility.FromJson<T>(this._jsonBuffer);
             }
             else
             {
-                throw new InvalidOperationException("The File Slot not is setup as custom data.");
+                return BinarySerializer.Deserialize<T>(this._binaryBuffer, this.OnBinaryDataDeserializing);
             }
         }
 
@@ -348,10 +325,7 @@ namespace Argos.Framework.FileSystem
                 EditorGUILayout.PropertyField(this._title);
                 EditorGUILayout.PropertyField(this._details);
                 EditorGUILayout.PropertyField(this._type);
-                if (this._baseTarget.Type == FileSlotType.CustomData)
-                {
-                    EditorGUILayout.PropertyField(this._serializeMode);
-                }
+                EditorGUILayout.PropertyField(this._serializeMode);
             }
             EditorGUILayout.EndVertical();
 

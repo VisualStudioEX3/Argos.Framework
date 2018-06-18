@@ -114,7 +114,9 @@ namespace Argos.Framework.Input
             #endregion
 
             #region Internal vars
+#pragma warning disable 414
             static Task _task;
+#pragma warning restore
             static System.Diagnostics.Stopwatch _stopWatch;
             static int _duration;
             #endregion

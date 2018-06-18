@@ -14,6 +14,17 @@ namespace Argos.Framework.FileSystem
     /// <remarks>This storage dictionary only allow the following types: boolean, int, float, string, TimeSpan and DateTime.</remarks>
     public sealed class Storage : IDisposable
     {
+        #region Constants
+        // Cached characters for custom JSON serializer:
+        const char CHAR_NULL = '\n';
+        const char CHAR_DOUBLE_QUOTE = '\"';
+        const char CHAR_DOT = '.';
+        const char CHAR_COMMA = ',';
+        const char CHAR_COLON = ':';
+        const char CHAR_LEFT_CURLY_BRACKET = '{';
+        const char CHAR_RIGHT_CURLY_BRACKET = '}';
+        #endregion
+
         #region Internal vars
         Dictionary<string, dynamic> _dictionary;
         #endregion
@@ -44,16 +55,14 @@ namespace Argos.Framework.FileSystem
         /// <remarks>Load a complex JSON string may created corrupt dictionary or throw any exception.</remarks>
         public Storage(string json) : this()
         {
-            string[] values = json.Replace("{", string.Empty)
-                                  .Replace("}", string.Empty)
-                                  .Replace("\"", string.Empty)
-                                  .Split(',');
+            string[] values = json.Replace(Storage.CHAR_DOUBLE_QUOTE, Storage.CHAR_NULL)
+                                  .Split(Storage.CHAR_COMMA);
 
             bool boolValue; int intValue; float floatValue;
 
-            for (int i = 0; i < values.Length; i++)
+            for (int i = 1; i < values.Length - 1; i++) // Exclude first and last lines (JSON open and close block: '{' and '}').
             {
-                string[] pieces = values[i].Substring(0, values[i].Length - 1).Split(':');
+                string[] pieces = values[i].Substring(0, values[i].Length - 1).Split(Storage.CHAR_COLON);
 
                 if (bool.TryParse(pieces[1], out boolValue))
                 {
@@ -226,7 +235,7 @@ namespace Argos.Framework.FileSystem
         {
             var json = new StringBuilder();
             {
-                json.AppendLine("{");
+                json.AppendLine(Storage.CHAR_LEFT_CURLY_BRACKET.ToString());
                 {
                     string value = string.Empty;
 
@@ -242,7 +251,7 @@ namespace Argos.Framework.FileSystem
                         }
                         else if (item.Value is float)
                         {
-                            value = $"{((float)item.Value).ToString("0.0#").Replace(',', '.')}";
+                            value = $"{((float)item.Value).ToString("0.0#").Replace(Storage.CHAR_COMMA, Storage.CHAR_DOT)}";
                         }
                         else
                         {
@@ -252,7 +261,7 @@ namespace Argos.Framework.FileSystem
                         json.AppendLine($"\t\"{item.Key}\": {value},");
                     }
                 }
-                json.AppendLine("}");
+                json.AppendLine(Storage.CHAR_RIGHT_CURLY_BRACKET.ToString());
             }
             return json.ToString();
         }

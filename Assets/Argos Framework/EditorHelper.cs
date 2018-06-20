@@ -15,12 +15,14 @@ namespace Argos.Framework
     /// </summary>
     public static class EditorHelper
     {
+        const float HEADER_NONE_HEIGHT = 3f;
+
         /// <summary>
         /// Initialize and setup a ReorderableList with non unique named elements.
         /// </summary>
         /// <param name="editorInstance">Instance of the Editor script hosting the ReorderableList.</param>
         /// <param name="list">ReorderableList instance.</param>
-        /// <param name="headerName">Name to shows on the header.</param>
+        /// <param name="headerName">Name to shows on the header. If leave blank this field, the header is not drawed.</param>
         /// <param name="property">Name of the property that contain the generic list to used in this ReorderableList.</param>
         /// <param name="prefixName">Optional. Prefix name for the data field.</param>
         /// <returns>Return the ready ReorderableList.</returns>
@@ -31,12 +33,19 @@ namespace Argos.Framework
             const string PROPERTY_NAME = "Name";
             const string PROPERTY_DATA = "Data";
 
-            var ret = new ReorderableList(editorInstance.serializedObject, editorInstance.serializedObject.FindProperty(property), true, true, true, true);
+            var ret = new ReorderableList(editorInstance.serializedObject, editorInstance.serializedObject.FindProperty(property), true, !string.IsNullOrEmpty(headerName), true, true);
 
-            ret.drawHeaderCallback = rect =>
+            if (!string.IsNullOrEmpty(headerName))
             {
-                EditorGUI.LabelField(rect, headerName);
-            };
+                ret.drawHeaderCallback = rect =>
+                {
+                    EditorGUI.LabelField(rect, headerName, EditorStyles.boldLabel);
+                };
+            }
+            else
+            {
+                ret.headerHeight = EditorHelper.HEADER_NONE_HEIGHT;
+            }
 
             ret.elementHeightCallback = (int index) =>
             {
@@ -63,6 +72,37 @@ namespace Argos.Framework
                 var dataField = element.FindPropertyRelative(PROPERTY_DATA);
                 rect.y += EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
                 EditorGUI.PropertyField(rect, dataField, new GUIContent(string.IsNullOrEmpty(prefixName) ? dataField.name : prefixName), true);
+            };
+
+            return ret;
+        }
+
+        public static ReorderableList CreateSimpleReorderableList(Editor editorInstance, ReorderableList list, string headerName, string property, string prefixName = "")
+        {
+            var ret = new ReorderableList(editorInstance.serializedObject, editorInstance.serializedObject.FindProperty(property), true, !string.IsNullOrEmpty(headerName), true, true);
+
+            if (!string.IsNullOrEmpty(headerName))
+            {
+                ret.drawHeaderCallback = rect =>
+                {
+                    EditorGUI.LabelField(rect, headerName, EditorStyles.boldLabel);
+                };
+            }
+            else
+            {
+                ret.headerHeight = EditorHelper.HEADER_NONE_HEIGHT;
+            }
+
+            ret.elementHeightCallback = (int index) =>
+            {
+                var element = ret.serializedProperty.GetArrayElementAtIndex(index);
+                return EditorGUI.GetPropertyHeight(element, GUIContent.none, true) + EditorGUIUtility.standardVerticalSpacing;
+            };
+
+            ret.drawElementCallback = (Rect rect, int index, bool isActive, bool isFocused) =>
+            {
+                var element = ret.serializedProperty.GetArrayElementAtIndex(index);
+                EditorGUI.PropertyField(rect, element, string.IsNullOrEmpty(prefixName) ? GUIContent.none : new GUIContent(element.name), true);
             };
 
             return ret;

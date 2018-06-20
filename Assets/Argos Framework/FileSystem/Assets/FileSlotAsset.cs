@@ -5,6 +5,7 @@ using UnityEngine;
 using Argos.Framework;
 #if UNITY_EDITOR
 using UnityEditor;
+using UnityEditorInternal;
 #endif
 
 namespace Argos.Framework.FileSystem
@@ -109,6 +110,9 @@ namespace Argos.Framework.FileSystem
         /// </summary>
         [SerializeField]
         FileSlotSerializationMode _serializeMode = FileSlotSerializationMode.JSON;
+
+        [SerializeField]
+        List<SceneAsset> _modules;
         #endregion
 
         #region Properties
@@ -190,6 +194,11 @@ namespace Argos.Framework.FileSystem
             if (this._dictionary == null)
             {
                 this._dictionary = new Storage();
+            }
+
+            if (this._modules == null)
+            {
+                this._modules = new List<SceneAsset>();
             }
         }
         #endregion
@@ -297,6 +306,7 @@ namespace Argos.Framework.FileSystem
         FileSlotAsset _baseTarget;
         SerializedProperty _title, _details, _creationDateTime, _lastWriteDateTime, _lastReadDateTime, _type, _serializeMode;
         bool _previewFoldOut;
+        ReorderableList _modules;
         #endregion
 
         #region Events
@@ -311,6 +321,8 @@ namespace Argos.Framework.FileSystem
             this._lastWriteDateTime = this.serializedObject.FindProperty("_lastWriteDateTime");
             this._type = this.serializedObject.FindProperty("_type");
             this._serializeMode = this.serializedObject.FindProperty("_serializeMode");
+
+            this._modules = EditorHelper.CreateSimpleReorderableList(this, this._modules, string.Empty, "_modules");
 
             this.HeaderTitle = "File Slot";
         }
@@ -328,9 +340,7 @@ namespace Argos.Framework.FileSystem
                 EditorGUILayout.PropertyField(this._serializeMode);
             }
             EditorGUILayout.EndVertical();
-
-            this.serializedObject.ApplyModifiedProperties();
-
+            
             EditorGUILayout.LabelField("File information:", EditorStyles.boldLabel);
             EditorGUILayout.BeginVertical(EditorStyles.helpBox);
             {
@@ -342,11 +352,14 @@ namespace Argos.Framework.FileSystem
             EditorGUILayout.EndVertical();
 
             EditorGUILayout.LabelField("Platform modules:", EditorStyles.boldLabel);
-            EditorGUILayout.BeginVertical(EditorStyles.helpBox);
-            {
-                EditorGUILayout.Space();
-            }
-            EditorGUILayout.EndVertical();
+            //EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+            //{
+            //    EditorGUILayout.Space();
+            //}
+            //EditorGUILayout.EndVertical();
+            this._modules.DoLayoutList();
+
+            this.serializedObject.ApplyModifiedProperties();
         }
         #endregion
 

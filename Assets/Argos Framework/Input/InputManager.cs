@@ -219,6 +219,7 @@ namespace Argos.Framework.Input
         #region Internal vars
         [SerializeField, HideInInspector]
         List<InputMapData> _inputMaps;
+        GamepadVibrationPool _vibrationPool;
         #endregion
 
         #region Public vars
@@ -238,6 +239,7 @@ namespace Argos.Framework.Input
         [HideInInspector] 
 #endif
         public GenericGamepadInputLayoutAsset GenericGamepadSetup;
+        public bool EnableGamepadVibration = true;
 
         [Header("UI settings:")]
         /// <summary>
@@ -276,6 +278,19 @@ namespace Argos.Framework.Input
         /// Return true if any key from keyboard or button from mouse is pressed down on current frame.
         /// </summary>
         public bool IsAnyKeyDown { get; private set; }
+
+        public bool IsGamepadVibrationEnable
+        {
+            get
+            {
+                return this.EnableGamepadVibration && this.CurrentInputType != InputType.KeyboardAndMouse;
+            }
+
+            set
+            {
+                this.EnableGamepadVibration = value;
+            }
+        }
         #endregion
 
         #region Initializers
@@ -290,6 +305,7 @@ namespace Argos.Framework.Input
             // Check for a generic joystick and initialize it for support Force Feedback:
             ForceFeedback.CheckForAvailableJoystick();
 #endif
+            this._vibrationPool = new GamepadVibrationPool();
 
             InputManager.Instance = this;
 
@@ -326,6 +342,8 @@ namespace Argos.Framework.Input
             {
                 this._inputMaps[i].Data.Update();
             }
+
+            this._vibrationPool.Update();
         }
         #endregion
 
@@ -333,6 +351,8 @@ namespace Argos.Framework.Input
 #if UNITY_DESKTOP
         private void OnApplicationQuit()
         {
+            this.SetGamepadVibration(Vector2.zero);
+
             // Release a generic joystick and stop active Force Feedback effect:
             ForceFeedback.ReleaseJoystick();
         } 
@@ -444,11 +464,32 @@ namespace Argos.Framework.Input
             switch (Gamepad.Instance.Type)
             {
                 case GamepadType.XBoxController:
-                    XInput.SetVibration(engines);
+
+                    XInput.SetVibration(this.IsGamepadVibrationEnable ? engines : Vector2.zero);
                     break;
+
                 case GamepadType.Generic:
-                    ForceFeedback.SetVibration(engines);
+
+                    ForceFeedback.SetVibration(this.IsGamepadVibrationEnable ? engines : Vector2.zero);
                     break;
+            }
+        }
+
+        /// <summary>
+        /// Set gamepad vibration effect.
+        /// </summary>
+        /// <param name="effect">Gamepad Vibration Effect asset.</param>
+        /// <param name="isBackgroundEffect">Run as background effect?.</param>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public void SetGamepadVibration(GamepadVibrationEffectAsset effect, bool isBackgroundEffect = false)
+        {
+            if (this.IsGamepadVibrationEnable)
+            {
+                this._vibrationPool.PlayEffect(effect, isBackgroundEffect); 
+            }
+            else
+            {
+                this.SetGamepadVibration(Vector2.zero);
             }
         }
 
@@ -472,7 +513,7 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public void SetGamepadTriggersImpulse(Vector2 impulse)
         {
-            XInput.SetTriggersImpulse(impulse);
+            XInput.SetTriggersImpulse(this.IsGamepadVibrationEnable ? impulse : Vector2.zero);
         }
         #endregion
 
@@ -495,15 +536,22 @@ namespace Argos.Framework.Input
                         switch (Gamepad.Instance.Type)
                         {
                             case GamepadType.XBoxController:
+
                                 this.CurrentInputType = InputType.XBoxController;
                                 break;
+
                             case GamepadType.PS4Controller:
+
                                 this.CurrentInputType = InputType.PS4Controller;
                                 break;
+
                             case GamepadType.NintendoSwitchProController:
+
                                 this.CurrentInputType = InputType.NintendoSwitchProController;
                                 break;
+
                             default:
+
                                 this.CurrentInputType = InputType.GenericGamepad;
                                 break;
                         }
@@ -516,10 +564,10 @@ namespace Argos.Framework.Input
                         Cursor.visible = true;
                         Cursor.lockState = CursorLockMode.None;
                         this.CurrentInputType = InputType.KeyboardAndMouse;
-                    }
 
-                    this.SetGamepadVibration(Vector2.zero);
-                    this.SetGamepadTriggersImpulse(Vector2.zero);
+                        this.SetGamepadVibration(Vector2.zero);
+                        this.SetGamepadTriggersImpulse(Vector2.zero);
+                    }
 
                     if (current != this.CurrentInputType)
                     {

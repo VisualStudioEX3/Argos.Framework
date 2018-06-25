@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 5e5f206b8b52a0a47bd5a98ed80b7b8b
-timeCreated: 1523489734
+guid: b2436fd3045f2944eb1881930e7613a0
+timeCreated: 1529963143
 licenseType: Free
 PluginImporter:
   externalObjects: {}
@@ -27,7 +27,7 @@ PluginImporter:
   - first:
       Any: 
     second:
-      enabled: 0
+      enabled: 1
       settings: {}
   - first:
       Editor: Editor
@@ -85,11 +85,6 @@ PluginImporter:
       enabled: 1
       settings:
         CPU: AnyCPU
-  - first:
-      WebGL: WebGL
-    second:
-      enabled: 0
-      settings: {}
   - first:
       Windows Store Apps: WindowsStoreApps
     second:

@@ -29,6 +29,7 @@ namespace Argos.Framework.Input.Extensions
         static EffectParameters _effectParams;
         static Vector2 _cachedForce;
         static Vector2 _cachedDirection;
+        static bool _forceFeedbackSupported;
         #endregion
 
         #region DLL Imports
@@ -75,8 +76,13 @@ namespace Argos.Framework.Input.Extensions
                 ForceFeedback._joystick.SetCooperativeLevel(ForceFeedback.GetActiveWindow(), CooperativeLevel.Exclusive | CooperativeLevel.Background);
                 ForceFeedback._joystick.Acquire();
 
-                ForceFeedback._effect = new Effect(ForceFeedback._joystick, EffectGuid.ConstantForce, ForceFeedback._effectParams);
-                ForceFeedback._effect.Start();
+                ForceFeedback._forceFeedbackSupported = (ForceFeedback._joystick.GetEffects(EffectType.ConstantForce).Count > 0);
+
+                if (ForceFeedback._forceFeedbackSupported)
+                {
+                    ForceFeedback._effect = new Effect(ForceFeedback._joystick, EffectGuid.ConstantForce, ForceFeedback._effectParams);
+                    ForceFeedback._effect.Start();
+                }
 
                 return true;
             }
@@ -111,7 +117,7 @@ namespace Argos.Framework.Input.Extensions
         public static bool SetVibration(Vector2 axes)
         {
 #if ENABLE_FORCE_FEEDBACK_SUPPORT
-            if (ForceFeedback._joystick != null)
+            if (ForceFeedback._joystick != null && ForceFeedback._forceFeedbackSupported)
             {
                 if (axes.x >= 0)
                 {
@@ -124,7 +130,7 @@ namespace Argos.Framework.Input.Extensions
                     ForceFeedback._cachedDirection.y = axes.y;
                 }
 
-                (ForceFeedback._effectParams.Parameters as SharpDX.DirectInput.ConstantForce).Magnitude = (int)Mathf.Sqrt(ForceFeedback._cachedForce.x * ForceFeedback._cachedForce.x + 
+                (ForceFeedback._effectParams.Parameters as SharpDX.DirectInput.ConstantForce).Magnitude = (int)Mathf.Sqrt(ForceFeedback._cachedForce.x * ForceFeedback._cachedForce.x +
                                                                                                                           ForceFeedback._cachedForce.y * ForceFeedback._cachedForce.y);
 
                 ForceFeedback._effectParams.Directions = new int[] { Mathf.CeilToInt(ForceFeedback._cachedDirection.x), Mathf.CeilToInt(ForceFeedback._cachedDirection.y) };

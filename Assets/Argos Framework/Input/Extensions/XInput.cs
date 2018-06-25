@@ -19,37 +19,17 @@ namespace Argos.Framework.Input.Extensions
 #if ENABLE_XINPUT_SUPPORT
 
         #region Constants
-        const int ERROR_SUCCESS = 0;
         const ushort MAX_VIBRATION_LEVEL = 65000;
         #endregion
 
-        #region Structs
-        [StructLayout(LayoutKind.Sequential)]
-        struct GamepadVibration
-        {
-            public ushort LeftMotor;
-            public ushort RightMotor;
-
-            public GamepadVibration(ushort left, ushort right)
-            {
-                LeftMotor = left;
-                RightMotor = right;
-            }
-        }
-        #endregion
-
-        #region DLL Imports
-        [DllImport("xinput9_1_0.dll", EntryPoint = "XInputSetState", CharSet = CharSet.Auto, CallingConvention = CallingConvention.Winapi)]
-        static extern int SetState(int dwUserIndex, ref GamepadVibration pVibration);
-        #endregion
-
-        #region Vars
-        static GamepadVibration _vibratorsSetup = new GamepadVibration();
+        #region Variables
+        static SharpDX.XInput.Controller _gamepad;
+        static SharpDX.XInput.Vibration _vibratorsSetup; 
         #endregion
 
 #elif ENABLE_WINMD_SUPPORT
 
-        #region Vars
+        #region Variables
         static Windows.Gaming.Input.GamepadVibration _vibrationSetup = new Windows.Gaming.Input.GamepadVibration(); 
         #endregion
 
@@ -68,14 +48,23 @@ namespace Argos.Framework.Input.Extensions
 
             if (engines.x >= 0f)
             {
-                XInput._vibratorsSetup.LeftMotor = (ushort)(XInput.MAX_VIBRATION_LEVEL * Mathf.Abs(engines.x));
+                XInput._vibratorsSetup.LeftMotorSpeed = (ushort)(XInput.MAX_VIBRATION_LEVEL * Mathf.Abs(engines.x));
             }
             if (engines.y >= 0f)
             {
-                XInput._vibratorsSetup.RightMotor = (ushort)(XInput.MAX_VIBRATION_LEVEL * Mathf.Abs(engines.y));
+                XInput._vibratorsSetup.RightMotorSpeed = (ushort)(XInput.MAX_VIBRATION_LEVEL * Mathf.Abs(engines.y));
             }
 
-            return XInput.SetState(0, ref XInput._vibratorsSetup) == XInput.ERROR_SUCCESS;
+            if (XInput._gamepad == null)
+            {
+                XInput._gamepad = new SharpDX.XInput.Controller(SharpDX.XInput.UserIndex.One);
+            }
+            else if (XInput._gamepad.IsConnected)
+            {
+                return (XInput._gamepad.SetVibration(XInput._vibratorsSetup) == SharpDX.Result.Ok);
+            }
+
+            return false;
 
 #elif ENABLE_WINMD_SUPPORT // UWP:
 

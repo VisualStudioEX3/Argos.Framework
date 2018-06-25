@@ -1,6 +1,6 @@
 fileFormatVersion: 2
-guid: 934f381ba6b2f9440b3d9107f76a30ee
-timeCreated: 1523489885
+guid: 8dc43b538b29b814c8e99f92c87a62e3
+timeCreated: 1529963153
 licenseType: Free
 PluginImporter:
   externalObjects: {}
@@ -27,7 +27,7 @@ PluginImporter:
   - first:
       Any: 
     second:
-      enabled: 0
+      enabled: 1
       settings: {}
   - first:
       Editor: Editor
@@ -54,13 +54,13 @@ PluginImporter:
     second:
       enabled: 0
       settings:
-        CPU: None
+        CPU: x86
   - first:
       Standalone: Linux64
     second:
       enabled: 0
       settings:
-        CPU: None
+        CPU: x86_64
   - first:
       Standalone: LinuxUniversal
     second:
@@ -72,7 +72,7 @@ PluginImporter:
     second:
       enabled: 0
       settings:
-        CPU: None
+        CPU: x86
   - first:
       Standalone: Win
     second:

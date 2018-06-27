@@ -219,7 +219,6 @@ namespace Argos.Framework.Input
         #region Internal vars
         [SerializeField, HideInInspector]
         List<InputMapData> _inputMaps;
-        GamepadVibrationPool _vibrationPool;
         #endregion
 
         #region Public vars
@@ -305,7 +304,6 @@ namespace Argos.Framework.Input
             // Check for a generic joystick and initialize it for support Force Feedback:
             ForceFeedback.CheckForAvailableJoystick();
 #endif
-            this._vibrationPool = new GamepadVibrationPool();
 
             InputManager.Instance = this;
 
@@ -342,8 +340,6 @@ namespace Argos.Framework.Input
             {
                 this._inputMaps[i].Data.Update();
             }
-
-            this._vibrationPool.Update();
         }
         #endregion
 
@@ -472,24 +468,6 @@ namespace Argos.Framework.Input
 
                     ForceFeedback.SetVibration(this.IsGamepadVibrationEnable ? engines : Vector2.zero);
                     break;
-            }
-        }
-
-        /// <summary>
-        /// Set gamepad vibration effect.
-        /// </summary>
-        /// <param name="effect">Gamepad Vibration Effect asset.</param>
-        /// <param name="isBackgroundEffect">Run as background effect?.</param>
-        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public void SetGamepadVibration(GamepadVibrationEffectAsset effect, bool isBackgroundEffect = false)
-        {
-            if (this.IsGamepadVibrationEnable)
-            {
-                this._vibrationPool.PlayEffect(effect, isBackgroundEffect); 
-            }
-            else
-            {
-                this.SetGamepadVibration(Vector2.zero);
             }
         }
 

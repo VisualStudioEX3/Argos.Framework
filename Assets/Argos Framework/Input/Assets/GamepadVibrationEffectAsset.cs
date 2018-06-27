@@ -238,6 +238,8 @@ namespace Argos.Framework.Input
                                 }
 
                                 EditorVibrationTask.SetVibration(intensity);
+
+                                Thread.Sleep(200);
                             }
                         }
                     }

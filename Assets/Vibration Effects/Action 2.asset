@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Name: Action 2
   m_EditorClassIdentifier: 
   _type: 0
-  _useCurves: 1
+  _useCurves: 0
   _loop: 0
   _strongForce: 1
-  _weakForce: 0.75
-  _duration: 0.25
+  _weakForce: 1
+  _duration: 1
   _strongCurve:
     serializedVersion: 2
     m_Curve:

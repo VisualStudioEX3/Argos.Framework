@@ -357,6 +357,8 @@ namespace Argos.Framework.Input
         #region Coroutines
         IEnumerator VibrationPlaybackCoroutine()
         {
+            var wait = new WaitForSeconds(Time.fixedDeltaTime);
+
             this._timer.Reset();
 
             while (this._playbackState != VibrationPlaybackState.Stoped && !Application.isPlaying)
@@ -393,13 +395,12 @@ namespace Argos.Framework.Input
                                 }
                             }
 
-                            //Debug.Log(intensity);
                             this.SetVibration(intensity);
                         }
                     }
                 }
 
-                yield return null;
+                yield return wait;
             }
 
             this.SetVibration(Vector2.zero);

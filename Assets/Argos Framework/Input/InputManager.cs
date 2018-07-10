@@ -238,6 +238,10 @@ namespace Argos.Framework.Input
         [HideInInspector] 
 #endif
         public GenericGamepadInputLayoutAsset GenericGamepadSetup;
+
+        /// <summary>
+        /// Enable gamepad vibration on available devices and platforms.
+        /// </summary>
         public bool EnableGamepadVibration = true;
 
         [Header("UI settings:")]
@@ -278,16 +282,15 @@ namespace Argos.Framework.Input
         /// </summary>
         public bool IsAnyKeyDown { get; private set; }
 
+        /// <summary>
+        /// Return true if the gamepad vibration is enable and available.
+        /// </summary>
+        /// <remarks>In KeyboardAndMouse mode this return false always.</remarks>
         public bool IsGamepadVibrationEnable
         {
             get
             {
                 return this.EnableGamepadVibration && this.CurrentInputType != InputType.KeyboardAndMouse;
-            }
-
-            set
-            {
-                this.EnableGamepadVibration = value;
             }
         }
         #endregion

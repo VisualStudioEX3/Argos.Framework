@@ -17,6 +17,10 @@ Library/ShaderCache/
 Library/UnityAssemblies/
 Screen Shoots/
 
+# Rafa plugin #
+Assets/FavoritesPlugin/
+Assets/FavoritesPlugin.meta
+
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #

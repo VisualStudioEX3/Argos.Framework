@@ -88,13 +88,13 @@ MonoBehaviour:
       KeyEvent: 0
       Main: 323
       Alternative: 305
-      GamepadButton: 10
+      GamepadButton: 11
   - Name: Fire2
     Data:
       KeyEvent: 0
       Main: 324
       Alternative: 313
-      GamepadButton: 11
+      GamepadButton: 10
   - Name: Reload
     Data:
       KeyEvent: 1

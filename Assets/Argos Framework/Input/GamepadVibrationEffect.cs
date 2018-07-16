@@ -30,7 +30,7 @@ namespace Argos.Framework.Input
         #region Initializers
         private void Start()
         {
-            this._timer = new Timer(this.UseUnScaledTime ? Timer.TimerMode.UnScaledTime : Timer.TimerMode.ScaledTime);
+            this._timer = new Timer(this.UseUnScaledTime ? Timer.TimerModes.UnScaledTime : Timer.TimerModes.ScaledTime);
             this._wait = this.FixedUpdate ? (YieldInstruction)new WaitForFixedUpdate() : (YieldInstruction)new WaitForEndOfFrame();
 
             if (this.PlayOnStart)
@@ -74,20 +74,22 @@ namespace Argos.Framework.Input
         IEnumerator VibrationCoroutine()
         {
             float currentTime;
+            float duration = this.Effect.Duration;
             Vector2 intensity;
 
-            this._timer.Reset();
+            this._timer.Start();
             this.IsPlaying = true;
 
             while (this.IsPlaying)
             {
+                intensity = Vector2.zero;
                 currentTime = _timer.Value;
 
-                if (currentTime >= this.Effect.Duration)
+                if (currentTime >= duration)
                 {
                     if (this.Effect.Loop)
                     {
-                        _timer.Reset(); 
+                        this._timer.Reset(true);
                     }
                     else
                     {
@@ -107,10 +109,12 @@ namespace Argos.Framework.Input
                 }
 
                 InputManager.Instance.SetGamepadVibration(intensity);
+
                 yield return _wait;
             }
 
             InputManager.Instance.SetGamepadVibration(Vector2.zero);
+            this._timer.Stop();
         } 
         #endregion
     }

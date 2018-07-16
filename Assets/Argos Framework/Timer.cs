@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using System.Diagnostics;
+﻿using UnityEngine;
 
 namespace Argos.Framework
 {
@@ -11,7 +8,10 @@ namespace Argos.Framework
     public sealed class Timer
     {
         #region Enums
-        public enum TimerMode
+        /// <summary>
+        /// Timer behaviour modes.
+        /// </summary>
+        public enum TimerModes
         {
             /// <summary>
             /// Use Time.time value. This is affected by Time.timeScale.
@@ -22,21 +22,37 @@ namespace Argos.Framework
             /// </summary>
             UnScaledTime,
             /// <summary>
-            /// For script editors. Use System.Diagnostics.Stopwatch value.
+            /// Use Time.realtimeSinceStartup. This is not affected by Time.timeScale.
             /// </summary>
             EditorMode
-        } 
+        }
+
+        /// <summary>
+        /// Timer behaviour states.
+        /// </summary>
+        public enum TimerStates
+        {
+            Running,
+            Paused,
+            Stopped
+        }
         #endregion
 
         #region Internal vars
         float _startTime;
         float _pauseDelta;
-        bool _isPaused;
-        Stopwatch _stopwatch;
         #endregion
 
         #region Properties
-        public TimerMode Mode { get; private set; }
+        /// <summary>
+        /// Timer behaviour mode.
+        /// </summary>
+        public TimerModes BehaviourMode { get; private set; }
+
+        /// <summary>
+        /// Current behaviour state.
+        /// </summary>
+        public TimerStates CurrentState { get; private set; }
 
         /// <summary>
         /// Return the current time value.
@@ -45,75 +61,58 @@ namespace Argos.Framework
         {
             get
             {
-                switch (this.Mode)
+                switch (this.CurrentState)
                 {
-                    case TimerMode.UnScaledTime:
+                    case TimerStates.Running:
 
-                        return this._isPaused ? this._pauseDelta : Time.unscaledTime - _startTime;
+                        return this.GetCurrentTime() - this._startTime;
 
-                    case TimerMode.EditorMode:
+                    case TimerStates.Paused:
 
-                        return this.GetStopWatchInSeconds();
+                        return this._pauseDelta - this._startTime;
 
                     default:
 
-                        return this._isPaused ? this._pauseDelta : Time.time - _startTime;
+                        return 0f;
                 }
-            }
-        }
-
-        /// <summary>
-        /// Is the Timer paused?
-        /// </summary>
-        public bool IsPaused
-        {
-            get
-            {
-                return this._isPaused;
             }
         }
         #endregion
 
         #region Constructor
-        public Timer(TimerMode mode = TimerMode.ScaledTime)
+        /// <summary>
+        /// Create new Timer instance.
+        /// </summary>
+        /// <param name="behaviourMode">Timer behaviour mode. ScaledTime by default.</param>
+        /// <param name="autoStart">Auto start the timer after instantiate it. False by default.</param>
+        public Timer(TimerModes behaviourMode = TimerModes.ScaledTime, bool autoStart = false)
         {
-            this.Mode = mode;
-
-            if (this.Mode == TimerMode.EditorMode)
-            {
-                this._stopwatch = new Stopwatch();
-            }
-
-            this.Reset();
+            this.BehaviourMode = behaviourMode;
+            this.Reset(autoStart);
         }
         #endregion
 
         #region Methods & Functions
         /// <summary>
-        /// Reset the timer value.
+        /// Start the timer.
         /// </summary>
-        public void Reset()
+        public void Start()
         {
-            this._isPaused = false;
-
-            switch (this.Mode)
+            if (this.CurrentState == TimerStates.Stopped)
             {
-                case TimerMode.ScaledTime:
-
-                    this._startTime = Time.time;
-                    break;
-
-                case TimerMode.UnScaledTime:
-
-                    this._startTime = Time.unscaledTime;
-                    break;
-
-                case TimerMode.EditorMode:
-
-                    this._stopwatch.Reset();
-                    this._stopwatch.Start();
-                    break;
+                this.Reset(true); 
             }
+        }
+
+        /// <summary>
+        /// Reset the timer.
+        /// </summary>
+        /// <param name="autoStart">Auto start the timer after reset.</param>
+        public void Reset(bool autoStart = false)
+        {
+            this.CurrentState = autoStart ? TimerStates.Running : TimerStates.Stopped;
+            this._pauseDelta = 0f;
+            this._startTime = this.GetCurrentTime();
         }
 
         /// <summary>
@@ -121,24 +120,10 @@ namespace Argos.Framework
         /// </summary>
         public void Pause()
         {
-            this._isPaused = true;
-
-            switch (this.Mode)
+            if (this.CurrentState == TimerStates.Running)
             {
-                case TimerMode.ScaledTime:
-
-                    this._pauseDelta = Time.time;
-                    break;
-
-                case TimerMode.UnScaledTime:
-
-                    this._pauseDelta = Time.unscaledTime;
-                    break;
-
-                case TimerMode.EditorMode:
-
-                    this._stopwatch.Stop();
-                    break;
+                this.CurrentState = TimerStates.Paused;
+                this._pauseDelta = this.GetCurrentTime();
             }
         }
 
@@ -147,39 +132,45 @@ namespace Argos.Framework
         /// </summary>
         public void Resume()
         {
-            this._isPaused = false;
-            switch (this.Mode)
+            if (this.CurrentState == TimerStates.Paused)
             {
-                case TimerMode.ScaledTime:
-
-                    this._startTime += Time.time - this._pauseDelta;
-                    break;
-
-                case TimerMode.UnScaledTime:
-
-                    this._startTime += Time.unscaledTime - this._pauseDelta;
-                    break;
-
-                case TimerMode.EditorMode:
-
-                    this._stopwatch.Start();
-                    break;
+                this.CurrentState = TimerStates.Running;
+                this._startTime += this.GetCurrentTime() - this._pauseDelta;
             }
         }
 
         /// <summary>
-        /// Reset and pause the timer.
+        /// Stop the timer.
         /// </summary>
         public void Stop()
         {
-            this.Reset();
-            this.Pause();
+            if (this.CurrentState != TimerStates.Stopped)
+            {
+                this.Reset(false);
+            }
         }
 
-        float GetStopWatchInSeconds()
+        /// <summary>
+        /// Get the right time value for the current mode.
+        /// </summary>
+        /// <returns>Return the time current value for the current behaviour mode.</returns>
+        float GetCurrentTime()
         {
-            return (float)(this._stopwatch.ElapsedMilliseconds / 1000f);
+            switch (this.BehaviourMode)
+            {
+                case TimerModes.UnScaledTime:
+
+                    return Time.unscaledTime;
+
+                case TimerModes.EditorMode:
+
+                    return Time.realtimeSinceStartup;
+
+                default:
+
+                    return Time.time;
+            }
         }
-        #endregion
+#endregion
     }
 }

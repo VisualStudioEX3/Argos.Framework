@@ -45,7 +45,7 @@ public class VibrationTestEditor : Editor
 
     IEnumerator VibrateCoroutine()
     {
-        Timer timer = new Timer(Timer.TimerMode.EditorMode);
+        Timer timer = new Timer(Timer.TimerModes.EditorMode);
 
         while (timer.Value < 1f)
         {

@@ -23,15 +23,15 @@ namespace Argos.Framework.Input
         public enum VibratorType
         {
             /// <summary>
-            /// Strong engine (left engine).
+            /// Strong engine (Left engine).
             /// </summary>
             Strong,
             /// <summary>
-            /// Weak engine (right engine).
+            /// Weak engine (Right engine).
             /// </summary>
             Weak,
             /// <summary>
-            /// Both.
+            /// Both (Left + Right engines).
             /// </summary>
             Both
         }
@@ -39,10 +39,8 @@ namespace Argos.Framework.Input
 
         #region Inspector fields
         [SerializeField]
-        [Tooltip("Strong = left engine\nWeak = right engine")]
         VibratorType _type;
         [SerializeField]
-        [Tooltip("Curves allow to define complex patterns.")]
         bool _useCurves;
         [SerializeField]
         bool _loop;
@@ -92,7 +90,35 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Effect duration.
         /// </summary>
-        public float Duration { get { return this._duration; } }
+        /// <remarks>When this effect use curves, return the curve time, or the longest curve time if use both of them. In other case, return the effect Duration value.</remarks>
+        public float Duration
+        {
+            get
+            {
+                if (this._useCurves)
+                {
+                    switch (this.Type)
+                    {
+                        case VibratorType.Strong:
+
+                            return this._strongCurve.keys[this._strongCurve.length - 1].time;
+
+                        case VibratorType.Weak:
+
+                            return this._weakCurve.keys[this._weakCurve.length - 1].time;
+
+                        default:
+
+                            return Mathf.Max(this._strongCurve.keys[this._strongCurve.length - 1].time,
+                                             this._weakCurve.keys[this._weakCurve.length - 1].time);
+                    }
+                }
+                else
+                {
+                    return this._duration;
+                }
+            }
+        }
 
         /// <summary>
         /// Strong pattern curve.
@@ -115,16 +141,21 @@ namespace Argos.Framework.Input
 
         const string LABEL_POPUP_TYPE = "Vibration type";
         const string LABEL_TOGGLE_USE_CURVES = "Use curves";
+        const string LABEL_USE_CURVES = "Vibration setup";
         const string LABEL_TOGGLE_LOOP = "Loop";
         const string LABEL_DEFAULT_VALUE = "Intensity";
         const string LABEL_STRONG_VALUE = "Strong intensity";
         const string LABEL_WEAK_VALUE = "Weak intensity";
         const string LABEL_DURATION_VALUE = "Duration";
         const string LABEL_CONTROL_PLAY = "Play";
+        const string LABEL_CONTROL_RESUME = "Resume";
         const string LABEL_CONTROL_PAUSE = "Pause";
         const string LABEL_CONTROL_RESTART = "Restart";
         const string LABEL_CONTROL_STOP = "Stop";
         const string MESSAGE_CANNOT_EDIT_VALUES = "You can't edit values until the effect is finished or stoped.";
+
+        static readonly string[] TYPE_ENUM_LABELS = new string[] { "Strong (Left engine)", "Weak (Right engine)", "Both (Left + right engines)" };
+        static readonly string[] USE_CURVES_ENUM_LABELS = new string[] { "Constant value", "Curve pattern" };
         #endregion
 
         #region Enums
@@ -140,7 +171,6 @@ namespace Argos.Framework.Input
         GamepadVibrationEffectAsset _target;
         SerializedProperty _type, _useCurves, _loop, _strongForce, _weakForce, _duration, _strongCurve, _weakCurve;
         VibrationPlaybackState _playbackState = VibrationPlaybackState.Stoped;
-        EditorCoroutine _coroutine;
         Timer _timer;
         #endregion
 
@@ -162,8 +192,7 @@ namespace Argos.Framework.Input
 
             ForceFeedback.CheckForAvailableJoystick();
 
-            this._timer = new Timer(Timer.TimerMode.EditorMode);
-            this._timer.Pause();
+            this._timer = new Timer(Timer.TimerModes.EditorMode);
         }
 
         private void OnDisable()
@@ -194,11 +223,15 @@ namespace Argos.Framework.Input
 
                     GUI.enabled = isMainGUIEnable;
 
-                    EditorGUILayout.PropertyField(this._type, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_POPUP_TYPE));
-                    EditorGUILayout.PropertyField(this._useCurves, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_TOGGLE_USE_CURVES));
+                    this._type.enumValueIndex = EditorGUILayout.Popup(GamepadVibrationEffectAssetEditor.LABEL_POPUP_TYPE, this._type.enumValueIndex, GamepadVibrationEffectAssetEditor.TYPE_ENUM_LABELS);
+
+                    int useCurvesIndex = this._useCurves.boolValue ? 1 : 0;
+                    useCurvesIndex = EditorGUILayout.Popup(GamepadVibrationEffectAssetEditor.LABEL_USE_CURVES, useCurvesIndex, GamepadVibrationEffectAssetEditor.USE_CURVES_ENUM_LABELS);
+                    this._useCurves.boolValue = useCurvesIndex == 1 ? true : false;
+
                     EditorGUILayout.PropertyField(this._loop, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_TOGGLE_LOOP));
 
-                    GUI.enabled = (this._target.UseCurves || !this._target.Loop) && isMainGUIEnable;
+                    if (!this._target.UseCurves)
                     {
                         EditorGUILayout.PropertyField(this._duration, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_DURATION_VALUE));
                         if (this._target.Duration < GamepadVibrationEffectAssetEditor.MIN_DURATION)
@@ -206,7 +239,6 @@ namespace Argos.Framework.Input
                             this._duration.floatValue = GamepadVibrationEffectAssetEditor.MIN_DURATION;
                         }
                     }
-                    GUI.enabled = isMainGUIEnable;
 
                     if (!this._target.UseCurves)
                     {
@@ -261,7 +293,9 @@ namespace Argos.Framework.Input
         {
             switch (GUILayout.Toolbar(-1, new string[] { (this._playbackState == VibrationPlaybackState.Playing ?
                                                                                  GamepadVibrationEffectAssetEditor.LABEL_CONTROL_PAUSE :
-                                                                                 GamepadVibrationEffectAssetEditor.LABEL_CONTROL_PLAY),
+                                                                                 this._playbackState == VibrationPlaybackState.Paused ? 
+                                                                                                        GamepadVibrationEffectAssetEditor.LABEL_CONTROL_RESUME :
+                                                                                                        GamepadVibrationEffectAssetEditor.LABEL_CONTROL_PLAY),
                                                          GamepadVibrationEffectAssetEditor.LABEL_CONTROL_RESTART,
                                                          GamepadVibrationEffectAssetEditor.LABEL_CONTROL_STOP }))
             {
@@ -302,7 +336,7 @@ namespace Argos.Framework.Input
         {
             this.Stop();
             this._playbackState = VibrationPlaybackState.Playing;
-            this._coroutine = this.StartCoroutine(this.VibrationPlaybackCoroutine());
+            this.StartCoroutine(this.VibrationPlaybackCoroutine());
         }
 
         void Pause()
@@ -348,7 +382,7 @@ namespace Argos.Framework.Input
 
             string label = condition ?
                            "Playback time: ∞" :
-                           $"Playback time: {currentTime.ToString("0.00")} / {this._target.Duration.ToString("0.00")}";
+                           $"Playback time: {currentTime.ToString("0.00")} - {this._target.Duration.ToString("0.00")}";
 
             EditorGUI.ProgressBar(EditorGUILayout.GetControlRect(), value, label);
         }
@@ -358,47 +392,42 @@ namespace Argos.Framework.Input
         IEnumerator VibrationPlaybackCoroutine()
         {
             var wait = new WaitForSeconds(Time.fixedDeltaTime);
+            float duration = this._target.Duration;
+            Vector2 intensity;
 
-            this._timer.Reset();
+            this._timer.Start();
 
             while (this._playbackState != VibrationPlaybackState.Stoped && !Application.isPlaying)
             {
+                intensity = Vector2.zero;
+
                 if (this._playbackState == VibrationPlaybackState.Playing)
                 {
-                    if (!this._target.Loop && this._timer.Value >= this._target.Duration)
+                    if (!this._target.Loop && this._timer.Value >= duration)
                     {
                         this._playbackState = VibrationPlaybackState.Stoped;
                     }
                     else
                     {
-                        if (this._playbackState == VibrationPlaybackState.Paused)
+                        if (!this._target.UseCurves)
                         {
-                            this.SetVibration(Vector2.zero);
+                            intensity = new Vector2(this._target.Type != GamepadVibrationEffectAsset.VibratorType.Weak ? this._target.StrongForce : -1,
+                                                    this._target.Type != GamepadVibrationEffectAsset.VibratorType.Strong ? this._target.WeakForce : -1);
                         }
                         else
                         {
-                            Vector2 intensity = Vector2.zero;
+                            intensity = new Vector2(this._target.Type != GamepadVibrationEffectAsset.VibratorType.Weak ? this.GetIntensityFromCurve(this._target.StrongCurve) : -1,
+                                                    this._target.Type != GamepadVibrationEffectAsset.VibratorType.Strong ? this.GetIntensityFromCurve(this._target.WeakCurve) : -1);
 
-                            if (!this._target.UseCurves)
+                            if (this._target.Loop && this._timer.Value >= this._target.Duration)
                             {
-                                intensity = new Vector2(this._target.Type != GamepadVibrationEffectAsset.VibratorType.Weak ? this._target.StrongForce : -1,
-                                                        this._target.Type != GamepadVibrationEffectAsset.VibratorType.Strong ? this._target.WeakForce : -1);
+                                this._timer.Reset(true);
                             }
-                            else
-                            {
-                                intensity = new Vector2(this._target.Type != GamepadVibrationEffectAsset.VibratorType.Weak ? this.GetIntensityFromCurve(this._target.StrongCurve) : -1,
-                                                        this._target.Type != GamepadVibrationEffectAsset.VibratorType.Strong ? this.GetIntensityFromCurve(this._target.WeakCurve) : -1);
-
-                                if (this._target.Loop && this._timer.Value >= this._target.Duration)
-                                {
-                                    this._timer.Reset();
-                                }
-                            }
-
-                            this.SetVibration(intensity);
                         }
                     }
                 }
+
+                this.SetVibration(intensity);
 
                 yield return wait;
             }

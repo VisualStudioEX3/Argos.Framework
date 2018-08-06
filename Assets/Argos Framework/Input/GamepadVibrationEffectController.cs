@@ -9,7 +9,7 @@ using Argos.Framework;
 
 namespace Argos.Framework.Input
 {
-    public class GamepadVibrationEffect : MonoBehaviour
+    public class GamepadVibrationEffectController : MonoBehaviour
     {
         #region Internal vars
         Timer _timer;
@@ -120,18 +120,18 @@ namespace Argos.Framework.Input
     }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(GamepadVibrationEffect))]
-    public class GamepadVibrationEffectEditor : Editor
+    [CustomEditor(typeof(GamepadVibrationEffectController))]
+    public class GamepadVibrationEffectControllerEditor : Editor
     {
         #region Internal vars
-        GamepadVibrationEffect _target;
+        GamepadVibrationEffectController _target;
         SerializedProperty _effect, _fixedUpdate, _useUnScaledTime, _playOnStart;
         #endregion
 
         #region Events
         private void OnEnable()
         {
-            this._target = (GamepadVibrationEffect)this.target;
+            this._target = (GamepadVibrationEffectController)this.target;
 
             this._effect = this.serializedObject.FindProperty("Effect");
             this._fixedUpdate = this.serializedObject.FindProperty("FixedUpdate");

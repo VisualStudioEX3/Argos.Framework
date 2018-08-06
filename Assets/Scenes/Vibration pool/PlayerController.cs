@@ -7,12 +7,12 @@ using Argos.Framework.Input;
 public class PlayerController : MonoBehaviour
 {
     InputMapAsset _ui;
-    GamepadVibrationEffect _vibrationEffect;
+    GamepadVibrationEffectController _vibrationEffect;
 
     void Start()
     {
         this._ui = InputManager.Instance.GetInputMap("UI");
-        this._vibrationEffect = GetComponent<GamepadVibrationEffect>();
+        this._vibrationEffect = GetComponent<GamepadVibrationEffectController>();
     }
 
     void Update()

@@ -24,6 +24,7 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Structs
+#pragma warning disable 0649
         struct UnityInputAxis
         {
             public string name;
@@ -46,6 +47,7 @@ namespace Argos.Framework.Input
             public int axis;
             public int joyNum;
         }
+#pragma warning restore
         #endregion
 
         #region Vars

@@ -17,10 +17,12 @@ namespace Argos.Framework.Utils
         #endregion
 
         #region Serialized fields
+#pragma warning disable 0649
         [Header("This field help to set a Tag in all parts of the ragdoll:"), SerializeField, Tag]
         string _collidersTag;
         [Header("This field help to set a Layer in all parts of the ragdoll:"), SerializeField, Layer]
         int _collidersLayer;
+#pragma warning restore
         #endregion
 
         #region Properties

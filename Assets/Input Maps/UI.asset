@@ -15,10 +15,10 @@ MonoBehaviour:
   - Name: Navigation
     Data:
       AxisType: 2
+      InvertYAxis: 0
+      Sensitivity: 0.5
       AlternativeMouseInput: 0
       IsUIInput: 1
-      Sensitivity: 0.5
-      InvertYAxis: 0
       Normalize: 0
       Left:
         KeyEvent: 1
@@ -54,15 +54,15 @@ MonoBehaviour:
       Main: 27
       Alternative: 0
       GamepadButton: 1
-  - Name: Default
-    Data:
-      KeyEvent: 1
-      Main: 9
-      Alternative: 0
-      GamepadButton: 2
   - Name: Delete
     Data:
       KeyEvent: 1
       Main: 127
       Alternative: 8
       GamepadButton: 3
+  - Name: Default
+    Data:
+      KeyEvent: 1
+      Main: 9
+      Alternative: 0
+      GamepadButton: 2

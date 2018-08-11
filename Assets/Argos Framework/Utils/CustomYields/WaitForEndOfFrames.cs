@@ -7,7 +7,7 @@ namespace Argos.Framework
     /// <summary>
     /// Wait for a desired number of frames.
     /// </summary>
-    public class WaitForEndFrames : CustomYieldInstruction
+    public class WaitForEndOfFrames : CustomYieldInstruction
     {
         #region Internal vars
         int _frames;
@@ -34,7 +34,7 @@ namespace Argos.Framework
         /// Constructor.
         /// </summary>
         /// <param name="frames">Frames to wait.</param>
-        public WaitForEndFrames(int frames)
+        public WaitForEndOfFrames(int frames)
         {
             this._frames = frames;
             this._lastDeltaTime = Time.deltaTime;

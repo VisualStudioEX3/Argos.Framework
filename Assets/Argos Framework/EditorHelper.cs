@@ -15,8 +15,11 @@ namespace Argos.Framework
     /// </summary>
     public static class EditorHelper
     {
+        #region Constants
         const float HEADER_NONE_HEIGHT = 3f;
+        #endregion
 
+        #region Methods & Functions
         /// <summary>
         /// Initialize and setup a ReorderableList with non unique named elements.
         /// </summary>
@@ -107,6 +110,7 @@ namespace Argos.Framework
 
             return ret;
         }
+        #endregion
     } 
 }
 #endif

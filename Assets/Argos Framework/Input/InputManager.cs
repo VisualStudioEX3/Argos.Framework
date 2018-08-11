@@ -298,6 +298,14 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Initializers
+        private void Reset()
+        {
+            if (GameObject.FindObjectOfType<InputManager>() != null)
+            {
+                throw new InvalidOperationException("Found one or more Input Manager instances in scene. Only one instance is allowed.");
+            }
+        }
+
         private void Awake()
         {
             Gamepad.Instance.TryToIndentifyGamepad();

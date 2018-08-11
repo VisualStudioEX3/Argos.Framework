@@ -3634,8 +3634,8 @@ GameObject:
   - component: {fileID: 792297477}
   - component: {fileID: 792297476}
   - component: {fileID: 792297475}
-  - component: {fileID: 792297474}
   - component: {fileID: 792297473}
+  - component: {fileID: 792297474}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -3689,7 +3689,7 @@ MonoBehaviour:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,
       Culture=neutral, PublicKeyToken=null
-  _onSetDefaults:
+  _onSetToDefault:
     m_PersistentCalls:
       m_Calls: []
     m_TypeName: UnityEngine.Events.UnityEvent, UnityEngine.CoreModule, Version=0.0.0.0,

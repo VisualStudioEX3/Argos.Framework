@@ -38,6 +38,7 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Inspector fields
+#pragma warning disable 0649
         [SerializeField]
         VibratorType _type;
         [SerializeField]
@@ -59,6 +60,7 @@ namespace Argos.Framework.Input
         AnimationCurve _strongCurve;
         [SerializeField]
         AnimationCurve _weakCurve;
+#pragma warning restore
         #endregion
 
         #region Properties

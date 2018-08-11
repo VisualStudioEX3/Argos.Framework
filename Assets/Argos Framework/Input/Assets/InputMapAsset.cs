@@ -33,15 +33,17 @@ namespace Argos.Framework.Input
         {
             public string Name;
             public InputAction Data;
-        } 
+        }
         #endregion
 
         #region Inspector fields
+#pragma warning disable 0649
         [SerializeField]
         List<InputMapAxisData> _axes;
 
         [SerializeField]
         List<InputMapActionData> _actions;
+#pragma warning restore
         #endregion
 
         #region Update logic

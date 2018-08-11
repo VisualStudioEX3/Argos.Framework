@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -59,7 +60,7 @@ namespace Argos.Framework.Input
     /// Button states.
     /// </summary>
     /// <remarks>Uses to virtualize axis states (triggers, DPad) as button states.</remarks>
-    [System.Serializable]
+    [Serializable]
     public struct ButtonStates
     {
         #region Internal vars
@@ -91,7 +92,7 @@ namespace Argos.Framework.Input
     /// Generic Gamepad Input Layout struct.
     /// </summary>
     /// <remarks>This is the layout reference for generic gamepad input values.</remarks>
-    [System.Serializable]
+    [Serializable]
     public struct GenericGamepadInputLayout
     {
         #region Enums
@@ -149,8 +150,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Some gamepads and joysticks defined the triggers as separated axes.
         /// </summary>
-        [HelpBox("Some gamepads and joysticks defined the triggers as separated axes:"), Space]
-        [CustomVector("L", "R")]
+        [HelpBox("Some gamepads and joysticks defined the triggers as separated axes:"), Space, CustomVector("L", "R")]
         public Vector2Int TriggersAxes;
 
         /// <summary>

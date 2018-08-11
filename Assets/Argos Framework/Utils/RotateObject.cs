@@ -1,44 +1,33 @@
 ﻿using UnityEngine;
-using System.Collections;
 using Argos.Framework;
 
 namespace Argos.Framework.Utils
 {
-    [AddComponentMenu("Argos.Framework/Utils/Rotate Object"), DisallowMultipleComponent]
+    [AddComponentMenu("Argos.Framework/Utils/Rotate Object"), DisallowMultipleComponent, ExecuteInEditMode]
     public class RotateObject : MonoBehaviour
     {
-        #region Enums
-        public enum RotationAxis
-        {
-            Right,
-            Up,
-            Forward
-        }
-        #endregion
-
         #region Public vars
         public float Speed = 1f;
-        public RotationAxis Axis = RotationAxis.Up;
-        public bool InLocalCoordinates = true;
+        [Tooltip("Step defined in degrees.")]
+        public float Step = 1f;
+        public Vector3 Axis = Vector3.zero;
+        public Space Space = Space.Self;
         #endregion
 
         #region Update logic
         void Update()
         {
-            Vector3 axis = Vector3.zero;
-            switch (this.Axis)
+            this.Axis = new Vector3()
             {
-                case RotationAxis.Right:
-                    axis = Vector3.right;
-                    break;
-                case RotationAxis.Up:
-                    axis = Vector3.up;
-                    break;
-                case RotationAxis.Forward:
-                    axis = Vector3.forward;
-                    break;
+                x = Mathf.Clamp(this.Axis.x, -1f, 1f),
+                y = Mathf.Clamp(this.Axis.y, -1f, 1f),
+                z = Mathf.Clamp(this.Axis.z, -1f, 1f)
+            };
+
+            if (Application.isPlaying)
+            {
+                this.transform.Rotate((this.Axis * this.Step) * (Time.deltaTime * this.Speed), this.Space);
             }
-            this.transform.Rotate(axis * Time.deltaTime * Speed, this.InLocalCoordinates ? Space.Self : Space.World);
         } 
         #endregion
     } 

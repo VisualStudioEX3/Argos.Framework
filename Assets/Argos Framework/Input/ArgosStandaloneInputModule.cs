@@ -6,6 +6,9 @@ using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 using UnityEngine.Events;
+#if UNITY_EDITOR
+using UnityEditor; 
+#endif
 using Argos.Framework;
 
 namespace Argos.Framework.Input
@@ -592,4 +595,68 @@ namespace Argos.Framework.Input
         } 
         #endregion
     }
+
+#if UNITY_EDITOR
+    [CustomEditor(typeof(ArgosStandaloneInputModule))]
+    public class ArgosStandaloneInputModuleEditor : Editor
+    {
+        const string INPUT_MAP_PROPERTY = "_inputMap";
+
+        #region Internal vars
+        InputManager _inputManager;
+        SerializedProperty _serializedInputMaps;
+        InputMapAsset[] _inputMaps;
+        string[] _inputMapNames = new string[0];
+        SerializedProperty _inputMapSelected;
+        #endregion
+
+        #region Events
+        private void OnEnable()
+        {
+            this._inputMapSelected = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.INPUT_MAP_PROPERTY);
+
+            this._inputManager = GameObject.FindObjectOfType<InputManager>();
+            // TODO: Check for multiple InputManager instances.
+            if (this._inputManager)
+            {
+                this._serializedInputMaps = new SerializedObject(this._inputManager).FindProperty(ArgosStandaloneInputModuleEditor.INPUT_MAP_PROPERTY);
+
+                this._inputMaps = new InputMapAsset[_serializedInputMaps.arraySize];
+                for (int i = 0; i < this._inputMaps.Length; i++)
+                {
+                    this._inputMaps[i] = (InputMapAsset)_serializedInputMaps.GetArrayElementAtIndex(i).FindPropertyRelative("Data").objectReferenceValue;
+                }
+
+                this._inputMapNames = new string[this._inputMaps.Length];
+                for (int i = 0; i < this._inputMapNames.Length; i++)
+                {
+                    this._inputMapNames[i] = this._inputMaps[i].name;
+                }
+            }
+        }
+
+        public override void OnInspectorGUI()
+        {
+            this.serializedObject.Update();
+            {
+                this.DrawDefaultInspector();
+                this.DrawInputMapPopup();
+            }
+            this.serializedObject.ApplyModifiedProperties();
+        }
+        #endregion
+
+        #region Methods & Functions
+        void DrawInputMapPopup()
+        {
+            int index; for (index = 0; index < this._inputMaps.Length; index++)
+            {
+                if (this._inputMaps[index].name == this._inputMapSelected.stringValue) break;
+            }
+            index = EditorGUILayout.Popup("Input Map", index, this._inputMapNames);
+            this._inputMapSelected.stringValue = this._inputMaps[index].name;
+        } 
+        #endregion
+    } 
+#endif
 }

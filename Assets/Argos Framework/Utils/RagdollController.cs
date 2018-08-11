@@ -17,11 +17,9 @@ namespace Argos.Framework.Utils
         #endregion
 
         #region Serialized fields
-        [Header("This field help to set a Tag in all parts of the ragdoll:")]
-        [SerializeField, Tag]
+        [Header("This field help to set a Tag in all parts of the ragdoll:"), SerializeField, Tag]
         string _collidersTag;
-        [Header("This field help to set a Layer in all parts of the ragdoll:")]
-        [SerializeField, Layer]
+        [Header("This field help to set a Layer in all parts of the ragdoll:"), SerializeField, Layer]
         int _collidersLayer;
         #endregion
 

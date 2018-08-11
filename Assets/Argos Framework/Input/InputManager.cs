@@ -29,7 +29,7 @@ namespace Argos.Framework.Input
     public sealed class InputManager : MonoBehaviour
     {
         #region Singleton
-        public static InputManager Instance { get; private set; } 
+        public static InputManager Instance { get; private set; }
         #endregion
 
         #region Constants
@@ -217,8 +217,10 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Internal vars
+#pragma warning disable 649
         [SerializeField, HideInInspector]
         List<InputMapData> _inputMaps;
+#pragma warning restore
         #endregion
 
         #region Public vars
@@ -583,10 +585,12 @@ namespace Argos.Framework.Input
         const string DIALOG_MESSAGE = "This action will delete the current Unity input settings axes values. Are you sure?";
         const string DIALOG_OK = "Yes, proceed";
         const string DIALOG_CANCEL = "No, cancel";
+
+        public const string INPUT_MAP_ARRAY_KEY = "Argos.Framework.Temp.InputManager.InputMaps";
         #endregion
 
         #region Internal vars
-        private ReorderableList _inputMapList;
+        ReorderableList _inputMapList;
         #endregion
 
         #region Events
@@ -594,6 +598,26 @@ namespace Argos.Framework.Input
         {
             this._inputMapList = EditorHelper.CreateNamedList(this, this._inputMapList, InputManagerEditor.HEADER_NAME, InputManagerEditor.PROPERTY_NAME, InputManagerEditor.PREFIX_NAME);
         }
+
+        //private void OnDisable()
+        //{
+        //    //string inputMapsNames = string.Empty;
+        //    SerializedProperty inputMapsProperty = this.serializedObject.FindProperty(InputManagerEditor.PROPERTY_NAME);
+        //    //for (int i = 0; i < inputMapsProperty.arraySize; i++)
+        //    //{
+        //    //    inputMapsNames += $"{AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(inputMapsProperty.GetArrayElementAtIndex(i).FindPropertyRelative("Data").objectReferenceValue))},";
+        //    //}
+
+        //    //EditorPrefs.SetString(InputManagerEditor.INPUT_MAP_ARRAY_KEY, inputMapsNames.Remove(inputMapsNames.Length - 1));
+
+        //    InputManager.InputMapsRefs = new InputMapAsset[inputMapsProperty.arraySize];
+        //    for (int i = 0; i < inputMapsProperty.arraySize; i++)
+        //    {
+        //        InputManager.InputMapsRefs[i] = (InputMapAsset)inputMapsProperty.GetArrayElementAtIndex(i).FindPropertyRelative("Data").objectReferenceValue;
+        //    }
+        //}
+
+        
 
         public override void OnInspectorGUI()
         {

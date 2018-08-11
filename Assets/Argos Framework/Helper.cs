@@ -357,6 +357,23 @@ namespace Argos.Framework
         {
             UnityEngine.Debug.LogErrorFormat(context, Helper.DEBUG_COLOR_STRING_TEMPLATE, Helper.DEBUG_COLORS[(int)level], message);
         }
+
+        /// <summary>
+        /// Cleanup memory and unused assets.
+        /// </summary>
+        /// <param name="discardGCCollect">Discard System.GC.Collect() call during the cleanup process.</param>
+        /// <returns>Return an AsyncOperation for controlling the wait period during the cleanup process.</returns>
+        /// <remarks>This function is only a shortcut to call an System.GC.Collect() and UnityEngine.Resources.UnloadUnussedAssets() functions.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static AsyncOperation CleanUpMemoryAndAssets(bool discardGCCollect = false)
+        {
+            if (!discardGCCollect)
+            {
+                System.GC.Collect();
+            }
+
+            return Resources.UnloadUnusedAssets();
+        }
         #endregion
     }
 }

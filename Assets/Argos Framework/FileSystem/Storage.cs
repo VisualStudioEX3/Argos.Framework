@@ -26,7 +26,7 @@ namespace Argos.Framework.FileSystem
         #endregion
 
         #region Internal vars
-        Dictionary<string, dynamic> _dictionary;
+        Dictionary<string, object> _dictionary;
         #endregion
 
         #region Properties
@@ -45,7 +45,7 @@ namespace Argos.Framework.FileSystem
         #region Constructor & destructors
         public Storage()
         {
-            this._dictionary = new Dictionary<string, dynamic>();
+            this._dictionary = new Dictionary<string, object>();
         }
 
         /// <summary>
@@ -87,7 +87,7 @@ namespace Argos.Framework.FileSystem
 
         Storage(byte[] buffer)
         {
-            this._dictionary = BinarySerializer.Deserialize<Dictionary<string, dynamic>>(buffer);
+            this._dictionary = BinarySerializer.Deserialize<Dictionary<string, object>>(buffer);
         }
 
         public void Dispose()
@@ -99,7 +99,7 @@ namespace Argos.Framework.FileSystem
 
         #region Methods & Functions
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        void SetValue(string key, dynamic value)
+        void SetValue(string key, object value)
         {
             if (this._dictionary.ContainsKey(key))
             {
@@ -117,7 +117,7 @@ namespace Argos.Framework.FileSystem
         /// <param name="key">Key value.</param>
         /// <returns>Return the desired value.</returns>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        dynamic GetValue(string key)
+        object GetValue(string key)
         {
             if (this._dictionary.ContainsKey(key))
             {
@@ -230,7 +230,7 @@ namespace Argos.Framework.FileSystem
         /// Serialize to JSON.
         /// </summary>
         /// <returns>A JSON formatted string with all data.</returns>
-        /// <remarks>The Unity JsonUtility can't serialize Dictionary objects and dynamic variables. This function serialized a simple keypar value list in standard JSON format.</remarks>
+        /// <remarks>The Unity JsonUtility can't serialize Dictionary objects and object variables. This function serialized a simple keypar value list in standard JSON format.</remarks>
         public string ToJSON()
         {
             var json = new StringBuilder();

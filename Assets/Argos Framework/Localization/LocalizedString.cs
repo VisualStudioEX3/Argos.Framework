@@ -22,7 +22,7 @@ namespace Argos.Framework.Localization
         private void Awake()
         {
             this._text = GetComponentInChildren<Text>();
-            LocalizationManager.Instance.OnLanguageChange += this.OnLanguageChange;
+            LocalizationManager.Instance.OnLanguageChanged += this.OnLanguageChange;
         }
 
         private void Start()
@@ -34,7 +34,7 @@ namespace Argos.Framework.Localization
         #region Events
         private void OnDestroy()
         {
-            LocalizationManager.Instance.OnLanguageChange -= this.OnLanguageChange;
+            LocalizationManager.Instance.OnLanguageChanged -= this.OnLanguageChange;
         }
 
         void OnLanguageChange(SystemLanguage language)

@@ -6,6 +6,7 @@ using Argos.Framework.Input;
 using Argos.Framework.Input.Extensions;
 using System;
 using Argos.Framework.FileSystem;
+using Argos.Framework.Helpers;
 
 public class Test : MonoBehaviour
 {
@@ -97,7 +98,7 @@ public class Test : MonoBehaviour
     [Button("Test Button with custom label")]
     public void TestButton2()
     {
-        Helper.Log("Test log message.", Helper.DebugLevel.Warning);
+        DebugHelper.Log("Test log message.", DebugLevel.Warning);
     }
 
     [Button("Test Button with custom label and tooltip", "Tooltip message test")]

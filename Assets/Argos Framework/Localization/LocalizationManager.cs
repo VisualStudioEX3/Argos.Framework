@@ -4,10 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 using System.Linq;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
-using Argos.Framework;
+using Argos.Framework.Helpers;
 
 namespace Argos.Framework.Localization
 {
@@ -50,7 +47,7 @@ namespace Argos.Framework.Localization
         /// <summary>
         /// Event raise when the language is changed.
         /// </summary>
-        public Action<SystemLanguage> OnLanguageChange;
+        public event Action<SystemLanguage> OnLanguageChanged;
         #endregion
 
         #region Properties
@@ -72,7 +69,7 @@ namespace Argos.Framework.Localization
                 if (this._currentLanguage != selection)
                 {
                     this._currentLanguage = selection;
-                    this.OnLanguageChange?.Invoke(this._currentLanguage);
+                    this.OnLanguageChanged?.Invoke(this._currentLanguage);
                 }
             }
         }
@@ -106,7 +103,7 @@ namespace Argos.Framework.Localization
         /// <returns>Return English as default language it this not match any spanish language.</returns>
         public static SystemLanguage CheckAllowedLanguages(SystemLanguage language)
         {
-            return !Helper.IsInArray<SystemLanguage>(language, LocalizationManager.SPANISH_LANGUAGES) ? SystemLanguage.English : language;
+            return !CollectionsHelper.Exists<SystemLanguage>(language, LocalizationManager.SPANISH_LANGUAGES) ? SystemLanguage.English : language;
         }
 
         /// <summary>
@@ -116,7 +113,7 @@ namespace Argos.Framework.Localization
         /// <returns>Return true if is a spanish language or variant.</returns>
         public static bool IsSpanishLanguage(SystemLanguage language)
         {
-            return Helper.IsInArray<SystemLanguage>(language, LocalizationManager.SPANISH_LANGUAGES);
+            return CollectionsHelper.Exists<SystemLanguage>(language, LocalizationManager.SPANISH_LANGUAGES);
         }
 
         /// <summary>
@@ -147,7 +144,7 @@ namespace Argos.Framework.Localization
             if (this.Strings.ContainsKey(key))
             {
                 var localizedString = this.Strings[key];
-                if (Helper.IsInArray<SystemLanguage>(this._currentLanguage, LocalizationManager.SPANISH_LANGUAGES))
+                if (CollectionsHelper.Exists<SystemLanguage>(this._currentLanguage, LocalizationManager.SPANISH_LANGUAGES))
                 {
                     return localizedString.Spanish;
                 }

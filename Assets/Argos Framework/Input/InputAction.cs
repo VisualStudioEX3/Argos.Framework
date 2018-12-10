@@ -51,17 +51,17 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Action event for key press event.
         /// </summary>
-        public System.Action OnKeyPress;
+        public event System.Action OnKeyPress;
 
         /// <summary>
         /// Action event for key down event.
         /// </summary>
-        public System.Action OnKeyDown;
+        public event System.Action OnKeyDown;
 
         /// <summary>
         /// Action event for key up event.
         /// </summary>
-        public System.Action OnKeyUp;
+        public event System.Action OnKeyUp;
         #endregion
 
         #region Properties

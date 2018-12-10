@@ -5,6 +5,7 @@ using UnityEditor;
 using Argos.Framework;
 using Argos.Framework.Input;
 using Argos.Framework.Input.Extensions;
+using Argos.Framework.Utils;
 
 public class VibrationTest : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class VibrationTest : MonoBehaviour
     IEnumerator VibrateCoroutine()
     {
         print("Vibration coroutine in play mode...");
-        Timer timer = new Timer();
+        var timer = new Timer();
 
         while (timer.Value < 1f)
         {
@@ -45,7 +46,7 @@ public class VibrationTestEditor : Editor
 
     IEnumerator VibrateCoroutine()
     {
-        Timer timer = new Timer(Timer.TimerModes.EditorMode);
+        Timer timer = new Timer(TimerModes.EditorMode);
 
         while (timer.Value < 1f)
         {

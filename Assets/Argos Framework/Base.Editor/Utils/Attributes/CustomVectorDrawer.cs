@@ -1,0 +1,65 @@
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEditor;
+
+namespace Argos.Framework
+{
+    [CustomPropertyDrawer(typeof(CustomVectorAttribute))]
+    public class CustomVectorDrawer : PropertyDrawer
+    {
+        #region Methods & Functions
+        bool CheckNameCount(SerializedProperty property, CustomVectorAttribute attribute)
+        {
+            switch (property.propertyType)
+            {
+                case SerializedPropertyType.Vector2:
+                case SerializedPropertyType.Vector2Int:
+
+                    return attribute.Names.Length == 2;
+
+                case SerializedPropertyType.Vector3:
+                case SerializedPropertyType.Vector3Int:
+
+                    return attribute.Names.Length == 3;
+
+                case SerializedPropertyType.Vector4:
+
+                    return attribute.Names.Length == 4;
+
+                default:
+
+                    return false;
+            }
+        }
+        #endregion
+
+        #region Events
+        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        {
+            var vectorAttribute = (CustomVectorAttribute)attribute;
+
+            if (!this.CheckNameCount(property, vectorAttribute))
+            {
+                Debug.LogError($"Missing names for CustomVector attribute. Ensured to match the names array elements with the right vector type. \nMember target: \"{label.text}\"");
+                return;
+            }
+
+            label = EditorGUI.BeginProperty(position, label, property);
+            {
+                var contentPosition = EditorGUI.PrefixLabel(position, label);
+
+                contentPosition.xMin--;
+
+                if (property.propertyType == SerializedPropertyType.Vector2 || property.propertyType == SerializedPropertyType.Vector2Int)
+                {
+                    contentPosition.width /= 1.5f;
+                }
+
+                EditorGUI.MultiPropertyField(contentPosition, vectorAttribute.Names, property.FindPropertyRelative("x"));
+            }
+            EditorGUI.EndProperty();
+        }
+        #endregion
+    }
+}

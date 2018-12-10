@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using Argos.Framework;
+using Argos.Framework.Helpers;
 
 namespace Argos.Framework.Input
 {
@@ -755,7 +755,7 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         bool ReadAxisTriggerState(int axis, ref ButtonStates states)
         {
-            if (!Helper.IsValueInRange(axis, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX)) return false;
+            if (!MathHelper.IsClamped(axis, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX)) return false;
 
             // KeyDown and KeyUp logic run in GamepadButtonStates code:
             states.IsPressed = UnityEngine.Input.GetAxis(this.GetAxisName(axis)) > Gamepad.AXIS_DELTA;
@@ -771,7 +771,7 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         void ReadButtonState(KeyCode button, ref ButtonStates states)
         {
-            if (!Helper.IsValueInRange((int)button, (int)KeyCode.JoystickButton0, (int)KeyCode.JoystickButton19)) return;
+            if (!MathHelper.IsClamped((int)button, (int)KeyCode.JoystickButton0, (int)KeyCode.JoystickButton19)) return;
 
             // KeyDown and KeyUp logic run in GamepadButtonStates code:
             states.IsPressed = UnityEngine.Input.GetKey(button);
@@ -816,17 +816,17 @@ namespace Argos.Framework.Input
             {
                 if (!string.IsNullOrEmpty(name))
                 {
-                    if (Helper.IsInString(name.ToLower(), Gamepad.XBOX_CONTROLLER_CHECK_NAMES))
+                    if (StringHelper.CheckForString(name.ToLower(), Gamepad.XBOX_CONTROLLER_CHECK_NAMES))
                     {
                         this.Type = GamepadType.XBoxController;
                         return;
                     }
-                    else if (Helper.IsInString(name.ToLower(), Gamepad.PS4_CONTROLLER_CHECK_NAMES))
+                    else if (StringHelper.CheckForString(name.ToLower(), Gamepad.PS4_CONTROLLER_CHECK_NAMES))
                     {
                         this.Type = GamepadType.PS4Controller;
                         return;
                     }
-                    else if (Helper.IsInString(name.ToLower(), Gamepad.NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES))
+                    else if (StringHelper.CheckForString(name.ToLower(), Gamepad.NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES))
                     {
                         this.Type = GamepadType.NintendoSwitchProController;
                         return;

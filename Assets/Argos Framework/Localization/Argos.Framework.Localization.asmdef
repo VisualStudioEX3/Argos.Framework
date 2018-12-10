@@ -1,0 +1,10 @@
+{
+    "name": "Argos.Framework.Localization",
+    "references": [
+        "Argos.Framework"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

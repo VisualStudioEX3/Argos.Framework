@@ -1,0 +1,10 @@
+{
+    "name": "Argos.Framework.Input",
+    "references": [
+        "Argos.Framework"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

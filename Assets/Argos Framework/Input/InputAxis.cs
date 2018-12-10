@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 using Argos.Framework;
+using Argos.Framework.Helpers;
 
 namespace Argos.Framework.Input
 {
@@ -270,7 +271,7 @@ namespace Argos.Framework.Input
                 this._axis.x = Mathf.Lerp(this._axis.x, this._target.x, time);
                 this._axis.y = Mathf.Lerp(this._axis.y, this._target.y, time);
 
-                if (Helper.CompareVector(this._axis, Vector2.zero, 0.001f))
+                if (MathHelper.CompareVector(this._axis, Vector2.zero, 0.001f))
                 {
                     this._axis = Vector2.zero;
                 }

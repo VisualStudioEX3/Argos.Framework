@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using Argos.Framework;
+using Argos.Framework.Utils;
 
 public class TimerTest : MonoBehaviour
 {
@@ -10,9 +11,9 @@ public class TimerTest : MonoBehaviour
 
     public void InitTimers()
     {
-        this.TimerScaled = new Timer(Timer.TimerModes.ScaledTime, false);
-        this.TimerUnScaled = new Timer(Timer.TimerModes.UnScaledTime, false);
-        this.TimerEditor = new Timer(Timer.TimerModes.EditorMode, false);
+        this.TimerScaled = new Timer(TimerModes.ScaledTime, false);
+        this.TimerUnScaled = new Timer(TimerModes.UnScaledTime, false);
+        this.TimerEditor = new Timer(TimerModes.EditorMode, false);
     }
 
     void Start()

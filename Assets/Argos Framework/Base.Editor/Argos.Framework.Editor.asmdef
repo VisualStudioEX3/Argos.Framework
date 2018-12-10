@@ -1,0 +1,12 @@
+{
+    "name": "Argos.Framework.Editor",
+    "references": [
+        "Argos.Framework"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

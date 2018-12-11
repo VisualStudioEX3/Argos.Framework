@@ -33,7 +33,7 @@ namespace Argos.Framework.FileSystem
             this._type = this.serializedObject.FindProperty("_type");
             this._serializeMode = this.serializedObject.FindProperty("_serializeMode");
 
-            this._modules = EditorHelper.CreateSimpleReorderableList(this, this._modules, string.Empty, "_modules");
+            //this._modules = ReorderableListHelper.CreateSimpleList(this, this._modules, string.Empty, "_modules");
 
             this.HeaderTitle = "File Slot";
         }
@@ -68,7 +68,7 @@ namespace Argos.Framework.FileSystem
             //    EditorGUILayout.Space();
             //}
             //EditorGUILayout.EndVertical();
-            this._modules.DoLayoutList();
+            //this._modules.DoLayoutList();
 
             this.serializedObject.ApplyModifiedProperties();
         }

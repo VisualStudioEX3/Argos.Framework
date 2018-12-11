@@ -17,7 +17,7 @@ namespace Argos.Framework.FileSystem
         /// Serialize data to binary array.
         /// </summary>
         /// <param name="data">Data to serialize.</param>
-        /// <param name="onSerialized">Optional event after the data has been serialized (usefull for encrypt the data).</param>
+        /// <param name="onSerialized">Optional event after the data has been serialized (useful for encrypt the data).</param>
         /// <returns>Byte array with the serialized data.</returns>
         public static byte[] Serialize(object data, BinarySerializationHandler onSerialized = null)
         {
@@ -36,7 +36,7 @@ namespace Argos.Framework.FileSystem
         /// </summary>
         /// <typeparam name="T">Original type of the serialized data.</typeparam>
         /// <param name="buffer">Byte array with the serialized data.</param>
-        /// <param name="onDeserializing">Optional event before the data has been deserialized (usefull for desencrypt the data, if previosuly has been encrypted).</param>
+        /// <param name="onDeserializing">Optional event before the data has been deserialized (useful for desencrypt the data, if previosuly has been encrypted).</param>
         /// <returns>Return an instance of T with the deserialized data.</returns>
         public static T Deserialize<T>(byte[] buffer, BinarySerializationHandler onDeserializing = null)
         {

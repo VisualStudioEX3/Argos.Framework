@@ -107,7 +107,7 @@ namespace Argos.Framework.FileSystem
         FileSlotSerializationMode _serializeMode = FileSlotSerializationMode.JSON;
 
         //[SerializeField]
-        //List<SceneAsset> _modules;
+        //List<MonoBehaviour> _modules;
         #endregion
 
         #region Properties

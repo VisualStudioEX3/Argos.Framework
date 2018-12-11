@@ -10,9 +10,9 @@ using UnityEditorInternal;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Helper functions to used in Editor scripts.
+    /// Helper functions to create ReorderableList controls.
     /// </summary>
-    public static class EditorHelper
+    public static class ReorderableListHelper
     {
         #region Constants
         const float HEADER_NONE_HEIGHT = 3f;
@@ -46,7 +46,7 @@ namespace Argos.Framework
             }
             else
             {
-                ret.headerHeight = EditorHelper.HEADER_NONE_HEIGHT;
+                ret.headerHeight = ReorderableListHelper.HEADER_NONE_HEIGHT;
             }
 
             ret.elementHeightCallback = (int index) =>
@@ -79,7 +79,7 @@ namespace Argos.Framework
             return ret;
         }
 
-        public static ReorderableList CreateSimpleReorderableList(Editor editorInstance, ReorderableList list, string headerName, string property, string prefixName = "")
+        public static ReorderableList CreateSimpleList(Editor editorInstance, ReorderableList list, string headerName, string property, string prefixName = "")
         {
             var ret = new ReorderableList(editorInstance.serializedObject, editorInstance.serializedObject.FindProperty(property), true, !string.IsNullOrEmpty(headerName), true, true);
 
@@ -92,7 +92,7 @@ namespace Argos.Framework
             }
             else
             {
-                ret.headerHeight = EditorHelper.HEADER_NONE_HEIGHT;
+                ret.headerHeight = ReorderableListHelper.HEADER_NONE_HEIGHT;
             }
 
             ret.elementHeightCallback = (int index) =>

@@ -3,6 +3,7 @@
 # =============== #
 Temp/
 Obj/
+Logs/
 
 # ================== #
 # Own build binaries #
@@ -15,9 +16,20 @@ Library/PlayerDataCache/
 Library/ScriptAssemblies/
 Library/ShaderCache/
 Library/UnityAssemblies/
+Library/PackageCache/
+Library/StateCache/
+Library/UIElements/
+Library/assetDatabase3
+Library/expandedItems
+Library/InspectorExpandedItems.asset
+Library/ScriptMapper
+Library/*.log
+
 Screen Shoots/
 
-# Rafa plugin #
+# ============= #
+# Rafa's plugin #
+# ============= #
 Assets/FavoritesWindow/
 Assets/FavoritesWindow.meta
 

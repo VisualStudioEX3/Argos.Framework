@@ -31,11 +31,12 @@ namespace Argos.Framework
         /// <param name="label">Field label.</param>
         /// <param name="condition">Condition to show or hide the content.</param>
         /// <param name="content">Method that define the content of the group.</param>
+        /// <param name="showWhenConditionIsFalse">Shows content when the condition is false.</param>
         /// <returns>Returns the current condition state.</returns>
-        public static bool ShowFieldGroup(string label, bool condition, Action content)
+        public static bool ShowFieldGroup(string label, bool condition, Action content, bool showWhenConditionIsFalse = false)
         {
             bool state = EditorGUILayout.Toggle(label, condition);
-            if (state)
+            if (state && !showWhenConditionIsFalse || !state && showWhenConditionIsFalse)
             {
                 EditorGUI.indentLevel++;
                 content.Invoke();

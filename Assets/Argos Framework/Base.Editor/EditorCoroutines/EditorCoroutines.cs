@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
+using UnityEngine.Networking;
 
 namespace Argos.Framework
 {
@@ -40,7 +41,7 @@ namespace Argos.Framework
 
     struct EditorYieldWWW : IEditorCoroutineYield
     {
-        public WWW Www;
+        public UnityWebRequest Www;
 
         public bool IsDone(float deltaTime)
         {
@@ -245,9 +246,9 @@ namespace Argos.Framework
                 float seconds = float.Parse(GetInstanceField(typeof(WaitForSeconds), current, "m_Seconds").ToString());
                 coroutine.currentYield = new EditorYieldWaitForSeconds() { timeLeft = (float)seconds };
             }
-            else if (current is WWW)
+            else if (current is UnityWebRequest)
             {
-                coroutine.currentYield = new EditorYieldWWW { Www = (WWW)current };
+                coroutine.currentYield = new EditorYieldWWW { Www = (UnityWebRequest)current };
             }
             else if (current is WaitForFixedUpdate)
             {

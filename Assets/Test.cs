@@ -24,6 +24,21 @@ public class Test : MonoBehaviour
 
         [ProgressBar("Field4", true)]
         public float Field4;
+
+        [TexturePreview]
+        public Texture Texture;
+
+        [TexturePreview]
+        public Texture2D Texture2D;
+
+        [TexturePreview]
+        public RenderTexture RenderTexture;
+
+        [TexturePreview]
+        public Cubemap CubeMap;
+
+        [TexturePreview]
+        public Sprite Sprite;
     }
 
     public FileSlotAsset File;
@@ -86,7 +101,22 @@ public class Test : MonoBehaviour
 
     [DinamicLabel(true, true)]
     public string DinamicSelectableMiniLabel = "Dinamic selectable mini label.";
-    
+
+    [TexturePreview]
+    public Texture Texture;
+
+    [TexturePreview]
+    public Texture2D Texture2D;
+
+    [TexturePreview]
+    public RenderTexture RenderTexture;
+
+    [TexturePreview]
+    public Cubemap CubeMap;
+
+    [TexturePreview]
+    public Sprite Sprite;
+
     public TestStruct Test2;
 
     [Button]

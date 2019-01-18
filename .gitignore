@@ -19,10 +19,10 @@ Library/UnityAssemblies/
 Library/PackageCache/
 Library/StateCache/
 Library/UIElements/
-Library/assetDatabase3
-Library/expandedItems
 Library/InspectorExpandedItems.asset
 Library/ScriptMapper
+Library/assetDatabase3
+Library/expandedItems
 Library/*.log
 
 Screen Shoots/

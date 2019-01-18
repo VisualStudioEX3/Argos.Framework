@@ -10,7 +10,7 @@ namespace Argos.Framework
     /// Based on code at https://forum.unity.com/threads/helpattribute-allows-you-to-use-helpbox-in-the-unity-inspector-window.462768/#post-3014998
     /// </remarks>
     [CustomPropertyDrawer(typeof(HelpBoxAttribute))]
-    public class HelpBoxAttributeDrawer : DecoratorDrawer
+    public class HelpBoxDrawer : DecoratorDrawer
     {
         #region Constants
         const float MIN_HEIGHT_WITH_ICON = 40f;
@@ -24,7 +24,7 @@ namespace Argos.Framework
             float width = EditorGUIUtility.currentViewWidth - EditorGUI.indentLevel;
             float height = EditorStyles.helpBox.CalcHeight(new GUIContent(helpBox.text), width) + EditorGUIUtility.standardVerticalSpacing;
 
-            return helpBox.messageType == HelpBoxMessageType.None ? height : Mathf.Max(HelpBoxAttributeDrawer.MIN_HEIGHT_WITH_ICON, height);
+            return helpBox.messageType == HelpBoxMessageType.None ? height : Mathf.Max(HelpBoxDrawer.MIN_HEIGHT_WITH_ICON, height);
         }
         #endregion
 

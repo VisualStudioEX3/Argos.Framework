@@ -6,6 +6,7 @@ using Argos.Framework.Utils;
 
 namespace Argos.Framework.Input
 {
+    [AddComponentMenu("Argos.Framework/Input/Gamepad Vibration Effect Controller")]
     public class GamepadVibrationEffectController : MonoBehaviour
     {
         #region Internal vars

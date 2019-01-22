@@ -19,44 +19,21 @@ namespace Argos.Framework
         static readonly float FIELD_SIZE = EditorGUIUtility.singleLineHeight * 4f;
         #endregion
 
-        #region Internal vars
-        Rect rect;
-        #endregion
-
         #region Methods & Functions
         public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
         {
-            if (property.depth > 0)
-            {
-                return base.GetPropertyHeight(property, label);
-            }
-
-            rect = EditorGUILayout.GetControlRect(true, TexturePreviewDrawer.FIELD_SIZE);
-
-            return rect.height;
+            return TexturePreviewDrawer.FIELD_SIZE;
         }
         #endregion
 
         #region Events
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            /* WARNING: When the attribute is used in a field inside of a data structure (serialized hierachy), the editor layout fails adding extra 
-               space (the same that ocuped the property drawer) before start rendering the hierachy.
-
-               This bug is provoked by GetPropertyHeight() function overload. 
-               
-               For avoid that, rendering a default field inspector for the property type target. */
-            if (property.depth > 0)
-            {
-                EditorGUI.PropertyField(position, property);
-                return;
-            }
-
-            Rect prefixRect = rect;
+            Rect prefixRect = position;
             prefixRect.width = EditorGUIUtility.labelWidth;
             EditorGUI.PrefixLabel(prefixRect, label);
 
-            Rect fieldRect = rect;
+            Rect fieldRect = position;
             fieldRect.x = fieldRect.xMax - fieldRect.height;
             fieldRect.width = fieldRect.height;
 

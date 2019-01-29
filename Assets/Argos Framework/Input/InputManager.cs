@@ -1,12 +1,4 @@
-﻿#if UNITY_STANDALONE || UNITY_EDITOR
-#define UNITY_DESKTOP
-#endif
-
-#if UNITY_XBOXONE || UNITY_PS4 || UNITY_SWITCH
-#define UNITY_CONSOLE
-#endif
-
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -220,20 +212,11 @@ namespace Argos.Framework.Input
 
         #region Public vars
         [Header("General settings:")]
-#if UNITY_CONSOLE
-        [HideInInspector]
-#endif
         public bool HideMouseCursorInGamepadMode = true;
 
         [Tooltip("Interval between input type identification checks.")]
-#if UNITY_CONSOLE
-        [HideInInspector] 
-#endif
         public float CheckInputTypeInterval = 0.02f;
 
-#if UNITY_CONSOLE
-        [HideInInspector] 
-#endif
         public GenericGamepadInputLayoutAsset GenericGamepadSetup;
 
         /// <summary>
@@ -245,14 +228,8 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Time for double click detection on UI controls.
         /// </summary>
-#if UNITY_CONSOLE
-        [HideInInspector] 
-#endif
         public float DoubleClickTime = 0.25f;
 
-#if UNITY_CONSOLE
-        [HideInInspector] 
-#endif
         [Header("Nintendo Switch Pro controller (PC only):")]
         [Tooltip("Use the Nintendo Switch Pro controller button layout or XBox button layout.\n\nWhen the Nintendo Switch Pro controller is active, this setting allow to use the Nintendo button layout. If this setting is false, uses the XBox button layout (swtich A B buttons, and X Y buttons to match the XBox controller button layout).\n\nThis setting not affect to XBox360/One, PS4 or generic controllers.")]
         public bool UseNintendoButtonLayout = true;
@@ -305,13 +282,11 @@ namespace Argos.Framework.Input
         {
             Gamepad.Instance.TryToIndentifyGamepad();
 
-#if UNITY_DESKTOP
             // Check in defined intervals the current active input:
             StartCoroutine(this.CheckCurrentInputTypeCoroutine()); 
 
             // Check for a generic joystick and initialize it for support Force Feedback:
             ForceFeedback.CheckForAvailableJoystick();
-#endif
 
             InputManager.Instance = this;
 
@@ -322,7 +297,6 @@ namespace Argos.Framework.Input
         #region Update logic
         private void Update()
         {
-#if UNITY_DESKTOP
             if (this.CheckInputTypeInterval < 0.01f)
             {
                 this.CheckInputTypeInterval = 0.01f;
@@ -336,7 +310,6 @@ namespace Argos.Framework.Input
             this.HasMotionFromMouse = Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_X_NAME)) > InputManager.MIN_MOUSE_X_DELTA ||
                                       Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Y_NAME)) > InputManager.MIN_MOUSE_Y_DELTA ||
                                       Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Z_NAME)) > InputManager.MIN_MOUSE_Z_DELTA;
-#endif
 
             this.IsAnyKeyDown = UnityEngine.Input.anyKeyDown;
 
@@ -352,7 +325,6 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Events
-#if UNITY_DESKTOP
         private void OnApplicationQuit()
         {
             this.SetGamepadVibration(Vector2.zero);
@@ -360,7 +332,6 @@ namespace Argos.Framework.Input
             // Release a generic joystick and stop active Force Feedback effect:
             ForceFeedback.ReleaseJoystick();
         } 
-#endif
         #endregion
 
         #region Methods & Functions

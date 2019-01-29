@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
+using System.Text;
 using UnityEngine;
 
 namespace Argos.Framework.Helpers
@@ -170,6 +171,28 @@ namespace Argos.Framework.Helpers
             }
 
             return Resources.UnloadUnusedAssets();
+        }
+
+        /// <summary>
+        /// Calculate MD5 Hash.
+        /// </summary>
+        /// <param name="input">Input string.</param>
+        /// <returns>MD5 Hash string.</returns>
+        /// <remarks>Based on this source: https://blogs.msdn.microsoft.com/csharpfaq/2006/10/09/how-do-i-calculate-a-md5-hash-from-a-string/ </remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static string CalculateMD5Hash(string input)
+        {
+            var md5 = System.Security.Cryptography.MD5.Create();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] hash = md5.ComputeHash(inputBytes);
+            var hashString = new StringBuilder();
+
+            foreach (var b in hash)
+            {
+                hashString.Append(b.ToString("x2"));
+            }
+
+            return hashString.ToString();
         }
         #endregion
     }

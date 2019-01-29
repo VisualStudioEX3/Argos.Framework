@@ -1,0 +1,18 @@
+{
+    "name": "Argos.Framework.RichPresence.Editor",
+    "references": [
+        "Argos.Framework",
+        "Argos.Framework.Editor",
+        "Argos.Framework.RichPresence"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

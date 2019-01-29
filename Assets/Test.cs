@@ -102,6 +102,30 @@ public class Test : MonoBehaviour
     [DinamicLabel(true, true)]
     public string DinamicSelectableMiniLabel = "Dinamic selectable mini label.";
 
+    [File("Open file", FileDialogTypes.OpenFile, "*.PNG")]
+    public string OpenFileField;
+
+    [File("Save file", FileDialogTypes.SaveFile, "*.PNG")]
+    public string SaveFileField;
+
+    [File("Save file", FileDialogTypes.SaveFileInProject, "*.PNG", "" , "New image.png", "Save image in project.")]
+    public string SaveFileInProjectField;
+
+    [Folder("Open folder", FolderDialogTypes.OpenFolder)]
+    public string OpenFolderField;
+
+    [Folder("Save folder", FolderDialogTypes.SaveFolder)]
+    public string SaveFolderField;
+
+    [LabeledTextArea(10)]
+    public string LabeledTextAreaField;
+
+    [OptionList]
+    public PrimitiveType OptionList;
+
+    [OptionList(true)]
+    public RuntimePlatform SplittedOptionList;
+
     [TexturePreview]
     public Texture Texture;
 

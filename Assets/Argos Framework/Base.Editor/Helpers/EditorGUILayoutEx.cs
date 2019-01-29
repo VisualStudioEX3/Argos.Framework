@@ -20,7 +20,7 @@ namespace Argos.Framework
         {
             EditorGUILayout.LabelField(title, EditorStyles.boldLabel);
             {
-                content.Invoke();
+                content?.Invoke();
             }
             EditorGUILayout.Space();
         }
@@ -39,7 +39,7 @@ namespace Argos.Framework
             if (state && !showWhenConditionIsFalse || !state && showWhenConditionIsFalse)
             {
                 EditorGUI.indentLevel++;
-                content.Invoke();
+                content?.Invoke();
                 EditorGUI.indentLevel--;
             }
 
@@ -52,17 +52,34 @@ namespace Argos.Framework
         /// <param name="label">Field label.</param>
         /// <param name="path">Path for the file location shows in the text field.</param>
         /// <param name="dialogTitle">Title for the open file dialog.</param>
+        /// <param name="dialogType">Dialog behaviour type.</param>
         /// <param name="fileExtension">File extension for the open file dialog.</param>
         /// <param name="directory">Initial directory to target the open file dialog. By default is empty.</param>
+        /// <param name="defaultName">Default filename. Use only for SaveFile type. By default is empty.</param>
+        /// <param name="message">Message displayed in dialog. Only for SaveFileInProject. By default is empty.</param>
         /// <returns>Returns the selected file path or the latest file path when the user cancels the open file dialog.</returns>
-        public static string FileField(string label, string path, string dialogTitle, string fileExtension, string directory = "")
+        public static string FileField(string label, string path, string dialogTitle, FileDialogTypes dialogType, string fileExtension, string directory = "", string defaultName = "", string message = "")
         {
             EditorGUILayout.BeginHorizontal();
             {
                 path = EditorGUILayout.TextField(label, path);
                 if (GUILayout.Button("...", EditorStyles.miniButton, GUILayout.Width(30f)))
                 {
-                    string newPath = EditorUtility.OpenFilePanel(dialogTitle, directory, fileExtension);
+                    string newPath = string.Empty;
+
+                    switch (dialogType)
+                    {
+                        case FileDialogTypes.OpenFile:
+                            newPath = EditorUtility.OpenFilePanel(dialogTitle, directory, fileExtension);
+                            break;
+                        case FileDialogTypes.SaveFile:
+                            newPath = EditorUtility.SaveFilePanel(dialogTitle, directory, defaultName, fileExtension);
+                            break;
+                        case FileDialogTypes.SaveFileInProject:
+                            newPath = EditorUtility.SaveFilePanelInProject(dialogTitle, directory, fileExtension, message);
+                            break;
+                    }
+
                     if (!string.IsNullOrEmpty(newPath))
                     {
                         path = newPath;
@@ -80,17 +97,28 @@ namespace Argos.Framework
         /// <param name="label">Field label.</param>
         /// <param name="path">Path for the folder location in text field.</param>
         /// <param name="dialogTitle">Title for the open folder dialog.</param>
+        /// <param name="dialogType">Dialog behaviour type.</param>
         /// <param name="folder">Initial directory to target the open folder dialog. By default is empty.</param>
         /// <param name="defaultName">Default folder name. By default empty.</param>
         /// <returns>Returns the selected folder path or the latest folder path when the user cancels the open folder dialog.</returns>
-        public static string FolderField(string label, string path, string dialogTitle, string folder = "", string defaultName = "")
+        public static string FolderField(string label, string path, string dialogTitle, FolderDialogTypes dialogType, string folder = "", string defaultName = "")
         {
             EditorGUILayout.BeginHorizontal();
             {
                 path = EditorGUILayout.TextField(label, path);
                 if (GUILayout.Button("...", EditorStyles.miniButton, GUILayout.Width(30f)))
                 {
-                    string newPath = EditorUtility.OpenFolderPanel(label, folder, defaultName);
+                    string newPath = string.Empty;
+                    switch (dialogType)
+                    {
+                        case FolderDialogTypes.OpenFolder:
+                            newPath = EditorUtility.OpenFolderPanel(label, folder, defaultName);
+                            break;
+                        case FolderDialogTypes.SaveFolder:
+                            newPath = EditorUtility.SaveFolderPanel(label, folder, defaultName);
+                            break;
+                    }
+                    
                     if (!string.IsNullOrEmpty(newPath))
                     {
                         path = newPath;

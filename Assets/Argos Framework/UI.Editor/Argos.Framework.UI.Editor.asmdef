@@ -1,0 +1,16 @@
+{
+    "name": "Argos.Framework.UI.Editor",
+    "references": [
+        "Argos.Framework",
+        "Argos.Framework.Editor",
+        "Argos.Framework.UI"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

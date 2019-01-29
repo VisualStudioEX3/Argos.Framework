@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Use this PropertyAttribute to add a multi-line richtext label above some fields in the Inspector.
+    /// Attribute used to add a multi-line richtext label above some fields in the Inspector.
     /// </summary>
     public class LabelAttribute : PropertyAttribute
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Argos.Framework.Helpers;
 
 namespace Argos.Framework
 {
@@ -17,29 +18,35 @@ namespace Argos.Framework
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             Rect initial = position;
-            bool listHasSplited = false;
 
             EditorGUI.LabelField(position, label);
+
             EditorGUI.indentLevel++;
-
-            position.width = EditorGUIUtility.currentViewWidth * 0.5f;
-            position.height = EditorGUIUtility.singleLineHeight;
-
-            for (int i = 0; i < property.enumDisplayNames.Length; i++)
             {
-                if (this._split && !listHasSplited && i > this._splitCount)
+                if (this._split)
                 {
-                    position = initial;
-                    position.x += position.width;
-                    listHasSplited = true;
+                    position.width = EditorGUIUtility.currentViewWidth * 0.5f;
                 }
 
-                position.y += EditorGUIUtility.singleLineHeight;
-                if (EditorGUI.ToggleLeft(position, property.enumDisplayNames[i], property.enumValueIndex == i))
+                position.height = EditorGUIUtility.singleLineHeight;
+
+                for (int i = 0; i < property.enumDisplayNames.Length; i++)
                 {
-                    property.enumValueIndex = i;
+                    position.x = initial.x;
+
+                    if (i % 2 == 0 || !this._split)
+                    {
+                        position.y += EditorGUIUtility.singleLineHeight;
+                    }
+                    else
+                    {
+                        position.x += position.width;
+                    }
+
+                    this.DrawLeftToggleField(position, property, i);
                 }
             }
+            EditorGUI.indentLevel--;
         }
         #endregion
 
@@ -52,23 +59,26 @@ namespace Argos.Framework
 
             if (this._split)
             {
-                this._splitCount = (int)(property.enumDisplayNames.Length * 0.5f);
+                this._splitCount = (int)(MathHelper.ForceEvenValue(property.enumDisplayNames.Length) * 0.5f);
 
-                if (property.enumDisplayNames.Length % 2 == 0)
-                {
-                    this._splitCount--;
-                }
-
-                height += (this._splitCount * EditorGUIUtility.singleLineHeight) + EditorGUIUtility.singleLineHeight;
+                height += (this._splitCount * EditorGUIUtility.singleLineHeight);
             }
             else
             {
                 height += (property.enumDisplayNames.Length * EditorGUIUtility.singleLineHeight);
             }
 
-            height += (EditorGUIUtility.standardVerticalSpacing * 2f);
+            height += EditorGUIUtility.standardVerticalSpacing;
 
             return height;
+        }
+
+        void DrawLeftToggleField(Rect position, SerializedProperty property, int index)
+        {
+            if (EditorGUI.ToggleLeft(position, property.enumDisplayNames[index], property.enumValueIndex == index))
+            {
+                property.enumValueIndex = index;
+            }
         }
         #endregion
     }

@@ -182,7 +182,7 @@ namespace Argos.Framework.Helpers
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static string CalculateMD5Hash(string input)
         {
-            var md5 = System.Security.Cryptography.MD5.Create();
+            var md5 = MD5.Create();
             byte[] inputBytes = Encoding.UTF8.GetBytes(input);
             byte[] hash = md5.ComputeHash(inputBytes);
             var hashString = new StringBuilder();

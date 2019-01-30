@@ -8,8 +8,6 @@ using Argos.Framework.Utils;
 public class TimerTest : MonoBehaviour
 {
     public Timer TimerScaled, TimerUnScaled, TimerEditor;
-    [File("Open file", FileDialogTypes.OpenFile, "PNG")]
-    public string OpenFileField;
 
     public void InitTimers()
     {

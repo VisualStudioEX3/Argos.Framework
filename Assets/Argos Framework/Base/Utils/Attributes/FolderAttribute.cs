@@ -18,10 +18,10 @@ namespace Argos.Framework
     public class FolderAttribute : PropertyAttribute
     {
         #region Public vars
-        public string DialogTitle;
-        public FolderDialogTypes DialogType;
-        public string Folder;
-        public string DefaultName;
+        public readonly string DialogTitle;
+        public readonly FolderDialogTypes DialogType;
+        public readonly string Folder;
+        public readonly string DefaultName;
         #endregion
 
         #region Constructors

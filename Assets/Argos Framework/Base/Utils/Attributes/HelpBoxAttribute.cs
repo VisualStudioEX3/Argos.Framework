@@ -25,8 +25,8 @@ namespace Argos.Framework
     public class HelpBoxAttribute : PropertyAttribute
     {
         #region Public vars
-        public string text;
-        public HelpBoxMessageType messageType;
+        public readonly string text;
+        public readonly HelpBoxMessageType messageType;
         #endregion
 
         #region Constructors

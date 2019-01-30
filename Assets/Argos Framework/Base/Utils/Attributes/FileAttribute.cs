@@ -19,12 +19,12 @@ namespace Argos.Framework
     public class FileAttribute : PropertyAttribute
     {
         #region Public vars
-        public string DialogTitle;
-        public FileDialogTypes DialogType;
-        public string Directory;
-        public string DefaultName;
-        public string FileExtension;
-        public string Message;
+        public readonly string DialogTitle;
+        public readonly FileDialogTypes DialogType;
+        public readonly string Directory;
+        public readonly string DefaultName;
+        public readonly string FileExtension;
+        public readonly string Message;
         #endregion
 
         #region Constructors

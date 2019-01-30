@@ -27,6 +27,13 @@ namespace Argos.Framework
         #endregion
 
         #region Events
+        public override bool CanCacheInspectorGUI(SerializedProperty property)
+        {
+            // This ensure that the texture always is rendered.
+            // Source: https://answers.unity.com/questions/1311926/texture2d-in-scriptableobjects-property-drawer-exp.html?childToView=1401566#answer-1401566
+            return false;
+        }
+
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             Rect prefixRect = position;

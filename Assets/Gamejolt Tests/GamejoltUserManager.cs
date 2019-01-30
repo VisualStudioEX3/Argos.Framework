@@ -57,6 +57,11 @@ public class GamejoltUserManager : MonoBehaviour
         GamejoltAPI.PrivateKey = this.PrivateKey;
     }
 
+    void Start()
+    {
+        this.LoginUser();
+    }
+
     void OnApplicationQuit()
     {
         this.LogoutUser();

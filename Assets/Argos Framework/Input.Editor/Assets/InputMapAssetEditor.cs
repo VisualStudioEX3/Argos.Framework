@@ -17,8 +17,8 @@ namespace Argos.Framework.Input
         #region Events
         private void OnEnable()
         {
-            this._axisList = ReorderableListHelper.CreateNamedList(this, this._axisList, "Axes", "_axes", "Axis Setup");
-            this._actionList = ReorderableListHelper.CreateNamedList(this, this._actionList, "Actions", "_actions", "Keys");
+            this._axisList = ReorderableListHelper.CreateNamedList(this, this._axisList, "Axes", "_axes", "Axis Setup", false);
+            this._actionList = ReorderableListHelper.CreateNamedList(this, this._actionList, "Actions", "_actions", "Keys", false);
             this.HeaderTitle = "Input Map";
         }
 
@@ -28,7 +28,6 @@ namespace Argos.Framework.Input
             {
                 this._axisList.DoLayoutList();
                 EditorGUILayout.Space();
-
                 this._actionList.DoLayoutList();
             }
             this.serializedObject.ApplyModifiedProperties();

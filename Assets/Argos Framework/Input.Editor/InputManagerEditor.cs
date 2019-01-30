@@ -32,7 +32,7 @@ namespace Argos.Framework.Input
         #region Events
         private void OnEnable()
         {
-            this._inputMapList = ReorderableListHelper.CreateNamedList(this, this._inputMapList, InputManagerEditor.HEADER_NAME, InputManagerEditor.PROPERTY_NAME, InputManagerEditor.PREFIX_NAME);
+            this._inputMapList = ReorderableListHelper.CreateNamedList(this, this._inputMapList, InputManagerEditor.HEADER_NAME, InputManagerEditor.PROPERTY_NAME, InputManagerEditor.PREFIX_NAME, false);
         }
 
         //private void OnDisable()

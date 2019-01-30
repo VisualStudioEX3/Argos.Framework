@@ -228,6 +228,7 @@ MonoBehaviour:
   UserName: EX3
   UserToken: 60070b
   PrivateKey: 46f295335d75274dd41009cf8c20ca20
+  UserAvatar: {fileID: 0}
   AuthResponse:
     response:
       success: 0
@@ -245,7 +246,6 @@ MonoBehaviour:
     response:
       success: 0
       message: 
-  UserAvatar: {fileID: 0}
 --- !u!4 &573385378
 Transform:
   m_ObjectHideFlags: 0

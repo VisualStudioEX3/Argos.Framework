@@ -8,6 +8,10 @@ namespace Argos.Framework
     [CustomPropertyDrawer(typeof(CustomVectorAttribute))]
     public class CustomVectorDrawer : PropertyDrawer
     {
+        #region Constants
+        const float VECTOR2_FIELD_WITDH_CORRECTION = 1.5f; 
+        #endregion
+
         #region Methods & Functions
         bool CheckNameCount(SerializedProperty property, CustomVectorAttribute attribute)
         {
@@ -53,7 +57,7 @@ namespace Argos.Framework
 
                 if (property.propertyType == SerializedPropertyType.Vector2 || property.propertyType == SerializedPropertyType.Vector2Int)
                 {
-                    contentPosition.width /= 1.5f;
+                    contentPosition.width /= CustomVectorDrawer.VECTOR2_FIELD_WITDH_CORRECTION;
                 }
 
                 EditorGUI.MultiPropertyField(contentPosition, vectorAttribute.Names, property.FindPropertyRelative("x"));

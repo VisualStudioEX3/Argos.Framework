@@ -39,6 +39,30 @@ public class Test : MonoBehaviour
 
         [TexturePreview]
         public Sprite Sprite;
+
+        [Multiline(10)]
+        public string Multiline;
+
+        [OptionList]
+        public PrimitiveType OptionList;
+
+        [OptionList(true)]
+        public RuntimePlatform SplittedOptionList;
+
+        [File("Open file", FileDialogTypes.OpenFile, "PNG")]
+        public string OpenFileField;
+
+        [File("Save file", FileDialogTypes.SaveFile, "PNG")]
+        public string SaveFileField;
+
+        [File("Save file", FileDialogTypes.SaveFileInProject, "PNG", "", "New image.png", "Save image in project.")]
+        public string SaveFileInProjectField;
+
+        [Folder("Open folder", FolderDialogTypes.OpenFolder)]
+        public string OpenFolderField;
+
+        [Folder("Save folder", FolderDialogTypes.SaveFolder)]
+        public string SaveFolderField;
     }
 
     public FileSlotAsset File;
@@ -102,13 +126,16 @@ public class Test : MonoBehaviour
     [DinamicLabel(true, true)]
     public string DinamicSelectableMiniLabel = "Dinamic selectable mini label.";
 
-    [File("Open file", FileDialogTypes.OpenFile, "*.PNG")]
+    [Multiline(10)]
+    public string Multiline;
+
+    [File("Open file", FileDialogTypes.OpenFile, "PNG")]
     public string OpenFileField;
 
-    [File("Save file", FileDialogTypes.SaveFile, "*.PNG")]
+    [File("Save file", FileDialogTypes.SaveFile, "PNG")]
     public string SaveFileField;
 
-    [File("Save file", FileDialogTypes.SaveFileInProject, "*.PNG", "" , "New image.png", "Save image in project.")]
+    [File("Save file", FileDialogTypes.SaveFileInProject, "PNG", "" , "New image.png", "Save image in project.")]
     public string SaveFileInProjectField;
 
     [Folder("Open folder", FolderDialogTypes.OpenFolder)]
@@ -116,9 +143,6 @@ public class Test : MonoBehaviour
 
     [Folder("Save folder", FolderDialogTypes.SaveFolder)]
     public string SaveFolderField;
-
-    [LabeledTextArea(10)]
-    public string LabeledTextAreaField;
 
     [OptionList]
     public PrimitiveType OptionList;
@@ -142,24 +166,6 @@ public class Test : MonoBehaviour
     public Sprite Sprite;
 
     public TestStruct Test2;
-
-    [Button]
-    public void TestButton()
-    {
-        StartCoroutine(this.TestProgressBarCoroutine());
-    }
-
-    [Button("Test Button with custom label")]
-    public void TestButton2()
-    {
-        DebugHelper.Log("Test log message.", DebugLevel.Warning);
-    }
-
-    [Button("Test Button with custom label and tooltip", "Tooltip message test")]
-    public void TestButton3()
-    {
-
-    }
 
     IEnumerator TestProgressBarCoroutine()
     {

@@ -39,7 +39,9 @@ namespace Argos.Framework
             if (state && !showWhenConditionIsFalse || !state && showWhenConditionIsFalse)
             {
                 EditorGUI.indentLevel++;
-                content?.Invoke();
+                {
+                    content?.Invoke();
+                }
                 EditorGUI.indentLevel--;
             }
 
@@ -53,42 +55,32 @@ namespace Argos.Framework
         /// <param name="path">Path for the file location shows in the text field.</param>
         /// <param name="dialogTitle">Title for the open file dialog.</param>
         /// <param name="dialogType">Dialog behaviour type.</param>
-        /// <param name="fileExtension">File extension for the open file dialog.</param>
+        /// <param name="fileExtension">File extension for the open file dialog. Format: "PNG", "TXT", ""</param>
         /// <param name="directory">Initial directory to target the open file dialog. By default is empty.</param>
         /// <param name="defaultName">Default filename. Use only for SaveFile type. By default is empty.</param>
         /// <param name="message">Message displayed in dialog. Only for SaveFileInProject. By default is empty.</param>
         /// <returns>Returns the selected file path or the latest file path when the user cancels the open file dialog.</returns>
         public static string FileField(string label, string path, string dialogTitle, FileDialogTypes dialogType, string fileExtension, string directory = "", string defaultName = "", string message = "")
         {
-            EditorGUILayout.BeginHorizontal();
+            return EditorGUILayoutEx.TextFieldWithButton(label, path, () => 
             {
-                path = EditorGUILayout.TextField(label, path);
-                if (GUILayout.Button("...", EditorStyles.miniButton, GUILayout.Width(30f)))
+                string newPath = string.Empty;
+
+                switch (dialogType)
                 {
-                    string newPath = string.Empty;
-
-                    switch (dialogType)
-                    {
-                        case FileDialogTypes.OpenFile:
-                            newPath = EditorUtility.OpenFilePanel(dialogTitle, directory, fileExtension);
-                            break;
-                        case FileDialogTypes.SaveFile:
-                            newPath = EditorUtility.SaveFilePanel(dialogTitle, directory, defaultName, fileExtension);
-                            break;
-                        case FileDialogTypes.SaveFileInProject:
-                            newPath = EditorUtility.SaveFilePanelInProject(dialogTitle, directory, fileExtension, message);
-                            break;
-                    }
-
-                    if (!string.IsNullOrEmpty(newPath))
-                    {
-                        path = newPath;
-                    }
+                    case FileDialogTypes.OpenFile:
+                        newPath = EditorUtility.OpenFilePanel(dialogTitle, directory, fileExtension);
+                        break;
+                    case FileDialogTypes.SaveFile:
+                        newPath = EditorUtility.SaveFilePanel(dialogTitle, directory, defaultName, fileExtension);
+                        break;
+                    case FileDialogTypes.SaveFileInProject:
+                        newPath = EditorUtility.SaveFilePanelInProject(dialogTitle, directory, fileExtension, message);
+                        break;
                 }
-            }
-            EditorGUILayout.EndHorizontal();
 
-            return path;
+                return !string.IsNullOrEmpty(newPath) ? newPath : path;
+            });
         }
 
         /// <summary>
@@ -103,64 +95,69 @@ namespace Argos.Framework
         /// <returns>Returns the selected folder path or the latest folder path when the user cancels the open folder dialog.</returns>
         public static string FolderField(string label, string path, string dialogTitle, FolderDialogTypes dialogType, string folder = "", string defaultName = "")
         {
-            EditorGUILayout.BeginHorizontal();
+            return EditorGUILayoutEx.TextFieldWithButton(label, path, () =>
             {
-                path = EditorGUILayout.TextField(label, path);
-                if (GUILayout.Button("...", EditorStyles.miniButton, GUILayout.Width(30f)))
-                {
-                    string newPath = string.Empty;
-                    switch (dialogType)
-                    {
-                        case FolderDialogTypes.OpenFolder:
-                            newPath = EditorUtility.OpenFolderPanel(label, folder, defaultName);
-                            break;
-                        case FolderDialogTypes.SaveFolder:
-                            newPath = EditorUtility.SaveFolderPanel(label, folder, defaultName);
-                            break;
-                    }
-                    
-                    if (!string.IsNullOrEmpty(newPath))
-                    {
-                        path = newPath;
-                    }
-                }
-            }
-            EditorGUILayout.EndHorizontal();
+                string newPath = string.Empty;
 
-            return path;
+                switch (dialogType)
+                {
+                    case FolderDialogTypes.OpenFolder:
+                        newPath = EditorUtility.OpenFolderPanel(label, folder, defaultName);
+                        break;
+                    case FolderDialogTypes.SaveFolder:
+                        newPath = EditorUtility.SaveFolderPanel(label, folder, defaultName);
+                        break;
+                }
+
+                return !string.IsNullOrEmpty(newPath) ? newPath : path;
+            });
+        }
+
+        static string TextFieldWithButton(string label, string text, Func<string> onButtonClick)
+        {
+            Rect position = EditorGUILayout.GetControlRect(true);
+
+            Rect fieldRect = position;
+            fieldRect.width -= TextFieldWithButtonDrawerBase.BUTTON_WIDTH + 2f;
+            string newText = EditorGUI.TextField(fieldRect, label, text);
+
+            Rect browseButtonRect = position;
+            browseButtonRect.x = browseButtonRect.xMax - TextFieldWithButtonDrawerBase.BUTTON_WIDTH;
+            browseButtonRect.width = TextFieldWithButtonDrawerBase.BUTTON_WIDTH;
+
+            if (GUI.Button(browseButtonRect, TextFieldWithButtonDrawerBase.BUTTON_LABEL, EditorStyles.miniButton))
+            {
+                EditorGUIUtility.editingTextField = false;
+                return onButtonClick?.Invoke();
+            }
+
+            return newText;
         }
 
         /// <summary>
-        /// Draws a labeled multi-line text field, with the label field in the left, and the text area in the field region, like the standard fields.
+        /// Draws a multi-line text field (like Multiline attribute behaviour).
         /// </summary>
         /// <param name="label">Field label.</param>
         /// <param name="text">Content of the text area.</param>
         /// <param name="lines">The lines to show in the field at same time.</param>
         /// <returns>Returns the current content of the text area.</returns>
-        public static string LabeledTextArea(string label, string text, int lines)
+        public static string MultilineTextField(string label, string text, int lines)
         {
-            EditorGUILayout.BeginHorizontal();
-            {
-                EditorGUILayout.PrefixLabel(label);
+            GUISkin editorSkin = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector);
+            Rect position = EditorGUILayout.GetControlRect(true, GUILayout.Height((editorSkin.textArea.lineHeight * lines) + editorSkin.textArea.margin.vertical));
 
-                var currentIndent = EditorGUI.indentLevel;
-                {
-                    EditorGUI.indentLevel = 0;
+            Rect labelRect = position;
+            labelRect.height = EditorGUIUtility.singleLineHeight;
+            labelRect.width = EditorGUIUtility.labelWidth;
 
-                    GUISkin editorSkin = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector);
+            Rect textAreaRect = EditorGUI.PrefixLabel(position, new GUIContent(label));
+            textAreaRect.height = position.height;
 
-                    Rect rect = EditorGUILayout.GetControlRect(true, (editorSkin.textArea.lineHeight * lines) + editorSkin.textArea.margin.vertical);
-                    float delta = 7f; // editorSkin.textArea.padding.horizontal;
-                    rect.x -= delta;
-                    rect.width += delta;
+            float indentCorrection = (position.x + 1f) * EditorGUI.indentLevel;
+            textAreaRect.x -= indentCorrection;
+            textAreaRect.width += indentCorrection;
 
-                    text = EditorGUI.TextArea(rect, text);
-                }
-                EditorGUI.indentLevel = currentIndent;
-            }
-            EditorGUILayout.EndHorizontal();
-
-            return text;
+            return EditorGUI.TextArea(textAreaRect, text);
         }
     }
 }

@@ -9,8 +9,8 @@ namespace Argos.Framework
     public abstract class TextFieldWithButtonDrawerBase : PropertyDrawer
     {
         #region Constants
-        const string BUTTON_LABEL = "...";
-        const float BUTTON_WIDTH = 22f;
+        public const string BUTTON_LABEL = "...";
+        public const float BUTTON_WIDTH = 22f;
         #endregion
 
         #region Events
@@ -26,6 +26,7 @@ namespace Argos.Framework
 
             if (GUI.Button(browseButtonRect, TextFieldWithButtonDrawerBase.BUTTON_LABEL, EditorStyles.miniButton))
             {
+                EditorGUIUtility.editingTextField = false;
                 this.OnButtonClick(property);
             }
         }

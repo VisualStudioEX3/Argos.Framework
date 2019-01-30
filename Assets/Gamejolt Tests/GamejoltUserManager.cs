@@ -62,13 +62,11 @@ public class GamejoltUserManager : MonoBehaviour
         this.LogoutUser();
     }
 
-    [Button]
     public void LoginUser()
     {
         StartCoroutine(this.LoginUserCoroutine());
     }
 
-    [Button]
     public void LogoutUser()
     {
         this.CleanResponses();

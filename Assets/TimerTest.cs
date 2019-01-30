@@ -8,6 +8,8 @@ using Argos.Framework.Utils;
 public class TimerTest : MonoBehaviour
 {
     public Timer TimerScaled, TimerUnScaled, TimerEditor;
+    [File("Open file", FileDialogTypes.OpenFile, "PNG")]
+    public string OpenFileField;
 
     public void InitTimers()
     {
@@ -36,38 +38,36 @@ public class TimerTestEditor : Editor
     public override void OnInspectorGUI()
     {
         EditorGUILayout.BeginHorizontal();
-
-        if (GUILayout.Button("Play"))
         {
-            this._target.TimerScaled.Start();
-            this._target.TimerUnScaled.Start();
-            this._target.TimerEditor.Start();
+            if (GUILayout.Button("Play"))
+            {
+                this._target.TimerScaled.Start();
+                this._target.TimerUnScaled.Start();
+                this._target.TimerEditor.Start();
+            }
+            else if (GUILayout.Button("Pause"))
+            {
+                this._target.TimerScaled.Pause();
+                this._target.TimerUnScaled.Pause();
+                this._target.TimerEditor.Pause();
+            }
+            else if (GUILayout.Button("Resume"))
+            {
+                this._target.TimerScaled.Resume();
+                this._target.TimerUnScaled.Resume();
+                this._target.TimerEditor.Resume();
+            }
+            else if (GUILayout.Button("Stop"))
+            {
+                this._target.TimerScaled.Stop();
+                this._target.TimerUnScaled.Stop();
+                this._target.TimerEditor.Stop();
+            }
         }
-        else if (GUILayout.Button("Pause"))
-        {
-            this._target.TimerScaled.Pause();
-            this._target.TimerUnScaled.Pause();
-            this._target.TimerEditor.Pause();
-        }
-        else if (GUILayout.Button("Resume"))
-        {
-            this._target.TimerScaled.Resume();
-            this._target.TimerUnScaled.Resume();
-            this._target.TimerEditor.Resume();
-        }
-        else if (GUILayout.Button("Stop"))
-        {
-            this._target.TimerScaled.Stop();
-            this._target.TimerUnScaled.Stop();
-            this._target.TimerEditor.Stop();
-        }
-
         EditorGUILayout.EndHorizontal();
 
         EditorGUILayout.LabelField($"Timer scaled: {this._target.TimerScaled.Value}");
         EditorGUILayout.LabelField($"Timer unscaled: {this._target.TimerUnScaled.Value}");
         EditorGUILayout.LabelField($"Timer editor: {this._target.TimerEditor.Value}");
-
-        this.Repaint();
     }
 }

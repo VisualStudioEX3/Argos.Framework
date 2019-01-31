@@ -167,7 +167,7 @@ namespace Argos.Framework.Helpers
         {
             if (!discardGCCollect)
             {
-                System.GC.Collect();
+                GC.Collect();
             }
 
             return Resources.UnloadUnusedAssets();

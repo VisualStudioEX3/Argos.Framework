@@ -11,7 +11,7 @@ namespace Argos.Framework.Input
     /// <summary>
     /// Virtual Input Axis.
     /// </summary>
-    /// <remarks>Simulated a input axis with the capacity of setup input actions for each axis direction, and support predefined axes for mouse input and gamepad axes.</remarks>
+    /// <remarks>Simulated an input axis with the capacity of setup input actions for each axis direction, and support predefined axes for mouse input and gamepad axes.</remarks>
     [Serializable]
     public class InputAxis
     {
@@ -69,7 +69,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Axis type.
         /// </summary>
-        /// <remarks>Uses prebuild axis setup as alternate input (read after the custom input setup).</remarks>
+        /// <remarks>Uses built-in axis setup as alternate input (read after the custom input setup).</remarks>
         public InputAxisType AxisType;
 
         /// <summary>
@@ -197,7 +197,6 @@ namespace Argos.Framework.Input
         /// <remarks>Use this to fast clone instance.</remarks>
         public InputAxis(InputAxis instance) : this(new InputAction(instance.Left), new InputAction(instance.Right), new InputAction(instance.Down), new InputAction(instance.Up), instance.AxisType, instance.AlternativeMouseInput, instance.IsUIInput, instance.Sensitivity, instance.InvertYAxis, instance.Normalize, instance.Debug)
         {
-
         }
         #endregion
 

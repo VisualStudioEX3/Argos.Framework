@@ -13,7 +13,7 @@ namespace Argos.Framework.Input
     /// 
     /// The gamepad vibration effects only supported on Windows (desktop and UWP apps) and XBox One systems.
     /// ForceFeedback only supported on Windows desktop apps.</remarks>
-    [CreateAssetMenu(fileName = "GamepadVibrationEffect", menuName = "Argos.Framework/Input/Gamepad Vibration Effect")]
+    [CreateAssetMenu(fileName = "New Gamepad Vibration Effect", menuName = "Argos.Framework/Input/Gamepad Vibration Effect")]
     public sealed class GamepadVibrationEffectAsset : ScriptableObject
     {
         #region Enums

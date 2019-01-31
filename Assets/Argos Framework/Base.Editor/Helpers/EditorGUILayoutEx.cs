@@ -67,6 +67,7 @@ namespace Argos.Framework
                 EditorGUI.indentLevel--;
             }
             EditorGUILayout.EndVertical();
+            EditorGUILayout.Space();
         }
     }
 }

@@ -12,7 +12,7 @@ namespace Argos.Framework.Input
     {
         #region Constants
         const float MIN_DURATION = 0.01f;
-
+        const string LABEL_HEADER_TITLE = "Gamepad Vibration Effect";
         const string LABEL_POPUP_TYPE = "Vibration type";
         const string LABEL_TOGGLE_USE_CURVES = "Use curves";
         const string LABEL_USE_CURVES = "Vibration setup";
@@ -62,7 +62,7 @@ namespace Argos.Framework.Input
             this._strongCurve = this.serializedObject.FindProperty("_strongCurve");
             this._weakCurve = this.serializedObject.FindProperty("_weakCurve");
 
-            this.HeaderTitle = "Gamepad Vibration Effect";
+            this.HeaderTitle = GamepadVibrationEffectAssetEditor.LABEL_HEADER_TITLE;
 
             ForceFeedback.CheckForAvailableJoystick();
 
@@ -105,7 +105,7 @@ namespace Argos.Framework.Input
 
                     EditorGUILayout.PropertyField(this._loop, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_TOGGLE_LOOP));
 
-                    if (!this._target.UseCurves)
+                    if (!this._target.UseCurves && !this._target.Loop)
                     {
                         EditorGUILayout.PropertyField(this._duration, new GUIContent(GamepadVibrationEffectAssetEditor.LABEL_DURATION_VALUE));
                         if (this._target.Duration < GamepadVibrationEffectAssetEditor.MIN_DURATION)

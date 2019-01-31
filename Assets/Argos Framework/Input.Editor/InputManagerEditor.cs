@@ -35,27 +35,9 @@ namespace Argos.Framework.Input
             this._inputMapList = ReorderableListHelper.CreateNamedList(this, this._inputMapList, InputManagerEditor.HEADER_NAME, InputManagerEditor.PROPERTY_NAME, InputManagerEditor.PREFIX_NAME, false);
         }
 
-        //private void OnDisable()
-        //{
-        //    //string inputMapsNames = string.Empty;
-        //    SerializedProperty inputMapsProperty = this.serializedObject.FindProperty(InputManagerEditor.PROPERTY_NAME);
-        //    //for (int i = 0; i < inputMapsProperty.arraySize; i++)
-        //    //{
-        //    //    inputMapsNames += $"{AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(inputMapsProperty.GetArrayElementAtIndex(i).FindPropertyRelative("Data").objectReferenceValue))},";
-        //    //}
-
-        //    //EditorPrefs.SetString(InputManagerEditor.INPUT_MAP_ARRAY_KEY, inputMapsNames.Remove(inputMapsNames.Length - 1));
-
-        //    InputManager.InputMapsRefs = new InputMapAsset[inputMapsProperty.arraySize];
-        //    for (int i = 0; i < inputMapsProperty.arraySize; i++)
-        //    {
-        //        InputManager.InputMapsRefs[i] = (InputMapAsset)inputMapsProperty.GetArrayElementAtIndex(i).FindPropertyRelative("Data").objectReferenceValue;
-        //    }
-        //}
-
         public override void OnInspectorGUI()
         {
-            this.DrawDefaultInspector();
+            this.DrawDefaultInspectorWithoutScriptField();
 
             EditorGUILayout.Space();
 

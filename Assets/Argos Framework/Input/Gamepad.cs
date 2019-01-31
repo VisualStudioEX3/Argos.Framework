@@ -150,13 +150,13 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Some gamepads and joysticks defined the triggers as separated axes.
         /// </summary>
-        [HelpBox("Some gamepads and joysticks defined the triggers as separated axes:"), Space, CustomVector("L", "R")]
+        [HelpBox("Some gamepads defined the triggers as separated axes:"), Space, CustomVector("L", "R")]
         public Vector2Int TriggersAxes;
 
         /// <summary>
         /// Some gamepads and joysticks defined the DPad as separated axes.
         /// </summary>
-        [HelpBox("Some gamepads and joysticks defined the DPad as separated axes:"), Space]
+        [HelpBox("Some gamepads defined the DPad as separated axes:"), Space]
         public Vector2Int DPadAxes;
 
         /// <summary>
@@ -188,12 +188,12 @@ namespace Argos.Framework.Input
         [Tooltip("XBox Right Stick, PS4 R3 or Nintendo Switch Right Stick button.")]
         public UnityJoystickButtons RightStick;
 
-        [HelpBox("Some gamepads and joysticks defined the triggers as buttons:"), Tooltip("XBox LT, PS4 L2 or Nintendo Switch ZL button."), Space]
+        [HelpBox("Some gamepads defined the triggers as buttons:"), Tooltip("XBox LT, PS4 L2 or Nintendo Switch ZL button."), Space]
         public UnityJoystickButtons LeftTrigger;
         [Tooltip("XBox RT, PS4 R2 or Nintendo Switch ZR button.")]
         public UnityJoystickButtons RightTrigger;
 
-        [HelpBox("Some gamepads and joysticks defined the DPad as buttons:"), Space]
+        [HelpBox("Some gamepads defined the DPad as buttons:"), Space]
         public UnityJoystickButtons DPadLeft;
         public UnityJoystickButtons DPadRight;
         public UnityJoystickButtons DPadUp;
@@ -526,8 +526,8 @@ namespace Argos.Framework.Input
 
                 default:
 
-                    xAxis = this.GetAxisName((int)this.GenericGamepadSetup.LeftStickAxes.x);
-                    yAxis = this.GetAxisName((int)this.GenericGamepadSetup.LeftStickAxes.y);
+                    xAxis = this.GetAxisName(this.GenericGamepadSetup.LeftStickAxes.x);
+                    yAxis = this.GetAxisName(this.GenericGamepadSetup.LeftStickAxes.y);
                     invertY = this.GenericGamepadSetup.LeftStickInvertY ? -1f : 1f;
                     break;
             }
@@ -567,8 +567,8 @@ namespace Argos.Framework.Input
 
                 default:
 
-                    xAxis = this.GetAxisName((int)this.GenericGamepadSetup.RightStickAxes.x);
-                    yAxis = this.GetAxisName((int)this.GenericGamepadSetup.RightStickAxes.y);
+                    xAxis = this.GetAxisName(this.GenericGamepadSetup.RightStickAxes.x);
+                    yAxis = this.GetAxisName(this.GenericGamepadSetup.RightStickAxes.y);
                     invertY = this.GenericGamepadSetup.RightStickInvertY ? -1f : 1f;
                     break;
             }
@@ -596,7 +596,7 @@ namespace Argos.Framework.Input
                                             UnityEngine.Input.GetAxis(yAxis) * invertY);
 
 #if UNITY_STANDALONE_LINUX
-                    // OSX always. In Linux, if axes not return values (maybe is a wireless controller), check buttons:
+                    // In Linux, if axes not return values (maybe is a wireless controller), check buttons:
                     if (this.DPad == Vector2.zero)
                     {
                         if (UnityEngine.Input.GetKeyDown((KeyCode)XBoxControllerButtons.DPadLeft))
@@ -642,8 +642,8 @@ namespace Argos.Framework.Input
                 default:
 
                     // Check first the axes:
-                    xAxis = this.GetAxisName((int)this.GenericGamepadSetup.DPadAxes.x);
-                    yAxis = this.GetAxisName((int)this.GenericGamepadSetup.DPadAxes.y);
+                    xAxis = this.GetAxisName(this.GenericGamepadSetup.DPadAxes.x);
+                    yAxis = this.GetAxisName(this.GenericGamepadSetup.DPadAxes.y);
                     invertY = this.GenericGamepadSetup.DPadInvertY ? -1f : 1f;
 
                     this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
@@ -785,7 +785,7 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         string GetAxisName(int index)
         {
-            return this._axisNames[Mathf.Clamp((int)index, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX) - 1];
+            return this._axisNames[Mathf.Clamp(index, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX) - 1];
         }
 
         /// <summary>
@@ -810,8 +810,6 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public void TryToIndentifyGamepad()
         {
-#if UNITY_STANDALONE || UNITY_EDITOR
-
             foreach (var name in UnityEngine.Input.GetJoystickNames())
             {
                 if (!string.IsNullOrEmpty(name))
@@ -835,12 +833,6 @@ namespace Argos.Framework.Input
             }
 
             this.Type = GamepadType.Generic;
-
-#elif UNITY_XBOXONE || UNITY_PS4 || UNITY_SWITCH
-
-        this.Type = GamepadType.XBoxController;
-
-#endif
         }
         #endregion
     }

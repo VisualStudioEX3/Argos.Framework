@@ -7,7 +7,7 @@ using System.Reflection;
 namespace Argos.Framework
 {
     [CustomPropertyDrawer(typeof(TexturePreviewAttribute))]
-    public class TexturePreviewDrawer : PropertyDrawer
+    public class TexturePreviewDrawer : ArgosPropertyDrawerBase
     {
         #region Constants
         const string SERIALIZED_TEXTURE_TYPE = "PPtr<$Texture>";
@@ -24,6 +24,15 @@ namespace Argos.Framework
         {
             return TexturePreviewDrawer.FIELD_SIZE;
         }
+
+        public override bool CheckPropertyType()
+        {
+            return this.fieldInfo.FieldType == typeof(Texture) ||
+                   this.fieldInfo.FieldType == typeof(Texture2D) ||
+                   this.fieldInfo.FieldType == typeof(RenderTexture) ||
+                   this.fieldInfo.FieldType == typeof(Cubemap) ||
+                   this.fieldInfo.FieldType == typeof(Sprite);
+        }
         #endregion
 
         #region Events
@@ -36,6 +45,12 @@ namespace Argos.Framework
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            if (!this.CheckPropertyType())
+            {
+                this.PrintErrorMessage(position, label);
+                return;
+            }
+
             Rect prefixRect = position;
             prefixRect.width = EditorGUIUtility.labelWidth;
             EditorGUI.PrefixLabel(prefixRect, label);
@@ -47,46 +62,11 @@ namespace Argos.Framework
             bool allowSceneObjects = (this.attribute as TexturePreviewAttribute).AllowSceneObjects;
 
             int indent = EditorGUI.indentLevel;
-            EditorGUI.indentLevel = 0;
-
-            switch (property.type)
             {
-                case TexturePreviewDrawer.SERIALIZED_TEXTURE_TYPE:
-
-                    property.objectReferenceValue = this.DrawPreviewField<Texture>(fieldRect, property.objectReferenceValue, allowSceneObjects);
-                    break;
-
-                case TexturePreviewDrawer.SERIALIZED_TEXTURE2D_TYPE:
-
-                    property.objectReferenceValue = this.DrawPreviewField<Texture2D>(fieldRect, property.objectReferenceValue, allowSceneObjects);
-                    break;
-
-                case TexturePreviewDrawer.SERIALIZED_RENDER_TEXTURE_TYPE:
-
-                    property.objectReferenceValue = this.DrawPreviewField<RenderTexture>(fieldRect, property.objectReferenceValue, allowSceneObjects);
-                    break;
-
-                case TexturePreviewDrawer.SERIALIZED_CUBEMAP_TYPE:
-
-                    property.objectReferenceValue = this.DrawPreviewField<Cubemap>(fieldRect, property.objectReferenceValue, allowSceneObjects);
-                    break;
-
-                case TexturePreviewDrawer.SERIALIZED_SPRITE_TYPE:
-
-                    property.objectReferenceValue = this.DrawPreviewField<Sprite>(fieldRect, property.objectReferenceValue, allowSceneObjects);
-                    break;
-
-                default:
-
-                    throw new System.InvalidCastException($"Error to cast \"{property.displayName}\" field. TexturePreview attribute only works with Texture, Texture2D, RenderTexture, Cubemap and Sprite types.");
+                EditorGUI.indentLevel = 0;
+                property.objectReferenceValue = EditorGUI.ObjectField(fieldRect, property.objectReferenceValue, this.fieldInfo.FieldType, allowSceneObjects);
             }
-
             EditorGUI.indentLevel = indent;
-        }
-
-        UnityEngine.Object DrawPreviewField<T>(Rect position, UnityEngine.Object texture, bool allowSceneObjects) where T : UnityEngine.Object
-        {
-            return EditorGUI.ObjectField(position, (T)texture, typeof(T), allowSceneObjects);
         }
         #endregion
     }

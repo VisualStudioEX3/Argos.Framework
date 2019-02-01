@@ -17,5 +17,5 @@ public class TexturePreviewFieldTest : MonoBehaviour
     [TexturePreview]
     public Sprite Sprite;
     [TexturePreview]
-    public string Puta;
+    public string String;
 }

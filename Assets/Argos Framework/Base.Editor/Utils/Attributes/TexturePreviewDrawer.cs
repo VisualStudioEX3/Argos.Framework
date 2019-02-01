@@ -47,7 +47,7 @@ namespace Argos.Framework
         {
             if (!this.CheckPropertyType())
             {
-                this.PrintErrorMessage(position, label);
+                this.PrintErrorMessage(position, property, label);
                 return;
             }
 

@@ -18,16 +18,18 @@ namespace Argos.Framework
         #region Methods & Functions
         public abstract bool CheckPropertyType();
 
-        public void PrintErrorMessage(Rect position, GUIContent label)
+        public void PrintErrorMessage(Rect position, SerializedProperty property, GUIContent label)
         {
             if (this._errorMessageStyle == null)
             {
                 this._errorMessageStyle = new GUIStyle();
-                this._errorMessageStyle.alignment = TextAnchor.MiddleRight;
+                this._errorMessageStyle.alignment = TextAnchor.UpperRight;
                 this._errorMessageStyle.richText = true;
             }
 
             EditorGUI.LabelField(position, label, new GUIContent(ArgosPropertyDrawerBase.ERROR_MESSAGE), this._errorMessageStyle);
+
+            this.Log(ArgosPropertyDrawerBase.ERROR_MESSAGE, LogLevel.Error, property.serializedObject.context);
         }
         #endregion
     }

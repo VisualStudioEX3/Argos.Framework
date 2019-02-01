@@ -45,7 +45,9 @@ namespace Argos.Framework
 
             if (!this.CheckNameCount(property, vectorAttribute))
             {
-                Debug.LogError($"Missing names for CustomVector attribute. Ensured to match the names array elements with the right vector type. \nMember target: \"{label.text}\"");
+                this.Log($"Missing names for CustomVector attribute. Ensured to match the names array elements with the right vector type. \nMember target: \"{label.text}\"", 
+                         LogLevel.Error, 
+                         property.serializedObject.targetObject);
                 return;
             }
 

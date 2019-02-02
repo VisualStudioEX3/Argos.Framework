@@ -36,7 +36,7 @@ namespace Argos.Framework
         /// <param name="fileExtension">File extension for the open file dialog.</param>
         /// <param name="directory">Initial directory to target the open file dialog. By default is empty.</param>
         /// <param name="defaultName">Default filename. Use only for SaveFile type. By default is empty.</param>
-        /// <param name="message">Message displayed in dialog. Only for SaveFileInProject. By default is empty.</param>
+        /// <param name="message">Message displayed in dialog. Only for SaveFileInProject (and only for OSX dialogs). By default is empty.</param>
         public FileAttribute(string dialogTitle, FileDialogTypes dialogType, string fileExtension, string directory = "", string defaultName = "", string message = "")
         {
             this.DialogTitle = dialogTitle;

@@ -6,13 +6,31 @@ using UnityEditor;
 namespace Argos.Framework
 {
     [CustomPropertyDrawer(typeof(CustomVectorAttribute))]
-    public class CustomVectorDrawer : PropertyDrawer
+    public class CustomVectorDrawer : ArgosPropertyDrawerBase
     {
         #region Constants
-        const float VECTOR2_FIELD_WITDH_CORRECTION = 1.5f; 
+        const float VECTOR2_FIELD_WITDH_CORRECTION = 1.5f;
         #endregion
 
         #region Methods & Functions
+        public override bool CheckPropertyType(SerializedProperty property)
+        {
+            switch (property.propertyType)
+            {
+                case SerializedPropertyType.Vector2:
+                case SerializedPropertyType.Vector3:
+                case SerializedPropertyType.Vector4:
+                case SerializedPropertyType.Vector2Int:
+                case SerializedPropertyType.Vector3Int:
+
+                    return true;
+
+                default:
+
+                    return false;
+            }
+        }
+
         bool CheckNameCount(SerializedProperty property, CustomVectorAttribute attribute)
         {
             switch (property.propertyType)
@@ -39,7 +57,7 @@ namespace Argos.Framework
         #endregion
 
         #region Events
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var vectorAttribute = (CustomVectorAttribute)attribute;
 

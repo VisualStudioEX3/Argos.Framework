@@ -49,6 +49,15 @@ public class Test : MonoBehaviour
         [OptionList(true)]
         public RuntimePlatform SplittedOptionList;
 
+        [Button]
+        public string ButtonAttribute;
+
+        [Button("Large Button", GUIButtonSize.Large)]
+        public string LargeButtonAttribute;
+
+        [Button("Mini Button", GUIButtonSize.Mini)]
+        public string MiniButtonAttribute;
+
         [File("Open file", FileDialogTypes.OpenFile, "PNG")]
         public string OpenFileField;
 
@@ -129,8 +138,14 @@ public class Test : MonoBehaviour
     [Multiline(10)]
     public string Multiline;
 
-    [Button("ButtonTest")]
-    public bool ButtonAttribute;
+    [Button]
+    public string ButtonAttribute = "ButtonTest";
+
+    [Button("Large Button", GUIButtonSize.Large)]
+    public string LargeButtonAttribute = "ButtonTest";
+
+    [Button("Mini Button", GUIButtonSize.Mini)]
+    public string MiniButtonAttribute = "ButtonTest";
 
     [File("Open file", FileDialogTypes.OpenFile, "PNG")]
     public string OpenFileField;
@@ -219,6 +234,6 @@ public class Test : MonoBehaviour
 
     public void ButtonTest()
     {
-
+        print("Button test!");
     }
 }

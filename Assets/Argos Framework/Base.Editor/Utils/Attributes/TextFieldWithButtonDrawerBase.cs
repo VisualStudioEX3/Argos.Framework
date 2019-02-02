@@ -6,15 +6,20 @@ using UnityEngine;
 
 namespace Argos.Framework
 {
-    public abstract class TextFieldWithButtonDrawerBase : PropertyDrawer
+    public abstract class TextFieldWithButtonDrawerBase : ArgosPropertyDrawerBase
     {
         #region Constants
         public const string BUTTON_LABEL = "...";
         public const float BUTTON_WIDTH = 22f;
         #endregion
 
+        public override bool CheckPropertyType(SerializedProperty property)
+        {
+            return property.propertyType == SerializedPropertyType.String;
+        }
+
         #region Events
-        public sealed override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public sealed override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             Rect fieldRect = position;
             fieldRect.width -= TextFieldWithButtonDrawerBase.BUTTON_WIDTH + 2f;

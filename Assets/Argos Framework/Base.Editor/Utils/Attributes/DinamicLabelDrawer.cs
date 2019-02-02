@@ -6,7 +6,7 @@ using UnityEditor;
 namespace Argos.Framework
 {
     [CustomPropertyDrawer(typeof(DinamicLabelAttribute))]
-    public class DinamicLabelDrawer : PropertyDrawer
+    public class DinamicLabelDrawer : ArgosPropertyDrawerBase
     {
         #region Internal vars
         DinamicLabelAttribute _attribute;
@@ -14,7 +14,12 @@ namespace Argos.Framework
         #endregion
 
         #region Methods & Functions
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        public override bool CheckPropertyType(SerializedProperty property)
+        {
+            return property.propertyType == SerializedPropertyType.String;
+        }
+
+        public override float GetCustomHeight(SerializedProperty property, GUIContent label)
         {
             this._attribute = (DinamicLabelAttribute)attribute;
             this._style = this._attribute.MiniLabel ? EditorStyles.wordWrappedMiniLabel : EditorStyles.wordWrappedLabel;
@@ -25,7 +30,7 @@ namespace Argos.Framework
         #endregion
 
         #region Events
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             if (this._attribute.Selectable)
             {

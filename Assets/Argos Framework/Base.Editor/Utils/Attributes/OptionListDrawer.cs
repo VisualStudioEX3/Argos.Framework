@@ -7,15 +7,52 @@ using Argos.Framework.Helpers;
 namespace Argos.Framework
 {
     [CustomPropertyDrawer(typeof(OptionListAttribute))]
-    public class OptionListDrawer : PropertyDrawer
+    public class OptionListDrawer : ArgosPropertyDrawerBase
     {
         #region Internal vars
         bool _split;
         int _splitCount;
         #endregion
 
+        #region Methods & Functions
+        public override bool CheckPropertyType(SerializedProperty property)
+        {
+            return property.propertyType == SerializedPropertyType.Enum;
+        }
+
+        public override float GetCustomHeight(SerializedProperty property, GUIContent label)
+        {
+            float height = EditorGUIUtility.singleLineHeight;
+
+            this._split = ((OptionListAttribute)this.attribute).Split;
+
+            if (this._split)
+            {
+                this._splitCount = (int)(MathHelper.ForceEvenValue(property.enumDisplayNames.Length) * 0.5f);
+
+                height += (this._splitCount * EditorGUIUtility.singleLineHeight);
+            }
+            else
+            {
+                height += (property.enumDisplayNames.Length * EditorGUIUtility.singleLineHeight);
+            }
+
+            height += EditorGUIUtility.standardVerticalSpacing;
+
+            return height;
+        }
+
+        void DrawLeftToggleField(Rect position, SerializedProperty property, int index)
+        {
+            if (EditorGUI.ToggleLeft(position, property.enumDisplayNames[index], property.enumValueIndex == index))
+            {
+                property.enumValueIndex = index;
+            }
+        }
+        #endregion
+
         #region Events
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             Rect initial = position;
 
@@ -47,38 +84,6 @@ namespace Argos.Framework
                 }
             }
             EditorGUI.indentLevel--;
-        }
-        #endregion
-
-        #region Methods & Functions
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
-        {
-            float height = EditorGUIUtility.singleLineHeight;
-
-            this._split = ((OptionListAttribute)this.attribute).Split;
-
-            if (this._split)
-            {
-                this._splitCount = (int)(MathHelper.ForceEvenValue(property.enumDisplayNames.Length) * 0.5f);
-
-                height += (this._splitCount * EditorGUIUtility.singleLineHeight);
-            }
-            else
-            {
-                height += (property.enumDisplayNames.Length * EditorGUIUtility.singleLineHeight);
-            }
-
-            height += EditorGUIUtility.standardVerticalSpacing;
-
-            return height;
-        }
-
-        void DrawLeftToggleField(Rect position, SerializedProperty property, int index)
-        {
-            if (EditorGUI.ToggleLeft(position, property.enumDisplayNames[index], property.enumValueIndex == index))
-            {
-                property.enumValueIndex = index;
-            }
         }
         #endregion
     }

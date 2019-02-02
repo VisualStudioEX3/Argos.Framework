@@ -6,10 +6,17 @@ using UnityEditor;
 namespace Argos.Framework
 {
     [CustomPropertyDrawer(typeof(SceneAttribute))]
-    public class SceneDrawer : PropertyDrawer
+    public class SceneDrawer : ArgosPropertyDrawerBase
     {
+        #region Methods & Functions
+        public override bool CheckPropertyType(SerializedProperty property)
+        {
+            return property.propertyType == SerializedPropertyType.String;
+        } 
+        #endregion
+
         #region Events
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(property.stringValue);
 

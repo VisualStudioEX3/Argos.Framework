@@ -6,7 +6,7 @@ using UnityEditor;
 namespace Argos.Framework
 {
     [CustomPropertyDrawer(typeof(MinMaxSliderAttribute))]
-    public class MinMaxSliderDrawer : PropertyDrawer
+    public class MinMaxSliderDrawer : ArgosPropertyDrawerBase
     {
         #region Constants
         const float FIELD_WIDTH = 50f;
@@ -18,6 +18,24 @@ namespace Argos.Framework
         #endregion
 
         #region Methods & Functions
+        public override bool CheckPropertyType(SerializedProperty property)
+        {
+            switch (property.propertyType)
+            {
+                case SerializedPropertyType.Vector2:
+                case SerializedPropertyType.Vector3:
+                case SerializedPropertyType.Vector4:
+                case SerializedPropertyType.Vector2Int:
+                case SerializedPropertyType.Vector3Int:
+
+                    return true;
+                
+                default:
+
+                    return false;
+            }
+        }
+
         void CalculateControlRects(Rect position)
         {
             Rect indentedPosition = EditorGUI.IndentedRect(position);
@@ -87,7 +105,7 @@ namespace Argos.Framework
         #endregion
 
         #region Events
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             bool isVector2Int = (property.propertyType == SerializedPropertyType.Vector2Int);
             Vector2 vector = isVector2Int ? property.vector2IntValue : property.vector2Value;

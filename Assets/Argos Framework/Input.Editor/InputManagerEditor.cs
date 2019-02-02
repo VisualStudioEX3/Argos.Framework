@@ -43,7 +43,7 @@ namespace Argos.Framework.Input
 
             EditorGUILayout.HelpBox(InputManagerEditor.HELPBOX_MESSAGE, MessageType.Info);
             GUI.enabled = !Application.isPlaying;
-            if (GUILayout.Button(InputManagerEditor.BUTTON_LABEL))
+            if (GUILayout.Button(InputManagerEditor.BUTTON_LABEL, GUILayout.Height(32f)))
             {
                 if (EditorUtility.DisplayDialog(InputManagerEditor.DIALOG_TITLE, InputManagerEditor.DIALOG_MESSAGE, InputManagerEditor.DIALOG_OK, InputManagerEditor.DIALOG_CANCEL))
                 {

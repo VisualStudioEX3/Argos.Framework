@@ -10,28 +10,22 @@ namespace Argos.Framework
     public class TexturePreviewDrawer : ArgosPropertyDrawerBase
     {
         #region Constants
-        const string SERIALIZED_TEXTURE_TYPE = "PPtr<$Texture>";
-        const string SERIALIZED_TEXTURE2D_TYPE = "PPtr<$Texture2D>";
-        const string SERIALIZED_RENDER_TEXTURE_TYPE = "PPtr<$RenderTexture>";
-        const string SERIALIZED_CUBEMAP_TYPE = "PPtr<$Cubemap>";
-        const string SERIALIZED_SPRITE_TYPE = "PPtr<$Sprite>";
-
         static readonly float FIELD_SIZE = EditorGUIUtility.singleLineHeight * 4f;
         #endregion
 
         #region Methods & Functions
-        public override float GetPropertyHeight(SerializedProperty property, GUIContent label)
+        public override float GetCustomHeight(SerializedProperty property, GUIContent label)
         {
             return TexturePreviewDrawer.FIELD_SIZE;
         }
 
-        public override bool CheckPropertyType()
+        public override bool CheckPropertyType(SerializedProperty property)
         {
-            return this.fieldInfo.FieldType == typeof(Texture) ||
-                   this.fieldInfo.FieldType == typeof(Texture2D) ||
-                   this.fieldInfo.FieldType == typeof(RenderTexture) ||
-                   this.fieldInfo.FieldType == typeof(Cubemap) ||
-                   this.fieldInfo.FieldType == typeof(Sprite);
+            return this.FieldType == typeof(Texture) ||
+                   this.FieldType == typeof(Texture2D) ||
+                   this.FieldType == typeof(RenderTexture) ||
+                   this.FieldType == typeof(Cubemap) ||
+                   this.FieldType == typeof(Sprite);
         }
         #endregion
 
@@ -43,14 +37,8 @@ namespace Argos.Framework
             return false;
         }
 
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (!this.CheckPropertyType())
-            {
-                this.PrintErrorMessage(position, property, label);
-                return;
-            }
-
             Rect prefixRect = position;
             prefixRect.width = EditorGUIUtility.labelWidth;
             EditorGUI.PrefixLabel(prefixRect, label);
@@ -64,7 +52,7 @@ namespace Argos.Framework
             int indent = EditorGUI.indentLevel;
             {
                 EditorGUI.indentLevel = 0;
-                property.objectReferenceValue = EditorGUI.ObjectField(fieldRect, property.objectReferenceValue, this.fieldInfo.FieldType, allowSceneObjects);
+                property.objectReferenceValue = EditorGUI.ObjectField(fieldRect, property.objectReferenceValue, this.FieldType, allowSceneObjects);
             }
             EditorGUI.indentLevel = indent;
         }

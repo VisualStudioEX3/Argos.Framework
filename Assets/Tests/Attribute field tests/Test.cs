@@ -139,13 +139,13 @@ public class Test : MonoBehaviour
     public string Multiline;
 
     [Button]
-    public string ButtonAttribute = "ButtonTest";
+    public string DefaultButton = "ButtonTest";
 
     [Button("Large Button", GUIButtonSize.Large)]
-    public string LargeButtonAttribute = "ButtonTest";
+    public string LargeButton = "ButtonTest";
 
     [Button("Mini Button", GUIButtonSize.Mini)]
-    public string MiniButtonAttribute = "ButtonTest";
+    public string MiniButton = "ButtonTest";
 
     [File("Open file", FileDialogTypes.OpenFile, "PNG")]
     public string OpenFileField;

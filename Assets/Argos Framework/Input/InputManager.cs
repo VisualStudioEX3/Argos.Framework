@@ -211,7 +211,7 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Public vars
-        [Header("General settings:")]
+        [Header("General settings")]
         public bool HideMouseCursorInGamepadMode = true;
 
         [Tooltip("Interval between input type identification checks.")]
@@ -224,13 +224,13 @@ namespace Argos.Framework.Input
         /// </summary>
         public bool EnableGamepadVibration = true;
 
-        [Header("UI settings:")]
+        [Header("UI settings")]
         /// <summary>
         /// Time for double click detection on UI controls.
         /// </summary>
         public float DoubleClickTime = 0.25f;
 
-        [Header("Nintendo Switch Pro controller (PC only):")]
+        [Header("Nintendo Switch Pro controller (PC only)")]
         [Tooltip("Use the Nintendo Switch Pro controller button layout or XBox button layout.\n\nWhen the Nintendo Switch Pro controller is active, this setting allow to use the Nintendo button layout. If this setting is false, uses the XBox button layout (swtich A B buttons, and X Y buttons to match the XBox controller button layout).\n\nThis setting not affect to XBox360/One, PS4 or generic controllers.")]
         public bool UseNintendoButtonLayout = true;
 
@@ -260,13 +260,7 @@ namespace Argos.Framework.Input
         /// Return true if the gamepad vibration is enable and available.
         /// </summary>
         /// <remarks>In KeyboardAndMouse mode this return false always.</remarks>
-        public bool IsGamepadVibrationEnable
-        {
-            get
-            {
-                return this.EnableGamepadVibration && this.CurrentInputType != InputType.KeyboardAndMouse;
-            }
-        }
+        public bool IsGamepadVibrationEnable { get { return this.EnableGamepadVibration && this.CurrentInputType != InputType.KeyboardAndMouse; } }
         #endregion
 
         #region Initializers

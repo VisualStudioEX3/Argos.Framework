@@ -485,11 +485,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   File: {fileID: 11400000, guid: f0b1e116445f4c34699fd0fe37dc7040, type: 2}
-  Vector2MinMaxSliderField: {x: 1.81, y: 3.47}
+  Vector2MinMaxSliderField: {x: 1.66, y: 3.58}
   Vector2IntMinMaxSliderField: {x: 1, y: 4}
   SceneField: 
-  TagField: Untagged
-  LayerField: 0
+  TagField: GameController
+  LayerField: 5
   CustomVector2: {x: 0, y: 0}
   CustomVector2Int: {x: 0, y: 0}
   CustomVector3: {x: 0, y: 0, z: 0}
@@ -504,14 +504,16 @@ MonoBehaviour:
   DinamicSelectableLabel: Dinamic selectable label.
   DinamicSelectableMiniLabel: Dinamic selectable mini label.
   Multiline: 
-  ButtonAttribute: 0
+  DefaultButton: ButtonTest
+  LargeButton: ButtonTest
+  MiniButton: ButtonTest
   OpenFileField: 
   SaveFileField: 
   SaveFileInProjectField: 
   OpenFolderField: 
   SaveFolderField: 
-  OptionList: 2
-  SplittedOptionList: 17
+  OptionList: 3
+  SplittedOptionList: 9
   Texture: {fileID: 0}
   Texture2D: {fileID: 0}
   RenderTexture: {fileID: 0}
@@ -529,7 +531,10 @@ MonoBehaviour:
     Sprite: {fileID: 0}
     Multiline: 
     OptionList: 3
-    SplittedOptionList: 17
+    SplittedOptionList: 4
+    ButtonAttribute: 
+    LargeButtonAttribute: 
+    MiniButtonAttribute: 
     OpenFileField: 
     SaveFileField: 
     SaveFileInProjectField: 

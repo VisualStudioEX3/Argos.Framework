@@ -5,24 +5,34 @@ using UnityEditor;
 
 namespace Argos.Framework
 {
-    [CustomPropertyDrawer(typeof(SceneAttribute))]
+    [CustomPropertyDrawer(typeof(SceneAsset))]
     public class SceneDrawer : ArgosPropertyDrawerBase
     {
-        #region Methods & Functions
-        public override bool CheckPropertyType(SerializedProperty property)
-        {
-            return property.propertyType == SerializedPropertyType.String;
-        } 
+        #region Internal vars
+        SerializedProperty _sceneAssetReference;
+        SerializedProperty _scenePath;
+
+        UnityEditor.SceneAsset _sceneAssetEditor;
+
+        string _guid;
+        long _localID;
         #endregion
 
         #region Events
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            var scene = AssetDatabase.LoadAssetAtPath<SceneAsset>(property.stringValue);
+            this._sceneAssetReference = property.FindPropertyRelative("_asset");
+            this._scenePath = property.FindPropertyRelative("_path");
 
-            scene = (SceneAsset)EditorGUI.ObjectField(position, label, scene, typeof(SceneAsset), true);
+            if (this._sceneAssetReference.objectReferenceValue && AssetDatabase.TryGetGUIDAndLocalFileIdentifier(this._sceneAssetReference.objectReferenceValue, out _guid, out _localID))
+            {
+                this._sceneAssetEditor = AssetDatabase.LoadAssetAtPath<UnityEditor.SceneAsset>(AssetDatabase.GUIDToAssetPath(_guid));
+            }
 
-            property.stringValue = AssetDatabase.GetAssetOrScenePath(scene);
+            this._sceneAssetEditor = (UnityEditor.SceneAsset)EditorGUI.ObjectField(position, label, this._sceneAssetEditor, typeof(UnityEditor.SceneAsset), true);
+
+            this._sceneAssetReference.objectReferenceValue = this._sceneAssetEditor ? this._sceneAssetEditor : null;
+            this._scenePath.stringValue = this._sceneAssetEditor ? AssetDatabase.GetAssetOrScenePath(this._sceneAssetEditor) : string.Empty;
         }
         #endregion
     }

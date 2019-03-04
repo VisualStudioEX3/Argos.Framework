@@ -19,8 +19,7 @@ public class Test : MonoBehaviour
         [MinMaxSlider(0f, 5f)]
         public Vector2Int Field2;
 
-        [Scene]
-        public string Field3;
+        public SceneAsset Field3;
 
         [ProgressBar("Field4", true)]
         public float Field4;
@@ -83,8 +82,7 @@ public class Test : MonoBehaviour
     [MinMaxSlider(0f, 5f)]
     public Vector2Int Vector2IntMinMaxSliderField;
     
-    [Scene]
-    public string SceneField;
+    public SceneAsset SceneField;
 
     [Tag]
     public string TagField;

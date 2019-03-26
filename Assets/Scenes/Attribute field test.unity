@@ -478,7 +478,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: aa655fd0394a21a4bb9a7fe66afc906f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 3}
+  Texture: {fileID: 0}
   Texture2D: {fileID: 0}
   RenderTexture: {fileID: 0}
   CubeMap: {fileID: 0}

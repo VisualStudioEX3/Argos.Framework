@@ -181,7 +181,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         }
 
         string urlPrivateKey = $"{url.ToString()}{GamejoltAPI.PrivateKey}";
-        url.Append($"&signature={ArgosHelper.CalculateMD5Hash(urlPrivateKey)}");
+        url.Append($"&signature={Argos.Framework.Helpers.Application.CalculateMD5Hash(urlPrivateKey)}");
 
         return url.ToString(); ;
     }
@@ -200,7 +200,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         paramList.Append(GamejoltAPI.PrivateKey);
 
         string urlPrivateKey = $"{url}{paramList.ToString()}";
-        string signature = $"&signature={ArgosHelper.CalculateMD5Hash(urlPrivateKey)}";
+        string signature = $"&signature={Argos.Framework.Helpers.Application.CalculateMD5Hash(urlPrivateKey)}";
 
         return $"{url}{signature}";
     }

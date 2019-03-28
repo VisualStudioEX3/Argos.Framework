@@ -144,7 +144,7 @@ namespace Argos.Framework
         /// <param name="label">New label.</param>
         public void EditHeaderToolbarButtonLabel(int buttonIndex, string label)
         {
-            if (MathHelper.IsClamped(buttonIndex, 0, this._toolbar.Count - 1))
+            if (Helpers.Math.IsClamped(buttonIndex, 0, this._toolbar.Count - 1))
             {
                 var button = this._toolbar[buttonIndex];
                 button.Label = label;

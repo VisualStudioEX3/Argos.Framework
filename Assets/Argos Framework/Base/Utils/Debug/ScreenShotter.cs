@@ -28,7 +28,7 @@ namespace Argos.Framework.Utils.Debug
         #region Update logic
         void Update()
         {
-            if (Helpers.ArgosSupportedPlatforms.Desktop.HasFlag(Helpers.ArgosHelper.CurrentPlatform))
+            if (Helpers.ArgosSupportedPlatforms.Desktop.HasFlag(Helpers.Application.CurrentPlatform))
             {
                 if (string.IsNullOrEmpty(this.Name))
                 {

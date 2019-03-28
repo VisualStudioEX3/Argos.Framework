@@ -28,7 +28,7 @@ namespace Argos.Framework
 
             if (this._split)
             {
-                this._splitCount = (int)(MathHelper.ForceEvenValue(property.enumDisplayNames.Length) * 0.5f);
+                this._splitCount = (int)(Math.ForceEvenValue(property.enumDisplayNames.Length) * 0.5f);
 
                 height += (this._splitCount * EditorGUIUtility.singleLineHeight);
             }

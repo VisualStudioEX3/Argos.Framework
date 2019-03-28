@@ -10,7 +10,7 @@ namespace Argos.Framework.Helpers
     /// <summary>
     /// Collections helper class.
     /// </summary>
-    public static class CollectionsHelper
+    public static class Collections
     {
         #region Methods & Functions
         /// <summary>
@@ -45,7 +45,7 @@ namespace Argos.Framework.Helpers
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static void Shuffle<T>(ref T[] array)
         {
-            var rng = new System.Random(ArgosHelper.GenerateSafeRandomSeed());
+            var rng = new System.Random(Application.GenerateSafeRandomSeed());
             int n = array.Length;
             while (n > 1)
             {
@@ -65,7 +65,7 @@ namespace Argos.Framework.Helpers
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static void Shuffle<T>(ref List<T> list)
         {
-            var rng = new System.Random(ArgosHelper.GenerateSafeRandomSeed());
+            var rng = new System.Random(Application.GenerateSafeRandomSeed());
             int n = list.Count;
             while (n > 1)
             {

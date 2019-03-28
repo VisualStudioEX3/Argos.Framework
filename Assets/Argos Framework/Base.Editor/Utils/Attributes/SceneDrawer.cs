@@ -34,7 +34,13 @@ namespace Argos.Framework
                 this._sceneAssetEditor = AssetDatabase.LoadAssetAtPath<UnityEditor.SceneAsset>(AssetDatabase.GUIDToAssetPath(_guid));
             }
 
-            this._sceneAssetEditor = (UnityEditor.SceneAsset)EditorGUI.ObjectField(position, label, this._sceneAssetEditor, typeof(UnityEditor.SceneAsset), true);
+            Rect propertyField = position;
+            if (property.IsArrayElement())
+            {
+                propertyField.height -= 2f;
+            }
+
+            this._sceneAssetEditor = (UnityEditor.SceneAsset)EditorGUI.ObjectField(propertyField, label, this._sceneAssetEditor, typeof(UnityEditor.SceneAsset), true);
 
             this._sceneAssetReference.objectReferenceValue = this._sceneAssetEditor ? this._sceneAssetEditor : null;
             if (this._sceneAssetEditor)

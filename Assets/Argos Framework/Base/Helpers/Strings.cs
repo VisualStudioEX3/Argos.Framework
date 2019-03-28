@@ -11,7 +11,7 @@ namespace Argos.Framework.Helpers
     /// <summary>
     /// String helper class.
     /// </summary>
-    public static class StringHelper
+    public static class Strings
     {
         #region Methods & Functions
         /// <summary>

@@ -34,7 +34,7 @@ namespace Argos.Framework.Helpers
     /// <summary>
     /// General helper class.
     /// </summary>
-    public static class ArgosHelper
+    public static class Application
     {
         #region Properties
         /// <summary>
@@ -44,7 +44,7 @@ namespace Argos.Framework.Helpers
         {
             get
             {
-                switch (Application.platform)
+                switch (UnityEngine.Application.platform)
                 {
                     case RuntimePlatform.OSXEditor:
                     case RuntimePlatform.OSXPlayer:
@@ -80,7 +80,7 @@ namespace Argos.Framework.Helpers
 
                             default:
 
-                                throw new NotImplementedException($"Platform not supported. Platform: {Application.platform}, Device type: {SystemInfo.deviceType}");
+                                throw new NotImplementedException($"Platform not supported. Platform: {UnityEngine.Application.platform}, Device type: {SystemInfo.deviceType}");
                         }
 
                     case RuntimePlatform.PS4:
@@ -97,7 +97,7 @@ namespace Argos.Framework.Helpers
 
                     default:
 
-                        throw new NotImplementedException($"Platform not supported. Platform: {Application.platform}, Device type: {SystemInfo.deviceType}");
+                        throw new NotImplementedException($"Platform not supported. Platform: {UnityEngine.Application.platform}, Device type: {SystemInfo.deviceType}");
                 }
             }
         } 
@@ -152,7 +152,7 @@ namespace Argos.Framework.Helpers
 
             for (int i = 0; i < ragdoll.childCount; i++)
             {
-                ArgosHelper.SetRagdollPose(ragdoll.GetChild(i), character.GetChild(i));
+                Application.SetRagdollPose(ragdoll.GetChild(i), character.GetChild(i));
             }
         }
 

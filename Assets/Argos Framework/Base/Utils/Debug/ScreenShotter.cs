@@ -4,6 +4,10 @@ using Argos.Framework;
 
 namespace Argos.Framework.Utils.Debug
 {
+    /// <summary>
+    /// Utility for make screenshots in gameplay and editor mode.
+    /// </summary>
+    /// <remarks>For now, only works on desktop platforms.</remarks>
     [AddComponentMenu("Argos.Framework/Utils/Debug/Screen Shotter"), DisallowMultipleComponent, ExecuteInEditMode]
     public sealed class ScreenShotter : MonoBehaviour
     {
@@ -12,6 +16,7 @@ namespace Argos.Framework.Utils.Debug
         #endregion
 
         #region Internal vars
+        string _path;
         string _lastName;
 #pragma warning disable 414
         [SerializeField, DinamicLabel(true, true)]
@@ -20,15 +25,31 @@ namespace Argos.Framework.Utils.Debug
         #endregion
 
         #region Public vars
-        public KeyCode screenshotKey = KeyCode.F12;
+        [Tooltip("Only works in play mode. Use \"Take Screenshot\" button in editor mode.")]
+        public KeyCode ScreenshotKey = KeyCode.F12;
         public string Name = DEFAULT_NAME;
-        
+        #endregion
+
+        #region Properties
+        public string ScreenshotsPath
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(this._path))
+                {
+                    this._path = $"{Application.dataPath.Remove(Application.dataPath.LastIndexOf('/'))}/Screenshots/";
+                }
+
+                return this._path;
+            }
+        }
         #endregion
 
         #region Update logic
         void Update()
         {
-            if (Helpers.ArgosSupportedPlatforms.Desktop.HasFlag(Helpers.Application.CurrentPlatform))
+            // TODO: Study how to implement in a way to apply for other platforms like consoles.
+            if (Helpers.Application.IsDesktopPlatform)
             {
                 if (string.IsNullOrEmpty(this.Name))
                 {
@@ -40,21 +61,43 @@ namespace Argos.Framework.Utils.Debug
                 if (this._lastName != this.Name)
                 {
                     this._lastName = this.Name;
-                    this._finalName = string.Format("{0} {1}.png", this.Name, System.DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss"));
+                    this._finalName = this.CreateFileName();
                 }
 
-                if (UnityEngine.Input.GetKeyDown(this.screenshotKey))
+                if (UnityEngine.Input.GetKeyDown(this.ScreenshotKey))
                 {
-                    string path = string.Format("{0}/Screenshots/", Application.dataPath.Remove(Application.dataPath.LastIndexOf('/')));
-                    if (!System.IO.Directory.Exists(path))
-                    {
-                        System.IO.Directory.CreateDirectory(path);
-                    }
-                    string fileName = string.Format("{0}{1} {2}.png", path, this.Name, System.DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss"));
-                    ScreenCapture.CaptureScreenshot(fileName);
-                    print("Created Screenshot: " + fileName);
-                } 
+                    this.TakeScreenshot();
+                }
             }
+        }
+        #endregion
+
+        #region Methods & Functions
+        string CreateFileName()
+        {
+            // TODO: Study how to implement in a way to apply for other platforms like consoles.
+            return $"{this.Name} {System.DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}.png";
+        }
+
+        /// <summary>
+        /// Takes a screenshot.
+        /// </summary>
+        /// <returns>Return the screenshot path and filename.</returns>
+        public string TakeScreenshot()
+        {
+            // TODO: Study how to implement in a way to apply for other platforms like consoles.
+            if (!System.IO.Directory.Exists(this.ScreenshotsPath))
+            {
+                System.IO.Directory.CreateDirectory(this.ScreenshotsPath);
+            }
+
+            string fileName = $"{this.ScreenshotsPath}{this.CreateFileName()}";
+
+            ScreenCapture.CaptureScreenshot(fileName);
+
+            print("ScreenShotter: Created Screenshot: " + fileName);
+
+            return fileName;
         }
         #endregion
     }

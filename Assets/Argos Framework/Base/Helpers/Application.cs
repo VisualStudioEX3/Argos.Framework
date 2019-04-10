@@ -27,7 +27,7 @@ namespace Argos.Framework.Helpers
         XBoxOne = 16,
         PS4 = 32,
         NintendoSwitch = 64,
-        Console = XBoxOne | PS4 | NintendoSwitch
+        Console = XBoxOne | UWPXBoxOne | PS4 | NintendoSwitch
     }
     #endregion
 
@@ -100,7 +100,17 @@ namespace Argos.Framework.Helpers
                         throw new NotImplementedException($"Platform not supported. Platform: {UnityEngine.Application.platform}, Device type: {SystemInfo.deviceType}");
                 }
             }
-        } 
+        }
+
+        /// <summary>
+        /// Determine if the current platform a desktop platform.
+        /// </summary>
+        public static bool IsDesktopPlatform { get { return ArgosSupportedPlatforms.Desktop.HasFlag(Application.CurrentPlatform); } }
+
+        /// <summary>
+        /// Determine if the current platform a console platform.
+        /// </summary>
+        public static bool IsConsolePlatform { get { return ArgosSupportedPlatforms.Console.HasFlag(Application.CurrentPlatform); } }
         #endregion
 
         #region Methods & Functions

@@ -56,15 +56,21 @@ namespace Argos.Framework
         #region Events
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            GUI.enabled = this._attribute.DisableOn == GUIButtonDisableEvents.Never ||
+                          (this._attribute.DisableOn == GUIButtonDisableEvents.EditorMode && EditorApplication.isPlaying) ||
+                          (this._attribute.DisableOn == GUIButtonDisableEvents.PlayMode && !EditorApplication.isPlaying);
+
             if (GUI.Button(EditorGUI.IndentedRect(position), this.GetButtonLabel(label), this._attribute.Size == GUIButtonSize.Mini ? EditorStyles.miniButton : GUI.skin.button))
             {
                 (property.serializedObject.targetObject as MonoBehaviour).Invoke(property.stringValue, 0f);
 
-                if (!EditorApplication.isPlaying)
+                if (!EditorApplication.isPlaying && !EditorApplication.isCompiling)
                 {
                     EditorUtility.SetDirty(property.serializedObject.targetObject); // Force in edit mode to update the Monobehaviour Update logic (needed to Invoke() call can be executed).
                 }
             }
+
+            GUI.enabled = true;
         }
         #endregion
     }

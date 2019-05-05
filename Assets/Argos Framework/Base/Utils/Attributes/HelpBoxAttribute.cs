@@ -4,7 +4,7 @@ namespace Argos.Framework
 {
     #region Enums
     /// <summary>
-    /// HelpBox MessageType enum non dependant form UnityEditor namespace.
+    /// HelpBox MessageType.
     /// </summary>
     public enum HelpBoxMessageType
     {
@@ -30,6 +30,11 @@ namespace Argos.Framework
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="text">The message text.</param>
+        /// <param name="messageType">The type of message.</param>
         public HelpBoxAttribute(string text, HelpBoxMessageType messageType = HelpBoxMessageType.None)
         {
             this.text = text;

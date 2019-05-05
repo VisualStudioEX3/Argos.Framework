@@ -21,7 +21,7 @@ namespace Argos.Framework
         long _localID;
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             this._sceneAssetReference = property.FindPropertyRelative("_asset");

@@ -7,7 +7,16 @@ namespace Argos.Framework
     /// <summary>
     /// Attribute used to make a int variable in a script be restricted to layer values.
     /// </summary>
-    public class LayerAttribute : PropertyAttribute
+    public class LayerAttribute : ArgosPropertyAttributeBase
     {
+        #region Constructors
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
+        public LayerAttribute(string tooltip = "") : base(tooltip)
+        {
+        } 
+        #endregion
     }
 }

@@ -24,7 +24,7 @@ namespace Argos.Framework
         {
             float height = EditorGUIUtility.singleLineHeight;
 
-            this._split = ((OptionListAttribute)this.attribute).Split;
+            this._split = ((OptionListAttribute)this.attribute).split;
 
             if (this._split)
             {
@@ -51,7 +51,7 @@ namespace Argos.Framework
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             Rect initial = position;

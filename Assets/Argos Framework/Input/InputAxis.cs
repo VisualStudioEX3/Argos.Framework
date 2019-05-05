@@ -70,64 +70,64 @@ namespace Argos.Framework.Input
         /// Axis type.
         /// </summary>
         /// <remarks>Uses built-in axis setup as alternate input (read after the custom input setup).</remarks>
-        public InputAxisType AxisType;
+        public InputAxisType axisType;
 
         /// <summary>
         /// Invert Y axis.
         /// </summary>
-        public bool InvertYAxis;
+        public bool invertYAxis;
 
         /// <summary>
         /// Axis sensitivity factor.
         /// </summary>
         /// <remarks>Not apply on Xbox/PS4/Nintendo Switch controllers axes.</remarks>
         [Range(InputAxis.MIN_SENSITIVITY, InputAxis.MAX_SENSITIVITY)]
-        public float Sensitivity = InputAxis.DEFAULT_SENSITIVITY;
+        public float sensitivity = InputAxis.DEFAULT_SENSITIVITY;
 
         /// <summary>
         /// Indicate if this axis uses the mouse input (axis or position) when the gamepad is not is the active input.
         /// </summary>
         /// <remarks>When this property is not setup as None, this axis ignore all Keys fields (InputActions) configured.</remarks>
         [HelpBox("Use mouse input when the gamepad is not the active input:"), Space]
-        public MouseInputMode AlternativeMouseInput = MouseInputMode.None;
+        public MouseInputMode alternativeMouseInput = MouseInputMode.None;
 
         /// <summary>
         /// Indicate if this input is using in UI.
         /// </summary>
         /// <remarks>This uses the absolute value of the axis, without applying sensivity.</remarks>
         [HelpBox("Uses the absolute value of the axis, without applying sensivity:"), Space]
-        public bool IsUIInput;
+        public bool isUIInput;
         
         /// <summary>
         /// Normalize axis.
         /// </summary>
         /// <remarks>Use this property to fix the diagonal ranges on 360º/free movements.</remarks>
         [HelpBox("Normalize the diagonal ranges:"), Space]
-        public bool Normalize;
+        public bool normalize;
 
         /// <summary>
         /// Left input action (-1 to 0 in X axis).
         /// </summary>
         [Header("Keys:")]
-        public InputAction Left;
+        public InputAction left;
 
         /// <summary>
         /// Right input action (0 to 1 in X axis).
         /// </summary>
-        public InputAction Right;
+        public InputAction right;
 
         /// <summary>
         /// Up input action (-1 to 0 in Y axis).
         /// </summary>
-        public InputAction Up;
+        public InputAction up;
 
         /// <summary>
         /// Down input action (0 to 1 in Y axis).
         /// </summary>
-        public InputAction Down;
+        public InputAction down;
         
         [Header("Print debug info:")]
-        public bool Debug;
+        public bool debug;
         #endregion
 
         #region Properties
@@ -177,17 +177,17 @@ namespace Argos.Framework.Input
         {
             this._axis = this._target = this.AxisKeyDown = Vector2.zero;
 
-            this.Left = leftKey;
-            this.Right = rightKey;
-            this.Down = downKey;
-            this.Up = upKey;
-            this.AlternativeMouseInput = alternativeMouseInput;
-            this.IsUIInput = isUIInput;
-            this.Sensitivity = sensitivity;
-            this.AxisType = axisType;
-            this.InvertYAxis = invertY;
-            this.Normalize = normalize;
-            this.Debug = debug;
+            this.left = leftKey;
+            this.right = rightKey;
+            this.down = downKey;
+            this.up = upKey;
+            this.alternativeMouseInput = alternativeMouseInput;
+            this.isUIInput = isUIInput;
+            this.sensitivity = sensitivity;
+            this.axisType = axisType;
+            this.invertYAxis = invertY;
+            this.normalize = normalize;
+            this.debug = debug;
         }
 
         /// <summary>
@@ -195,7 +195,7 @@ namespace Argos.Framework.Input
         /// </summary>
         /// <param name="instance">Previous instance of an InputAxis.</param>
         /// <remarks>Use this to fast clone instance.</remarks>
-        public InputAxis(InputAxis instance) : this(new InputAction(instance.Left), new InputAction(instance.Right), new InputAction(instance.Down), new InputAction(instance.Up), instance.AxisType, instance.AlternativeMouseInput, instance.IsUIInput, instance.Sensitivity, instance.InvertYAxis, instance.Normalize, instance.Debug)
+        public InputAxis(InputAxis instance) : this(new InputAction(instance.left), new InputAction(instance.right), new InputAction(instance.down), new InputAction(instance.up), instance.axisType, instance.alternativeMouseInput, instance.isUIInput, instance.sensitivity, instance.invertYAxis, instance.normalize, instance.debug)
         {
         }
         #endregion
@@ -209,7 +209,7 @@ namespace Argos.Framework.Input
         {
             this.AxisKeyDown = Vector2.zero;
 
-            switch (this.AxisType)
+            switch (this.axisType)
             {
                 case InputAxisType.MouseAxis:
 
@@ -234,9 +234,9 @@ namespace Argos.Framework.Input
 
             if (this._target == Vector2.zero)
             {
-                if (this.AlternativeMouseInput != MouseInputMode.None)
+                if (this.alternativeMouseInput != MouseInputMode.None)
                 {
-                    if (this.AlternativeMouseInput == MouseInputMode.MousePosition)
+                    if (this.alternativeMouseInput == MouseInputMode.MousePosition)
                     {
                         this._axis = UnityEngine.Input.mousePosition;
                     }
@@ -247,26 +247,26 @@ namespace Argos.Framework.Input
                 }
                 else
                 {
-                    this.Left.Update();
-                    this.Right.Update();
-                    this.Up.Update();
-                    this.Down.Update();
+                    this.left.Update();
+                    this.right.Update();
+                    this.up.Update();
+                    this.down.Update();
 
-                    this._target.x = this.Left.State ? -1f : this.Right.State ? 1f : 0f;
-                    this._target.y = this.Down.State ? -1f : this.Up.State ? 1f : 0f;
+                    this._target.x = this.left.State ? -1f : this.right.State ? 1f : 0f;
+                    this._target.y = this.down.State ? -1f : this.up.State ? 1f : 0f;
 
                     // For the right behaviour, the ActionInputs KeyEvent property must be setted as Down:
                     this.AxisKeyDown = new Vector2()
                     {
-                        x = this.Left.State || this.Right.State ? 1f : 0f,
-                        y = this.Up.State || this.Down.State ? 1f : 0f
+                        x = this.left.State || this.right.State ? 1f : 0f,
+                        y = this.up.State || this.down.State ? 1f : 0f
                     };
                 }
             }
 
-            if (!this.IsUIInput)
+            if (!this.isUIInput)
             {
-                float time = Time.unscaledDeltaTime * this.Sensitivity;
+                float time = Time.unscaledDeltaTime * this.sensitivity;
                 this._axis.x = Mathf.Lerp(this._axis.x, this._target.x, time);
                 this._axis.y = Mathf.Lerp(this._axis.y, this._target.y, time);
 
@@ -280,12 +280,12 @@ namespace Argos.Framework.Input
                 this._axis = this._target;
             }
 
-            if (this.InvertYAxis)
+            if (this.invertYAxis)
             {
                 this._axis.y *= -1;
             }
 
-            if (this.Normalize)
+            if (this.normalize)
             {
                 if (this._axis.sqrMagnitude > 1f)
                 {
@@ -293,7 +293,7 @@ namespace Argos.Framework.Input
                 }
             }
 
-            if (this.Debug)
+            if (this.debug)
             {
                 UnityEngine.Debug.Log(this.ToString());
             }
@@ -309,7 +309,7 @@ namespace Argos.Framework.Input
 
         public override string ToString()
         {
-            return $"{this._axis.ToString()} (Axis KeyDown: {this.AxisKeyDown.ToString()}) - Type: {this.AxisType} Left key: {this.Left.Main}/{this.Left.Alternative}/{this.Left.GamepadButton}, Right key: {this.Right.Main}/{this.Right.Alternative}/{this.Right.GamepadButton}, Up key: {this.Up.Main}/{this.Up.Alternative}/{this.Up.GamepadButton}, Down key: {this.Down.Main}/{this.Down.Alternative}/{this.Down.GamepadButton}, Is UI Input: {this.IsUIInput}, Sensitivity: {this.Sensitivity}, Invert Y: {this.InvertYAxis}, Normalize: {this.Normalize}";
+            return $"{this._axis.ToString()} (Axis KeyDown: {this.AxisKeyDown.ToString()}) - Type: {this.axisType} Left key: {this.left.main}/{this.left.alternative}/{this.left.gamepadButton}, Right key: {this.right.main}/{this.right.alternative}/{this.right.gamepadButton}, Up key: {this.up.main}/{this.up.alternative}/{this.up.gamepadButton}, Down key: {this.down.main}/{this.down.alternative}/{this.down.gamepadButton}, Is UI Input: {this.isUIInput}, Sensitivity: {this.sensitivity}, Invert Y: {this.invertYAxis}, Normalize: {this.normalize}";
         }
         #endregion
     }

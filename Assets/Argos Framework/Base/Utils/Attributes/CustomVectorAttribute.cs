@@ -7,10 +7,10 @@ namespace Argos.Framework
     /// <summary>
     /// Attribute used to set custom names to a Vector2, Vector2Int, Vector3, Vector3Int or Vector4 variable in a script.
     /// </summary>
-    public class CustomVectorAttribute : PropertyAttribute
+    public class CustomVectorAttribute : ArgosPropertyAttributeBase
     {
         #region Public vars
-        public readonly GUIContent[] Names;
+        public readonly GUIContent[] names;
         #endregion
 
         #region Constructors
@@ -18,12 +18,21 @@ namespace Argos.Framework
         /// Constructor.
         /// </summary>
         /// <param name="names">Names of each vector element (one character).</param>
-        public CustomVectorAttribute(params string[] names)
+        public CustomVectorAttribute(params string[] names) : this(names, "")
         {
-            this.Names = new GUIContent[names.Length];
+        }
+
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="names">Names of each vector element (one character).</param>
+        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
+        public CustomVectorAttribute(string[] names, string tooltip = "") : base(tooltip)
+        {
+            this.names = new GUIContent[names.Length];
             for (int i = 0; i < names.Length; i++)
             {
-                this.Names[i] = new GUIContent(names[i]);
+                this.names[i] = new GUIContent(names[i]);
             }
         }
         #endregion

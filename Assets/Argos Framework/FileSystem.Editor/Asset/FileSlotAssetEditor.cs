@@ -20,7 +20,7 @@ namespace Argos.Framework.FileSystem
         ReorderableList _modules;
         #endregion
 
-        #region Events
+        #region Event listeners
         public void OnEnable()
         {
             this._baseTarget = (FileSlotAsset)target;

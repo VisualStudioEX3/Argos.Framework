@@ -78,7 +78,7 @@ namespace Argos.Framework
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         /// <summary>
         /// Custom event for render any content in custom inspector header area.
         /// </summary>

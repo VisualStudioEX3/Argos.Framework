@@ -8,10 +8,10 @@ namespace Argos.Framework
     /// <summary>
     /// Attribute used to make a Vector2 or Vector2Int variable in a script be restricted to a specific range.
     /// </summary>
-    public class MinMaxSliderAttribute : PropertyAttribute
+    public class MinMaxSliderAttribute : ArgosPropertyAttributeBase
     {
         #region Public vars
-        public readonly Vector2 Range;
+        public readonly Vector2 range;
         #endregion
 
         #region Constructor
@@ -20,9 +20,10 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="min">The minimum allowed value.</param>
         /// <param name="max">The maximum allowed value.</param>
-        public MinMaxSliderAttribute(float min = 0f, float max = 1f)
+        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
+        public MinMaxSliderAttribute(float min = 0f, float max = 1f, string tooltip = "") : base(tooltip)
         {
-            this.Range = new Vector2(min, max);
+            this.range = new Vector2(min, max);
         }
         #endregion
     }

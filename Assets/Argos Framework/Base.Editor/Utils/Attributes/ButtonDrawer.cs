@@ -31,36 +31,28 @@ namespace Argos.Framework
                 this._attribute = (ButtonAttribute)this.attribute;
             }
 
-            switch (this._attribute.Size)
+            switch (this._attribute.size)
             {
-                case GUIButtonSize.Large:
-
-                    return ButtonDrawer.LARGE_BUTTON_SIZE;
-
-                case GUIButtonSize.Mini:
-
-                    return ButtonDrawer.MINI_BUTTON_SIZE;
-
-                default:
-
-                    return ButtonDrawer.DEFAULT_BUTTON_SIZE;
+                case GUIButtonSize.Large: return ButtonDrawer.LARGE_BUTTON_SIZE;
+                case GUIButtonSize.Mini: return ButtonDrawer.MINI_BUTTON_SIZE;
+                default: return ButtonDrawer.DEFAULT_BUTTON_SIZE;
             }
         }
 
-        string GetButtonLabel(GUIContent label)
+        GUIContent GetButtonLabel(GUIContent label)
         {
-            return string.IsNullOrEmpty(this._attribute.CustomLabel) ? label.text : this._attribute.CustomLabel;
+            return string.IsNullOrEmpty(this._attribute.customLabel) ? label : new GUIContent(this._attribute.customLabel, this._attribute.tooltip);
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            GUI.enabled = this._attribute.DisableOn == GUIButtonDisableEvents.Never ||
-                          (this._attribute.DisableOn == GUIButtonDisableEvents.EditorMode && EditorApplication.isPlaying) ||
-                          (this._attribute.DisableOn == GUIButtonDisableEvents.PlayMode && !EditorApplication.isPlaying);
+            GUI.enabled = this._attribute.disableOn == GUIButtonDisableEvents.Never ||
+                          (this._attribute.disableOn == GUIButtonDisableEvents.EditorMode && EditorApplication.isPlaying) ||
+                          (this._attribute.disableOn == GUIButtonDisableEvents.PlayMode && !EditorApplication.isPlaying);
 
-            if (GUI.Button(EditorGUI.IndentedRect(position), this.GetButtonLabel(label), this._attribute.Size == GUIButtonSize.Mini ? EditorStyles.miniButton : GUI.skin.button))
+            if (GUI.Button(EditorGUI.IndentedRect(position), this.GetButtonLabel(label), this._attribute.size == GUIButtonSize.Mini ? EditorStyles.miniButton : GUI.skin.button))
             {
                 (property.serializedObject.targetObject as MonoBehaviour).Invoke(property.stringValue, 0f);
 

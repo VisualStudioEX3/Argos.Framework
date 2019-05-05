@@ -6,8 +6,8 @@ using UnityEngine;
 public class OptionListTest : MonoBehaviour
 {
     [OptionList(true)]
-    public PrimitiveType OptionList;
+    public PrimitiveType optionList;
 
     [OptionList(true)]
-    public RuntimePlatform SplitOptionList;
+    public RuntimePlatform splitOptionList;
 }

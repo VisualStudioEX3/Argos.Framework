@@ -15,13 +15,13 @@ namespace Argos.Framework
     /// <summary>
     /// Attribute used to make a string variable in a script be a text field with button to invoke a folder browser.
     /// </summary>
-    public class FolderAttribute : PropertyAttribute
+    public class FolderAttribute : ArgosPropertyAttributeBase
     {
         #region Public vars
-        public readonly string DialogTitle;
-        public readonly FolderDialogTypes DialogType;
-        public readonly string Folder;
-        public readonly string DefaultName;
+        public readonly string dialogTitle;
+        public readonly FolderDialogTypes dialogType;
+        public readonly string folder;
+        public readonly string defaultName;
         #endregion
 
         #region Constructors
@@ -32,12 +32,13 @@ namespace Argos.Framework
         /// <param name="dialogType">Dialog behaviour type.</param>
         /// <param name="folder">Initial directory to target the open folder dialog. By default is empty.</param>
         /// <param name="defaultName">Default folder name. By default empty.</param>
-        public FolderAttribute(string dialogTitle, FolderDialogTypes dialogType, string folder = "", string defaultName = "")
+        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
+        public FolderAttribute(string dialogTitle, FolderDialogTypes dialogType, string folder = "", string defaultName = "", string tooltip = "") : base(tooltip)
         {
-            this.DialogTitle = dialogTitle;
-            this.DialogType = dialogType;
-            this.Folder = folder;
-            this.DefaultName = defaultName;
+            this.dialogTitle = dialogTitle;
+            this.dialogType = dialogType;
+            this.folder = folder;
+            this.defaultName = defaultName;
         } 
         #endregion
     }

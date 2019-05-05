@@ -48,7 +48,7 @@ namespace Argos.Framework.Input
         Timer _timer;
         #endregion
 
-        #region Events
+        #region Event listeners
         private void OnEnable()
         {
             this._target = (GamepadVibrationEffectAsset)this.target;

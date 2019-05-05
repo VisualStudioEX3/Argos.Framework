@@ -60,7 +60,6 @@ namespace Argos.Framework.Input
     /// Button states.
     /// </summary>
     /// <remarks>Uses to virtualize axis states (triggers, DPad) as button states.</remarks>
-    [Serializable]
     public struct ButtonStates
     {
         #region Internal vars
@@ -69,7 +68,7 @@ namespace Argos.Framework.Input
         bool _isUp;
         #endregion
 
-        #region Public vars
+        #region Properties
         public bool IsPressed
         {
             get
@@ -129,29 +128,29 @@ namespace Argos.Framework.Input
         /// Left Stick axes setup.
         /// </summary>
         [Header("Axes:")]
-        public Vector2Int LeftStickAxes;
+        public Vector2Int leftStickAxes;
 
         /// <summary>
         /// Invert Y axis on Left Stick.
         /// </summary>
-        public bool LeftStickInvertY;
+        public bool leftStickInvertY;
 
         /// <summary>
         /// Right Stick axes setup.
         /// </summary>
         [Space]
-        public Vector2Int RightStickAxes;
+        public Vector2Int rightStickAxes;
 
         /// <summary>
         /// Invert Y axis on Right Stick.
         /// </summary>
-        public bool RightStickInvertY;
+        public bool rightStickInvertY;
 
         /// <summary>
         /// Some gamepads and joysticks defined the triggers as separated axes.
         /// </summary>
         [HelpBox("Some gamepads defined the triggers as separated axes:"), Space, CustomVector("L", "R")]
-        public Vector2Int TriggersAxes;
+        public Vector2Int triggersAxes;
 
         /// <summary>
         /// Some gamepads and joysticks defined the DPad as separated axes.
@@ -165,33 +164,33 @@ namespace Argos.Framework.Input
         public bool DPadInvertY;
 
         [Tooltip("XBox A, PS4 Cross or Nintendo Switch A\n(B on inverted layout) button."), Header("Buttons:")]
-        public UnityJoystickButtons Button1;
+        public UnityJoystickButtons button1;
         [Tooltip("XBox B, PS4 Circle or Nintendo Switch B\n(A on inverted layout) button.")]
-        public UnityJoystickButtons Button2;
+        public UnityJoystickButtons button2;
         [Tooltip("XBox X, PS4 Square or Nintendo Switch X\n(Y on inverted layout) button.")]
-        public UnityJoystickButtons Button3;
+        public UnityJoystickButtons button3;
         [Tooltip("XBox Y, PS4 Triangle or Nintendo Switch Y\n(X on inverted layout) button.")]
-        public UnityJoystickButtons Button4;
+        public UnityJoystickButtons button4;
 
         [Tooltip("XBox Start/Menu, PS4 Options or Nintendo Switch + button."), Space]
-        public UnityJoystickButtons Start;
+        public UnityJoystickButtons start;
         [Tooltip("XBox Back/View, PS4 Share or Nintendo Switch - button.")]
-        public UnityJoystickButtons Select;
+        public UnityJoystickButtons select;
 
         [Tooltip("XBox LB, PS4 L1 or Nintendo Switch L button."), Space]
-        public UnityJoystickButtons LeftBumper;
+        public UnityJoystickButtons leftBumper;
         [Tooltip("XBox RB, PS4 R1 or Nintendo Switch R button.")]
-        public UnityJoystickButtons RightBumper;
+        public UnityJoystickButtons rightBumper;
 
         [Tooltip("XBox Left Stick, PS4 L3 or Nintendo Switch Left Stick button."), Space]
-        public UnityJoystickButtons LeftStick;
+        public UnityJoystickButtons leftStick;
         [Tooltip("XBox Right Stick, PS4 R3 or Nintendo Switch Right Stick button.")]
-        public UnityJoystickButtons RightStick;
+        public UnityJoystickButtons rightStick;
 
         [HelpBox("Some gamepads defined the triggers as buttons:"), Tooltip("XBox LT, PS4 L2 or Nintendo Switch ZL button."), Space]
-        public UnityJoystickButtons LeftTrigger;
+        public UnityJoystickButtons leftTrigger;
         [Tooltip("XBox RT, PS4 R2 or Nintendo Switch ZR button.")]
-        public UnityJoystickButtons RightTrigger;
+        public UnityJoystickButtons rightTrigger;
 
         [HelpBox("Some gamepads defined the DPad as buttons:"), Space]
         public UnityJoystickButtons DPadLeft;
@@ -254,7 +253,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Generic gamepad setup shortcut.
         /// </summary>
-        public GenericGamepadInputLayout GenericGamepadSetup { get { return InputManager.Instance.GenericGamepadSetup.Map; } }
+        public GenericGamepadInputLayout GenericGamepadSetup { get { return InputManager.Instance.genericGamepadSetup.map; } }
 
         /// <summary>
         /// Use the Nintendo Switch Pro controller button layout or XBox button layout.
@@ -440,16 +439,16 @@ namespace Argos.Framework.Input
 
                 default:
 
-                    button1 = (KeyCode)this.GenericGamepadSetup.Button1;
-                    button2 = (KeyCode)this.GenericGamepadSetup.Button2;
-                    button3 = (KeyCode)this.GenericGamepadSetup.Button3;
-                    button4 = (KeyCode)this.GenericGamepadSetup.Button4;
-                    start = (KeyCode)this.GenericGamepadSetup.Start;
-                    select = (KeyCode)this.GenericGamepadSetup.Select;
-                    leftBumper = (KeyCode)this.GenericGamepadSetup.LeftBumper;
-                    rightBumper = (KeyCode)this.GenericGamepadSetup.RightBumper;
-                    leftStickButton = (KeyCode)this.GenericGamepadSetup.LeftStick;
-                    rightStickButton = (KeyCode)this.GenericGamepadSetup.RightStick;
+                    button1 = (KeyCode)this.GenericGamepadSetup.button1;
+                    button2 = (KeyCode)this.GenericGamepadSetup.button2;
+                    button3 = (KeyCode)this.GenericGamepadSetup.button3;
+                    button4 = (KeyCode)this.GenericGamepadSetup.button4;
+                    start = (KeyCode)this.GenericGamepadSetup.start;
+                    select = (KeyCode)this.GenericGamepadSetup.select;
+                    leftBumper = (KeyCode)this.GenericGamepadSetup.leftBumper;
+                    rightBumper = (KeyCode)this.GenericGamepadSetup.rightBumper;
+                    leftStickButton = (KeyCode)this.GenericGamepadSetup.leftStick;
+                    rightStickButton = (KeyCode)this.GenericGamepadSetup.rightStick;
                     break;
 
             }
@@ -526,9 +525,9 @@ namespace Argos.Framework.Input
 
                 default:
 
-                    xAxis = this.GetAxisName(this.GenericGamepadSetup.LeftStickAxes.x);
-                    yAxis = this.GetAxisName(this.GenericGamepadSetup.LeftStickAxes.y);
-                    invertY = this.GenericGamepadSetup.LeftStickInvertY ? -1f : 1f;
+                    xAxis = this.GetAxisName(this.GenericGamepadSetup.leftStickAxes.x);
+                    yAxis = this.GetAxisName(this.GenericGamepadSetup.leftStickAxes.y);
+                    invertY = this.GenericGamepadSetup.leftStickInvertY ? -1f : 1f;
                     break;
             }
 
@@ -567,9 +566,9 @@ namespace Argos.Framework.Input
 
                 default:
 
-                    xAxis = this.GetAxisName(this.GenericGamepadSetup.RightStickAxes.x);
-                    yAxis = this.GetAxisName(this.GenericGamepadSetup.RightStickAxes.y);
-                    invertY = this.GenericGamepadSetup.RightStickInvertY ? -1f : 1f;
+                    xAxis = this.GetAxisName(this.GenericGamepadSetup.rightStickAxes.x);
+                    yAxis = this.GetAxisName(this.GenericGamepadSetup.rightStickAxes.y);
+                    invertY = this.GenericGamepadSetup.rightStickInvertY ? -1f : 1f;
                     break;
             }
 
@@ -730,14 +729,14 @@ namespace Argos.Framework.Input
                 default:
 
                     // Check first the axes, if axes not return values, check buttons:
-                    if (!this.ReadAxisTriggerState((int)this.GenericGamepadSetup.TriggersAxes.x, ref left))
+                    if (!this.ReadAxisTriggerState((int)this.GenericGamepadSetup.triggersAxes.x, ref left))
                     {
-                        this.ReadButtonState((KeyCode)this.GenericGamepadSetup.LeftTrigger, ref left);
+                        this.ReadButtonState((KeyCode)this.GenericGamepadSetup.leftTrigger, ref left);
                     }
 
-                    if (!this.ReadAxisTriggerState((int)this.GenericGamepadSetup.TriggersAxes.y, ref right))
+                    if (!this.ReadAxisTriggerState((int)this.GenericGamepadSetup.triggersAxes.y, ref right))
                     {
-                        this.ReadButtonState((KeyCode)this.GenericGamepadSetup.RightTrigger, ref right);
+                        this.ReadButtonState((KeyCode)this.GenericGamepadSetup.rightTrigger, ref right);
                     }
                     break;
             }

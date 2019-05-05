@@ -11,6 +11,7 @@ namespace Argos.Framework
     /// </summary>
     public static class EditorGUILayoutEx
     {
+        #region Methods & Functions
         /// <summary>
         /// Draws a section with a header title and content.
         /// </summary>
@@ -58,7 +59,7 @@ namespace Argos.Framework
             Rect headerRect = EditorGUILayout.BeginVertical("window", GUILayout.Height(10f));
             {
                 headerRect.x += 8f;
-                EditorGUI.LabelField(headerRect, "Header", EditorStyles.boldLabel);
+                EditorGUI.LabelField(headerRect, title, EditorStyles.boldLabel);
 
                 EditorGUI.indentLevel++;
                 {
@@ -68,6 +69,7 @@ namespace Argos.Framework
             }
             EditorGUILayout.EndVertical();
             EditorGUILayout.Space();
-        }
+        } 
+        #endregion
     }
 }

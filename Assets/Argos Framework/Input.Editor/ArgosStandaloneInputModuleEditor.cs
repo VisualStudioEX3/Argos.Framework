@@ -50,7 +50,7 @@ namespace Argos.Framework.Input
         SerializedProperty _onSubmit, _onCancel, _onSetToDefault, _onDelete;
         #endregion
 
-        #region Events
+        #region Event listeners
         private void OnEnable()
         {
             this.GetLocalSerializedProperties();
@@ -124,14 +124,14 @@ namespace Argos.Framework.Input
                 this._inputMaps = new InputManager.InputMapData[this._serializedInputMaps.arraySize];
                 for (int i = 0; i < this._inputMaps.Length; i++)
                 {
-                    this._inputMaps[i].Name = this._serializedInputMaps.GetArrayElementAtIndex(i).FindPropertyRelative(ArgosStandaloneInputModuleEditor.NAME_PROPERTY).stringValue;
-                    this._inputMaps[i].Data = (InputMapAsset)this._serializedInputMaps.GetArrayElementAtIndex(i).FindPropertyRelative(ArgosStandaloneInputModuleEditor.DATA_PROPERTY).objectReferenceValue;
+                    this._inputMaps[i].name = this._serializedInputMaps.GetArrayElementAtIndex(i).FindPropertyRelative(ArgosStandaloneInputModuleEditor.NAME_PROPERTY).stringValue;
+                    this._inputMaps[i].data = (InputMapAsset)this._serializedInputMaps.GetArrayElementAtIndex(i).FindPropertyRelative(ArgosStandaloneInputModuleEditor.DATA_PROPERTY).objectReferenceValue;
                 }
 
                 this._inputMapNames = new string[this._inputMaps.Length];
                 for (int i = 0; i < this._inputMapNames.Length; i++)
                 {
-                    this._inputMapNames[i] = this._inputMaps[i].Name;
+                    this._inputMapNames[i] = this._inputMaps[i].name;
                 }
             }
         }
@@ -148,9 +148,9 @@ namespace Argos.Framework.Input
             {
                 for (int i = 0; i < this._inputMaps.Length; i++)
                 {
-                    if (this._inputMaps[i].Name == this._inputMapSelected.stringValue)
+                    if (this._inputMaps[i].name == this._inputMapSelected.stringValue)
                     {
-                        var serializedAxes = new SerializedObject(this._inputMaps[i].Data).FindProperty(serializedPropertyArrayName);
+                        var serializedAxes = new SerializedObject(this._inputMaps[i].data).FindProperty(serializedPropertyArrayName);
                         array = new string[serializedAxes.arraySize];
                         for (int j = 0; j < array.Length; j++)
                         {

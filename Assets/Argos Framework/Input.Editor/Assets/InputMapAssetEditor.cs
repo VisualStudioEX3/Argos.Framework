@@ -14,7 +14,7 @@ namespace Argos.Framework.Input
         private ReorderableList _actionList;
         #endregion
 
-        #region Events
+        #region Event listeners
         private void OnEnable()
         {
             this._axisList = ReorderableListHelper.CreateNamedList(this, this._axisList, "Axes", "_axes", "Axis Setup", false);

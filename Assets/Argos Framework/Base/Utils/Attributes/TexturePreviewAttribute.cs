@@ -7,10 +7,10 @@ namespace Argos.Framework
     /// <summary>
     /// Attribute used to make a Texture, Texture2D, RenderTexture, Cubemap and Sprite variables in a script be a Unity texture preview box field.
     /// </summary>
-    public class TexturePreviewAttribute : PropertyAttribute
+    public class TexturePreviewAttribute : ArgosPropertyAttributeBase
     {
         #region Public vars
-        public readonly bool AllowSceneObjects = false;
+        public readonly bool allowSceneObjects;
         #endregion
 
         #region Constructors
@@ -18,9 +18,10 @@ namespace Argos.Framework
         /// Constructor.
         /// </summary>
         /// <param name="allowSceneObjects">Allow assigning Scene objects.</param>
-        public TexturePreviewAttribute(bool allowSceneObjects = false)
+        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
+        public TexturePreviewAttribute(bool allowSceneObjects = false, string tooltip = "") : base(tooltip)
         {
-            this.AllowSceneObjects = allowSceneObjects;
+            this.allowSceneObjects = allowSceneObjects;
         } 
         #endregion
     }

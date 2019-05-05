@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace Argos.Framework.Input
 {
+    #region Enums
     /// <summary>
     /// Valid keyboard and mouse button codes.
     /// </summary>
@@ -521,5 +522,6 @@ namespace Argos.Framework.Input
         /// Additional (or seventh) mouse button.
         /// </summary>
         AdditionalMouseButton7 = KeyCode.Mouse6
-    }
+    } 
+    #endregion
 }

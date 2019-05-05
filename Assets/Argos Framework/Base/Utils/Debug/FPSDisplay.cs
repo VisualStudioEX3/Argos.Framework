@@ -20,52 +20,56 @@ namespace Argos.Framework.Utils.Debug
         #endregion
 
         #region Public vars
-        public Color Color = Color.yellow;
-        public TextAnchor Alignment = TextAnchor.UpperLeft;
+        public Color color = Color.yellow;
+        public TextAnchor alignment = TextAnchor.UpperLeft;
         [Range(8, 96)]
-        public int Size = 14;
+        public int size = 14;
         #endregion
 
-        #region Events
+        #region Methods & Functions
+        GUIStyle SetStyle()
+        {
+            if (this.style.alignment != this.alignment)
+            {
+                this.style.alignment = this.alignment;
+            }
+
+            if (this.style.fontSize != this.size)
+            {
+                this.style.fontSize = this.size;
+            }
+
+            if (this.style.normal.textColor != this.color)
+            {
+                this.style.normal.textColor = this.color;
+            }
+
+            return this.style;
+        }
+        #endregion
+
+        #region Initializers
         void Awake()
         {
             this.style = new GUIStyle();
-        }
+        } 
+        #endregion
 
+        #region Update logic
         void Update()
         {
             deltaTime += (Time.unscaledDeltaTime - deltaTime) * 0.1f;
-        }
+        } 
+        #endregion
 
+        #region Event listeners
         void OnGUI()
         {
             this.SetStyle();
             GUI.Label(new Rect(0, 0, Screen.width, Screen.height),
                       string.Format(FPSDisplay.DISPLAY_FORMAT, deltaTime * 1000f, 1.0f / deltaTime),
                       this.SetStyle());
-        } 
+        }
         #endregion
-
-        #region Methods & Functions
-        GUIStyle SetStyle()
-        {
-            if (this.style.alignment != this.Alignment)
-            {
-                this.style.alignment = this.Alignment;
-            }
-
-            if (this.style.fontSize != this.Size)
-            {
-                this.style.fontSize = this.Size;
-            }
-
-            if (this.style.normal.textColor != this.Color)
-            {
-                this.style.normal.textColor = this.Color;
-            }
-
-            return this.style;
-        } 
-        #endregion
-    } 
+    }
 }

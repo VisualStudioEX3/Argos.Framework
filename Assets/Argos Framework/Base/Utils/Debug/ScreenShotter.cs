@@ -11,7 +11,7 @@ namespace Argos.Framework.Utils.Debug
     [AddComponentMenu("Argos.Framework/Utils/Debug/Screen Shotter"), DisallowMultipleComponent, ExecuteInEditMode]
     public sealed class ScreenShotter : MonoBehaviour
     {
-        #region Private constants
+        #region Constants
         const string DEFAULT_NAME = "Screenshot";
         #endregion
 
@@ -26,8 +26,8 @@ namespace Argos.Framework.Utils.Debug
 
         #region Public vars
         [Tooltip("Only works in play mode. Use \"Take Screenshot\" button in editor mode.")]
-        public KeyCode ScreenshotKey = KeyCode.F12;
-        public string Name = DEFAULT_NAME;
+        public KeyCode screenshotKey = KeyCode.F12;
+        public string name = DEFAULT_NAME;
         #endregion
 
         #region Properties
@@ -51,20 +51,20 @@ namespace Argos.Framework.Utils.Debug
             // TODO: Study how to implement in a way to apply for other platforms like consoles.
             if (Helpers.Application.IsDesktopPlatform)
             {
-                if (string.IsNullOrEmpty(this.Name))
+                if (string.IsNullOrEmpty(this.name))
                 {
                     UnityEngine.Debug.LogError("ScreenShotter: The Name field never be an empty string.");
-                    this.Name = DEFAULT_NAME;
+                    this.name = DEFAULT_NAME;
                 }
 
                 // Generate preview:
-                if (this._lastName != this.Name)
+                if (this._lastName != this.name)
                 {
-                    this._lastName = this.Name;
+                    this._lastName = this.name;
                     this._finalName = this.CreateFileName();
                 }
 
-                if (UnityEngine.Input.GetKeyDown(this.ScreenshotKey))
+                if (UnityEngine.Input.GetKeyDown(this.screenshotKey))
                 {
                     this.TakeScreenshot();
                 }
@@ -76,7 +76,7 @@ namespace Argos.Framework.Utils.Debug
         string CreateFileName()
         {
             // TODO: Study how to implement in a way to apply for other platforms like consoles.
-            return $"{this.Name} {System.DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}.png";
+            return $"{this.name} {System.DateTime.Now.ToString("yyyy-MM-dd hh-mm-ss")}.png";
         }
 
         /// <summary>

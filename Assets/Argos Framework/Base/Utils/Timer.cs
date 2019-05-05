@@ -63,17 +63,9 @@ namespace Argos.Framework.Utils
             {
                 switch (this.CurrentState)
                 {
-                    case TimerStates.Running:
-
-                        return this.GetCurrentTime() - this._startTime;
-
-                    case TimerStates.Paused:
-
-                        return this._pauseDelta - this._startTime;
-
-                    default:
-
-                        return 0f;
+                    case TimerStates.Running: return this.GetCurrentTime() - this._startTime;
+                    case TimerStates.Paused: return this._pauseDelta - this._startTime;
+                    default: return 0f;
                 }
             }
         }
@@ -85,7 +77,7 @@ namespace Argos.Framework.Utils
         /// </summary>
         /// <param name="behaviourMode">Timer behaviour mode. ScaledTime by default.</param>
         /// <param name="autoStart">Auto start the timer after instantiate it. False by default.</param>
-        public Timer(TimerModes behaviourMode = TimerModes.ScaledTime, bool autoStart = false)
+        public Timer(TimerModes behaviourMode = TimerModes.ScaledTime, bool autoStart = true)
         {
             this.BehaviourMode = behaviourMode;
             this.Reset(autoStart);
@@ -108,7 +100,7 @@ namespace Argos.Framework.Utils
         /// Reset the timer.
         /// </summary>
         /// <param name="autoStart">Auto start the timer after reset.</param>
-        public void Reset(bool autoStart = false)
+        public void Reset(bool autoStart = true)
         {
             this.CurrentState = autoStart ? TimerStates.Running : TimerStates.Stopped;
             this._pauseDelta = 0f;
@@ -158,17 +150,9 @@ namespace Argos.Framework.Utils
         {
             switch (this.BehaviourMode)
             {
-                case TimerModes.UnScaledTime:
-
-                    return Time.unscaledTime;
-
-                case TimerModes.EditorMode:
-
-                    return Time.realtimeSinceStartup;
-
-                default:
-
-                    return Time.time;
+                case TimerModes.UnScaledTime: return Time.unscaledTime;
+                case TimerModes.EditorMode: return Time.realtimeSinceStartup;
+                default: return Time.time;
             }
         }
         #endregion

@@ -17,23 +17,23 @@ namespace Argos.Framework
         public override float GetHeight()
         {
             this._attribute = (LabelAttribute)attribute;
-            this._style = this._attribute.MiniLabel ? EditorStyles.wordWrappedMiniLabel : EditorStyles.wordWrappedLabel;
+            this._style = this._attribute.miniLabel ? EditorStyles.wordWrappedMiniLabel : EditorStyles.wordWrappedLabel;
             this._style.richText = true;
 
-            return this._style.CalcHeight(new GUIContent(this._attribute.Text), EditorGUIUtility.currentViewWidth);
+            return this._style.CalcHeight(new GUIContent(this._attribute.text), EditorGUIUtility.currentViewWidth);
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnGUI(Rect position)
         {
-            if (this._attribute.Selectable)
+            if (this._attribute.selectable)
             {
-                EditorGUI.SelectableLabel(position, this._attribute.Text, this._style);
+                EditorGUI.SelectableLabel(position, this._attribute.text, this._style);
             }
             else
             {
-                EditorGUI.LabelField(position, this._attribute.Text, this._style);
+                EditorGUI.LabelField(position, this._attribute.text, this._style);
             }
         }
         #endregion

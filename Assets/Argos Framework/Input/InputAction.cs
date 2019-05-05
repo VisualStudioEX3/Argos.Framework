@@ -30,38 +30,38 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Key event.
         /// </summary>
-        public InputKeyEvent KeyEvent;
+        public InputKeyEvent keyEvent;
         /// <summary>
         /// Main key input.
         /// </summary>
         [Space]
-        public KeyboardMouseCodes Main;
+        public KeyboardMouseCodes main;
         /// <summary>
         /// Alternative key input.
         /// </summary>
-        public KeyboardMouseCodes Alternative;
+        public KeyboardMouseCodes alternative;
         /// <summary>
         /// Gamepad button input.
         /// </summary>
         /// <remarks>Reference the gamepad button map, not a direct KeyCode value.</remarks>
-        public GamepadButtons GamepadButton;
+        public GamepadButtons gamepadButton;
         #endregion
 
-        #region Events & delegates
+        #region Events
         /// <summary>
         /// Action event for key press event.
         /// </summary>
-        public event System.Action OnKeyPress;
+        public event Action OnKeyPress;
 
         /// <summary>
         /// Action event for key down event.
         /// </summary>
-        public event System.Action OnKeyDown;
+        public event Action OnKeyDown;
 
         /// <summary>
         /// Action event for key up event.
         /// </summary>
-        public event System.Action OnKeyUp;
+        public event Action OnKeyUp;
         #endregion
 
         #region Properties
@@ -95,10 +95,10 @@ namespace Argos.Framework.Input
         /// <param name="onKeyUp">Optional. Event listener for key up event.</param>
         public InputAction(KeyboardMouseCodes main, KeyboardMouseCodes alternative, GamepadButtons gamepadButton, InputKeyEvent keyEvent = InputKeyEvent.Pressed, System.Action onKeyPress = null, System.Action onKeyDown = null, System.Action onKeyUp = null)
         {
-            this.Main = main;
-            this.Alternative = alternative;
-            this.GamepadButton = gamepadButton;
-            this.KeyEvent = keyEvent;
+            this.main = main;
+            this.alternative = alternative;
+            this.gamepadButton = gamepadButton;
+            this.keyEvent = keyEvent;
 
             this.State = false;
 
@@ -112,7 +112,7 @@ namespace Argos.Framework.Input
         /// </summary>
         /// <param name="instance">Previous instance of an InputAction.</param>
         /// <remarks>Use this to fast clone struct.</remarks>
-        public InputAction(InputAction instance) : this(instance.Main, instance.Alternative, instance.GamepadButton, instance.KeyEvent, instance.OnKeyPress, instance.OnKeyDown, instance.OnKeyUp)
+        public InputAction(InputAction instance) : this(instance.main, instance.alternative, instance.gamepadButton, instance.keyEvent, instance.OnKeyPress, instance.OnKeyDown, instance.OnKeyUp)
         {
         }
         #endregion
@@ -125,11 +125,11 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public void Update()
         {
-            this.State = (GetKeyState(this.Main) || GetKeyState(this.Alternative) || this.GetGamepadButtonState());
+            this.State = (GetKeyState(this.main) || GetKeyState(this.alternative) || this.GetGamepadButtonState());
 
             if (this.State)
             {
-                switch (this.KeyEvent)
+                switch (this.keyEvent)
                 {
                     case InputKeyEvent.Pressed:
 
@@ -166,7 +166,7 @@ namespace Argos.Framework.Input
 
                 default:
 
-                    switch (this.KeyEvent)
+                    switch (this.keyEvent)
                     {
                         case InputKeyEvent.Down:
 
@@ -188,7 +188,7 @@ namespace Argos.Framework.Input
         {
             ButtonStates state = new ButtonStates();
 
-            switch (this.GamepadButton)
+            switch (this.gamepadButton)
             {
                 case GamepadButtons.Button1:
                     state = Gamepad.Instance.Button1;
@@ -240,14 +240,14 @@ namespace Argos.Framework.Input
                     break;
             }
 
-            return this.KeyEvent == InputKeyEvent.Pressed && state.IsPressed ||
-                   this.KeyEvent == InputKeyEvent.Down && state.IsDown ||
-                   this.KeyEvent == InputKeyEvent.Up && state.IsUp;
+            return this.keyEvent == InputKeyEvent.Pressed && state.IsPressed ||
+                   this.keyEvent == InputKeyEvent.Down && state.IsDown ||
+                   this.keyEvent == InputKeyEvent.Up && state.IsUp;
         }
 
         public override string ToString()
         {
-            return $"KeyEvent: {this.KeyEvent}, Main key: {this.Main}, Alternative key: {this.Alternative}, Gamepad button: {this.GamepadButton}, State: {this.State}";
+            return $"KeyEvent: {this.keyEvent}, Main key: {this.main}, Alternative key: {this.alternative}, Gamepad button: {this.gamepadButton}, State: {this.State}";
         }
         #endregion
     }

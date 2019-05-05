@@ -50,7 +50,7 @@ namespace Argos.Framework.Input
 #pragma warning restore
         #endregion
 
-        #region Vars
+        #region Internal vars
         static SerializedObject _serializedObject;
         static SerializedProperty _axesProperty;
         #endregion

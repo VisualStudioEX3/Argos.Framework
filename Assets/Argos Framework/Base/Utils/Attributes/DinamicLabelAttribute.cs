@@ -10,11 +10,11 @@ namespace Argos.Framework
     public class DinamicLabelAttribute : PropertyAttribute
     {
         #region Public vars
-        public readonly bool MiniLabel;
-        public readonly bool Selectable;
+        public readonly bool miniLabel;
+        public readonly bool selectable;
         #endregion
 
-        #region MyRegion
+        #region Constructors
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -22,8 +22,8 @@ namespace Argos.Framework
         /// <param name="selectable">The content is selectable?</param>
         public DinamicLabelAttribute(bool miniLabel = false, bool selectable = false)
         {
-            this.MiniLabel = miniLabel;
-            this.Selectable = selectable;
+            this.miniLabel = miniLabel;
+            this.selectable = selectable;
         }
         #endregion
     }

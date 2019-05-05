@@ -29,7 +29,7 @@ namespace Argos.Framework.Input
         ReorderableList _inputMapList;
         #endregion
 
-        #region Events
+        #region Event listeners
         private void OnEnable()
         {
             this._inputMapList = ReorderableListHelper.CreateNamedList(this, this._inputMapList, InputManagerEditor.HEADER_NAME, InputManagerEditor.PROPERTY_NAME, InputManagerEditor.PREFIX_NAME, false);

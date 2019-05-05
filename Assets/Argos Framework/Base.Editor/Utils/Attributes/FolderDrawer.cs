@@ -8,18 +8,19 @@ namespace Argos.Framework
     [CustomPropertyDrawer(typeof(FolderAttribute))]
     public class FolderDrawer : TextFieldWithButtonDrawerBase
     {
+        #region Event listeners
         public override void OnButtonClick(SerializedProperty property)
         {
             string newPath = string.Empty;
             var target = (FolderAttribute)this.attribute;
 
-            switch (target.DialogType)
+            switch (target.dialogType)
             {
                 case FolderDialogTypes.OpenFolder:
-                    newPath = EditorUtility.OpenFolderPanel(target.DialogTitle, target.Folder, target.DefaultName);
+                    newPath = EditorUtility.OpenFolderPanel(target.dialogTitle, target.folder, target.defaultName);
                     break;
                 case FolderDialogTypes.SaveFolder:
-                    newPath = EditorUtility.SaveFolderPanel(target.DialogTitle, target.Folder, target.DefaultName);
+                    newPath = EditorUtility.SaveFolderPanel(target.dialogTitle, target.folder, target.defaultName);
                     break;
             }
 
@@ -27,6 +28,7 @@ namespace Argos.Framework
             {
                 property.stringValue = newPath;
             }
-        }
+        } 
+        #endregion
     } 
 }

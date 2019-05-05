@@ -76,21 +76,24 @@ public class Test : MonoBehaviour
     public FileSlotAsset File;
 
     [HelpBox("Argos Helpbox", HelpBoxMessageType.Warning)]
-    [MinMaxSlider(0f, 5f)]
+    [MinMaxSlider(0f, 5f, "Test")]
     public Vector2 Vector2MinMaxSliderField;
 
-    [MinMaxSlider(0f, 5f)]
+    [MinMaxSlider(0f, 5f, "Test")]
     public Vector2Int Vector2IntMinMaxSliderField;
-    
+
+    [Tooltip("Test")] // TooltipAttribute is not detected in PropertyDrawers ¿?
     public SceneAsset SceneField;
 
-    [Tag]
+    [Tag("Test")]
     public string TagField;
 
-    [Layer]
+    [Layer("Test")]
     public int LayerField;
-    
-    [CustomVector("L", "R")]
+
+    public SortingLayer SortingLayer;
+
+    [CustomVector(new string[] {"L", "R"}, "Test")]
     public Vector2 CustomVector2;
 
     [Label("Label field.")]
@@ -109,7 +112,7 @@ public class Test : MonoBehaviour
     [CustomVector("R", "G", "B", "A")]
     public Vector4 CustomVector4;
 
-    [ProgressBar]
+    [ProgressBar("Test")]
     public float ProgressBarField;
 
     [ProgressBar("This is a full width ProgressBar field with message")]
@@ -130,13 +133,13 @@ public class Test : MonoBehaviour
     [DinamicLabel(false, true)]
     public string DinamicSelectableLabel = "Dinamic selectable label.";
 
-    [DinamicLabel(true, true)]
+    [DinamicLabel]
     public string DinamicSelectableMiniLabel = "Dinamic selectable mini label.";
 
-    [Multiline(10)]
+    [Multiline(10), Tooltip("Test")]
     public string Multiline;
 
-    [Button]
+    [Button("", GUIButtonSize.Normal, GUIButtonDisableEvents.Never, "Test")]
     public string DefaultButton = "ButtonTest";
 
     [Button("Large Button", GUIButtonSize.Large)]
@@ -145,7 +148,7 @@ public class Test : MonoBehaviour
     [Button("Mini Button", GUIButtonSize.Mini)]
     public string MiniButton = "ButtonTest";
 
-    [File("Open file", FileDialogTypes.OpenFile, "PNG")]
+    [File("Open file", FileDialogTypes.OpenFile, "PNG", "", "", "", "Test")]
     public string OpenFileField;
 
     [File("Save file", FileDialogTypes.SaveFile, "PNG")]
@@ -154,7 +157,7 @@ public class Test : MonoBehaviour
     [File("Save file", FileDialogTypes.SaveFileInProject, "PNG", "" , "New image.png", "Save image in project.")]
     public string SaveFileInProjectField;
 
-    [Folder("Open folder", FolderDialogTypes.OpenFolder)]
+    [Folder("Open folder", FolderDialogTypes.OpenFolder, "", "", "Test")]
     public string OpenFolderField;
 
     [Folder("Save folder", FolderDialogTypes.SaveFolder)]
@@ -163,10 +166,10 @@ public class Test : MonoBehaviour
     [OptionList]
     public PrimitiveType OptionList;
 
-    [OptionList(true)]
+    [OptionList(true, "Test")]
     public RuntimePlatform SplittedOptionList;
 
-    [TexturePreview]
+    [TexturePreview(false, "Test")]
     public Texture Texture;
 
     [TexturePreview]

@@ -5,6 +5,7 @@ using Argos.Framework;
 
 namespace Argos.Framework.Input
 {
+    #region Enums
 #if UNITY_STANDALONE_LINUX
     /// <summary>
     /// XBox 360/XBox One Controller map for Linux.
@@ -154,5 +155,6 @@ namespace Argos.Framework.Input
         RightStickY = 8,
         DPadX = 9,
         DPadY = 10
-    }
+    } 
+    #endregion
 }

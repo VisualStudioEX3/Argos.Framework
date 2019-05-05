@@ -210,18 +210,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a24ba39fea6b248429cec52ca23d52af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputMaps:
-  - Name: UI
-    Data: {fileID: 11400000, guid: 91002079750e7c347b5708fd6771ea17, type: 2}
-  - Name: Player
-    Data: {fileID: 11400000, guid: ef6ab9da010499c48b4ccda2f9863895, type: 2}
-  HideMouseCursorInGamepadMode: 1
-  CheckInputTypeInterval: 0.02
-  GenericGamepadSetup: {fileID: 11400000, guid: a80f2a4c4bc854c48ba60695b1452c5f,
-    type: 2}
-  EnableGamepadVibration: 1
-  DoubleClickTime: 0.25
-  UseNintendoButtonLayout: 1
+  _inputMaps: []
+  hideMouseCursorInGamepadMode: 1
+  checkInputTypeInterval: 0.02
+  genericGamepadSetup: {fileID: 0}
+  enableGamepadVibration: 1
+  doubleClickTime: 0.25
+  useNintendoButtonLayout: 1
 --- !u!4 &186444145
 Transform:
   m_ObjectHideFlags: 0
@@ -433,8 +428,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b98a4b9a0e993e479c3890f344319bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  OptionList: 3
-  SplitOptionList: 9
+  optionList: 3
+  splitOptionList: 13
 --- !u!4 &889760508
 Transform:
   m_ObjectHideFlags: 0
@@ -532,7 +527,9 @@ MonoBehaviour:
   Vector2IntMinMaxSliderField: {x: 1, y: 4}
   SceneField:
     _asset: {fileID: 102900000, guid: 99c9720ab356a0642a771bea13969a05, type: 3}
-    _path: Assets/Scenes/Attribute field test.unity
+    _assetPath: Assets/Scenes/Attribute field test.unity
+    _scenePath: Scenes/Attribute field test
+    _sceneIndex: 0
   TagField: GameController
   LayerField: 5
   CustomVector2: {x: 0, y: 0}
@@ -569,7 +566,9 @@ MonoBehaviour:
     Field2: {x: 1, y: 2}
     Field3:
       _asset: {fileID: 102900000, guid: e2c86846ebf70d1479afd297e161b27d, type: 3}
-      _path: Assets/Scenes/Vibration pool test.unity
+      _assetPath: Assets/Scenes/Vibration pool test.unity
+      _scenePath: Scenes/Vibration pool test
+      _sceneIndex: -1
     Field4: 0
     Texture: {fileID: 0}
     Texture2D: {fileID: 0}

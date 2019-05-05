@@ -16,15 +16,15 @@ namespace Argos.Framework
     /// <summary>
     /// Attribute used to make a string variable in a script be a text field with button to invoke a file browser.
     /// </summary>
-    public class FileAttribute : PropertyAttribute
+    public class FileAttribute : ArgosPropertyAttributeBase
     {
         #region Public vars
-        public readonly string DialogTitle;
-        public readonly FileDialogTypes DialogType;
-        public readonly string Directory;
-        public readonly string DefaultName;
-        public readonly string FileExtension;
-        public readonly string Message;
+        public readonly string dialogTitle;
+        public readonly FileDialogTypes dialogType;
+        public readonly string directory;
+        public readonly string defaultName;
+        public readonly string fileExtension;
+        public readonly string message;
         #endregion
 
         #region Constructors
@@ -37,14 +37,15 @@ namespace Argos.Framework
         /// <param name="directory">Initial directory to target the open file dialog. By default is empty.</param>
         /// <param name="defaultName">Default filename. Use only for SaveFile type. By default is empty.</param>
         /// <param name="message">Message displayed in dialog. Only for SaveFileInProject (and only for OSX dialogs). By default is empty.</param>
-        public FileAttribute(string dialogTitle, FileDialogTypes dialogType, string fileExtension, string directory = "", string defaultName = "", string message = "")
+        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
+        public FileAttribute(string dialogTitle, FileDialogTypes dialogType, string fileExtension, string directory = "", string defaultName = "", string message = "", string tooltip = "") : base(tooltip)
         {
-            this.DialogTitle = dialogTitle;
-            this.DialogType = dialogType;
-            this.FileExtension = fileExtension;
-            this.Directory = directory;
-            this.DefaultName = defaultName;
-            this.Message = message;
+            this.dialogTitle = dialogTitle;
+            this.dialogType = dialogType;
+            this.fileExtension = fileExtension;
+            this.directory = directory;
+            this.defaultName = defaultName;
+            this.message = message;
         } 
         #endregion
     }

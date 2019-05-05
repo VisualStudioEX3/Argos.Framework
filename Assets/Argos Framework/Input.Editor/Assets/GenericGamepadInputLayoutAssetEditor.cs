@@ -13,7 +13,7 @@ namespace Argos.Framework.Input
         SerializedProperty _map;
         #endregion
 
-        #region Events
+        #region Event listeners
         private void OnEnable()
         {
             this._target = (GenericGamepadInputLayoutAsset)this.target;
@@ -40,14 +40,14 @@ namespace Argos.Framework.Input
         #region Methods & Functions
         void CheckAxisRanges()
         {
-            this._target.Map.LeftStickAxes = new Vector2Int(Mathf.Clamp(this._target.Map.LeftStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
-                                                            Mathf.Clamp(this._target.Map.LeftStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+            this._target.map.leftStickAxes = new Vector2Int(Mathf.Clamp(this._target.map.leftStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
+                                                            Mathf.Clamp(this._target.map.leftStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
 
-            this._target.Map.RightStickAxes = new Vector2Int(Mathf.Clamp(this._target.Map.RightStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
-                                                             Mathf.Clamp(this._target.Map.RightStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+            this._target.map.rightStickAxes = new Vector2Int(Mathf.Clamp(this._target.map.rightStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
+                                                             Mathf.Clamp(this._target.map.rightStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
 
-            this._target.Map.DPadAxes = new Vector2Int(Mathf.Clamp(this._target.Map.DPadAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
-                                                       Mathf.Clamp(this._target.Map.DPadAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+            this._target.map.DPadAxes = new Vector2Int(Mathf.Clamp(this._target.map.DPadAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
+                                                       Mathf.Clamp(this._target.map.DPadAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
         }
         #endregion
     } 

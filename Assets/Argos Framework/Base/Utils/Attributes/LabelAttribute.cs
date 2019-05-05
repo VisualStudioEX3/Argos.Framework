@@ -10,12 +10,12 @@ namespace Argos.Framework
     public class LabelAttribute : PropertyAttribute
     {
         #region Public vars
-        public readonly string Text;
-        public readonly bool MiniLabel;
-        public readonly bool Selectable;
+        public readonly string text;
+        public readonly bool miniLabel;
+        public readonly bool selectable;
         #endregion
 
-        #region MyRegion
+        #region Constructors
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -24,9 +24,9 @@ namespace Argos.Framework
         /// <param name="selectable">The content is selectable?</param>
         public LabelAttribute(string text, bool miniLabel = false, bool selectable = false)
         {
-            this.Text = text;
-            this.MiniLabel = miniLabel;
-            this.Selectable = selectable;
+            this.text = text;
+            this.miniLabel = miniLabel;
+            this.selectable = selectable;
         }
         #endregion
     }

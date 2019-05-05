@@ -16,10 +16,10 @@ namespace Argos.Framework
         public override bool CheckPropertyType(SerializedProperty property)
         {
             return property.propertyType == SerializedPropertyType.String;
-        } 
+        }
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             property.stringValue = EditorGUI.TagField(position, label, string.IsNullOrEmpty(property.stringValue.Trim()) ? TagDrawer.DEFAULT_TAG : property.stringValue);

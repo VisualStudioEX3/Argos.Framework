@@ -47,8 +47,8 @@ namespace Argos.Framework.Input
         [Serializable]
         public struct InputMapData
         {
-            public string Name;
-            public InputMapAsset Data;
+            public string name;
+            public InputMapAsset data;
         } 
         #endregion
 
@@ -212,32 +212,34 @@ namespace Argos.Framework.Input
 
         #region Public vars
         [Header("General settings")]
-        public bool HideMouseCursorInGamepadMode = true;
+        public bool hideMouseCursorInGamepadMode = true;
 
         [Tooltip("Interval between input type identification checks.")]
-        public float CheckInputTypeInterval = 0.02f;
+        public float checkInputTypeInterval = 0.02f;
 
-        public GenericGamepadInputLayoutAsset GenericGamepadSetup;
+        public GenericGamepadInputLayoutAsset genericGamepadSetup;
 
         /// <summary>
         /// Enable gamepad vibration on available devices and platforms.
         /// </summary>
-        public bool EnableGamepadVibration = true;
+        public bool enableGamepadVibration = true;
 
         [Header("UI settings")]
         /// <summary>
         /// Time for double click detection on UI controls.
         /// </summary>
-        public float DoubleClickTime = 0.25f;
+        public float doubleClickTime = 0.25f;
 
         [Header("Nintendo Switch Pro controller (PC only)")]
         [Tooltip("Use the Nintendo Switch Pro controller button layout or XBox button layout.\n\nWhen the Nintendo Switch Pro controller is active, this setting allow to use the Nintendo button layout. If this setting is false, uses the XBox button layout (swtich A B buttons, and X Y buttons to match the XBox controller button layout).\n\nThis setting not affect to XBox360/One, PS4 or generic controllers.")]
-        public bool UseNintendoButtonLayout = true;
+        public bool useNintendoButtonLayout = true;
+        #endregion
 
+        #region Events
         /// <summary>
         /// Event raised when the input type is changed.
         /// </summary>
-        public Action<InputType> OnInputTypeChange;
+        public event Action<InputType> OnInputTypeChange;
         #endregion
 
         #region Properties
@@ -260,7 +262,7 @@ namespace Argos.Framework.Input
         /// Return true if the gamepad vibration is enable and available.
         /// </summary>
         /// <remarks>In KeyboardAndMouse mode this return false always.</remarks>
-        public bool IsGamepadVibrationEnable { get { return this.EnableGamepadVibration && this.CurrentInputType != InputType.KeyboardAndMouse; } }
+        public bool IsGamepadVibrationEnable { get { return this.enableGamepadVibration && this.CurrentInputType != InputType.KeyboardAndMouse; } }
         #endregion
 
         #region Initializers
@@ -291,14 +293,14 @@ namespace Argos.Framework.Input
         #region Update logic
         private void Update()
         {
-            if (this.CheckInputTypeInterval < 0.01f)
+            if (this.checkInputTypeInterval < 0.01f)
             {
-                this.CheckInputTypeInterval = 0.01f;
+                this.checkInputTypeInterval = 0.01f;
             }
 
-            if (Gamepad.Instance.UseNintendoButtonLayout != this.UseNintendoButtonLayout)
+            if (Gamepad.Instance.UseNintendoButtonLayout != this.useNintendoButtonLayout)
             {
-                Gamepad.Instance.UseNintendoButtonLayout = this.UseNintendoButtonLayout;
+                Gamepad.Instance.UseNintendoButtonLayout = this.useNintendoButtonLayout;
             }
 
             this.HasMotionFromMouse = Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_X_NAME)) > InputManager.MIN_MOUSE_X_DELTA ||
@@ -313,12 +315,12 @@ namespace Argos.Framework.Input
             // Update the input maps:
             for (int i = 0; i < this._inputMaps.Count; i++)
             {
-                this._inputMaps[i].Data.Update();
+                this._inputMaps[i].data.Update();
             }
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         private void OnApplicationQuit()
         {
             this.SetGamepadVibration(Vector2.zero);
@@ -339,9 +341,9 @@ namespace Argos.Framework.Input
         {
             for (int i = 0; i < this._inputMaps.Count; i++)
             {
-                if (this._inputMaps[i].Name == name)
+                if (this._inputMaps[i].name == name)
                 {
-                    return this._inputMaps[i].Data;
+                    return this._inputMaps[i].data;
                 }
             }
 
@@ -385,26 +387,11 @@ namespace Argos.Framework.Input
                 {
                     switch (type)
                     {
-                        case InputType.KeyboardAndMouse:
-
-                            return InputManager.NOT_ASSIGNABLE_KEYS.Contains(keyCode) ? KeyCode.None : keyCode; 
-
-                        case InputType.XBoxController:
-
-                            return InputManager.ASSIGNABLE_XBOX_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
-
-                        case InputType.PS4Controller:
-
-                            return InputManager.ASSIGNABLE_PS4_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
-
-                        case InputType.NintendoSwitchProController:
-
-                            return InputManager.ASSIGNABLE_NINTENDO_SWITCH_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
-
-                        case InputType.GenericGamepad:
-
-                            return InputManager.ASSIGNABLE_GENERIC_GAMEPAD_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
-
+                        case InputType.KeyboardAndMouse: return InputManager.NOT_ASSIGNABLE_KEYS.Contains(keyCode) ? KeyCode.None : keyCode; 
+                        case InputType.XBoxController: return InputManager.ASSIGNABLE_XBOX_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
+                        case InputType.PS4Controller: return InputManager.ASSIGNABLE_PS4_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
+                        case InputType.NintendoSwitchProController: return InputManager.ASSIGNABLE_NINTENDO_SWITCH_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
+                        case InputType.GenericGamepad: return InputManager.ASSIGNABLE_GENERIC_GAMEPAD_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
                     }
                 }
             }
@@ -473,7 +460,7 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         IEnumerator CheckCurrentInputTypeCoroutine()
         {
-            var wait = new WaitForSecondsRealtime(this.CheckInputTypeInterval);
+            var wait = new WaitForSecondsRealtime(this.checkInputTypeInterval);
             while (true)
             {
                 var current = this.CurrentInputType;
@@ -507,8 +494,8 @@ namespace Argos.Framework.Input
                                 break;
                         }
 
-                        Cursor.visible = !this.HideMouseCursorInGamepadMode;
-                        Cursor.lockState = this.HideMouseCursorInGamepadMode ? CursorLockMode.Locked : CursorLockMode.None;
+                        Cursor.visible = !this.hideMouseCursorInGamepadMode;
+                        Cursor.lockState = this.hideMouseCursorInGamepadMode ? CursorLockMode.Locked : CursorLockMode.None;
                     }
                     else
                     {

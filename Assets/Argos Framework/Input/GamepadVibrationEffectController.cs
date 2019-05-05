@@ -15,10 +15,10 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Public vars
-        public GamepadVibrationEffectAsset Effect;
-        public bool FixedUpdate = false;
-        public bool UseUnScaledTime = false;
-        public bool PlayOnStart = false;
+        public GamepadVibrationEffectAsset effect;
+        public bool fixedUpdate = false;
+        public bool useUnScaledTime = false;
+        public bool playOnStart = false;
         #endregion
 
         #region Properties
@@ -28,10 +28,10 @@ namespace Argos.Framework.Input
         #region Initializers
         private void Start()
         {
-            this._timer = new Timer(this.UseUnScaledTime ? TimerModes.UnScaledTime : TimerModes.ScaledTime);
-            this._wait = this.FixedUpdate ? (YieldInstruction)new WaitForFixedUpdate() : (YieldInstruction)new WaitForEndOfFrame();
+            this._timer = new Timer(this.useUnScaledTime ? TimerModes.UnScaledTime : TimerModes.ScaledTime);
+            this._wait = this.fixedUpdate ? (YieldInstruction)new WaitForFixedUpdate() : (YieldInstruction)new WaitForEndOfFrame();
 
-            if (this.PlayOnStart)
+            if (this.playOnStart)
             {
                 this.Play();
             }
@@ -72,7 +72,7 @@ namespace Argos.Framework.Input
         IEnumerator VibrationCoroutine()
         {
             float currentTime;
-            float duration = this.Effect.Duration;
+            float duration = this.effect.Duration;
             Vector2 intensity;
 
             this._timer.Start();
@@ -85,7 +85,7 @@ namespace Argos.Framework.Input
 
                 if (currentTime >= duration)
                 {
-                    if (this.Effect.Loop)
+                    if (this.effect.Loop)
                     {
                         this._timer.Reset(true);
                     }
@@ -95,15 +95,15 @@ namespace Argos.Framework.Input
                     }
                 }
 
-                if (!this.Effect.UseCurves)
+                if (!this.effect.UseCurves)
                 {
-                    intensity = new Vector2(this.Effect.Type != GamepadVibrationEffectAsset.VibratorType.Weak ? this.Effect.StrongForce : -1,
-                                            this.Effect.Type != GamepadVibrationEffectAsset.VibratorType.Strong ? this.Effect.WeakForce : -1);
+                    intensity = new Vector2(this.effect.Type != GamepadVibrationEffectAsset.VibratorType.Weak ? this.effect.StrongForce : -1,
+                                            this.effect.Type != GamepadVibrationEffectAsset.VibratorType.Strong ? this.effect.WeakForce : -1);
                 }
                 else
                 {
-                    intensity = new Vector2(this.Effect.Type != GamepadVibrationEffectAsset.VibratorType.Weak ? this.Effect.StrongCurve.Evaluate(currentTime) : -1,
-                                            this.Effect.Type != GamepadVibrationEffectAsset.VibratorType.Strong ? this.Effect.WeakCurve.Evaluate(currentTime) : -1);
+                    intensity = new Vector2(this.effect.Type != GamepadVibrationEffectAsset.VibratorType.Weak ? this.effect.StrongCurve.Evaluate(currentTime) : -1,
+                                            this.effect.Type != GamepadVibrationEffectAsset.VibratorType.Strong ? this.effect.WeakCurve.Evaluate(currentTime) : -1);
                 }
 
                 InputManager.Instance.SetGamepadVibration(intensity);

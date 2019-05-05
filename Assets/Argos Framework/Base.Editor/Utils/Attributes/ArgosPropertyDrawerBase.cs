@@ -17,7 +17,7 @@ namespace Argos.Framework
         #region Internal vars
         GUIStyle _errorMessageStyle;
         #endregion
-
+        
         #region Properties
         /// <summary>
         /// The type of the field.
@@ -57,16 +57,25 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="property">Serialized property that has the field content.</param>
         /// <param name="label">The field label displayed on GUI.</param>
-        /// <returns></returns>
+        /// <returns>Return the property height.</returns>
         public virtual float GetCustomHeight(SerializedProperty property, GUIContent label)
         {
             return EditorGUIUtility.singleLineHeight;
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         public sealed override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
+            if (this.attribute is ArgosPropertyAttributeBase)
+            {
+                label.tooltip = (this.attribute as ArgosPropertyAttributeBase).tooltip; 
+            }
+            //else if (this.attribute is TooltipAttribute) // TooltipAttribute is not detected in PropertyDrawers ¿?
+            //{
+            //    label.tooltip = (this.attribute as TooltipAttribute).tooltip;
+            //}
+
             if (this.CheckPropertyType(property))
             {
                 this.OnCustomGUI(position, property, label);

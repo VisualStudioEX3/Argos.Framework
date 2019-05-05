@@ -8,21 +8,22 @@ namespace Argos.Framework
     [CustomPropertyDrawer(typeof(FileAttribute))]
     public class FileDrawer : TextFieldWithButtonDrawerBase
     {
+        #region Event listeners
         public override void OnButtonClick(SerializedProperty property)
         {
             string newPath = string.Empty;
             var target = (FileAttribute)this.attribute;
 
-            switch (target.DialogType)
+            switch (target.dialogType)
             {
                 case FileDialogTypes.OpenFile:
-                    newPath = EditorUtility.OpenFilePanel(target.DialogTitle, target.Directory, target.FileExtension);
+                    newPath = EditorUtility.OpenFilePanel(target.dialogTitle, target.directory, target.fileExtension);
                     break;
                 case FileDialogTypes.SaveFile:
-                    newPath = EditorUtility.SaveFilePanel(target.DialogTitle, target.Directory, target.DefaultName, target.FileExtension);
+                    newPath = EditorUtility.SaveFilePanel(target.dialogTitle, target.directory, target.defaultName, target.fileExtension);
                     break;
                 case FileDialogTypes.SaveFileInProject:
-                    newPath = EditorUtility.SaveFilePanelInProject(target.DialogTitle, target.Directory, target.FileExtension, target.Message);
+                    newPath = EditorUtility.SaveFilePanelInProject(target.dialogTitle, target.directory, target.fileExtension, target.message);
                     break;
             }
 
@@ -30,6 +31,7 @@ namespace Argos.Framework
             {
                 property.stringValue = newPath;
             }
-        }
+        } 
+        #endregion
     } 
 }

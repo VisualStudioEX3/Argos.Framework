@@ -7,24 +7,24 @@ namespace Argos.Framework.Utils
     public sealed class RotateObject : MonoBehaviour
     {
         #region Public vars
-        public float Speed = 1f;
+        public float speed = 1f;
         [Tooltip("Step defined in degrees.")]
-        public float Step = 1f;
-        public Vector3 Axis = Vector3.zero;
-        public Space Space = Space.Self;
+        public float step = 1f;
+        public Vector3 axis = Vector3.zero;
+        public Space space = Space.Self;
         #endregion
 
         #region Update logic
         void Update()
         {
-            this.Axis = new Vector3()
+            this.axis = new Vector3()
             {
-                x = Mathf.Clamp(this.Axis.x, -1f, 1f),
-                y = Mathf.Clamp(this.Axis.y, -1f, 1f),
-                z = Mathf.Clamp(this.Axis.z, -1f, 1f)
+                x = Mathf.Clamp(this.axis.x, -1f, 1f),
+                y = Mathf.Clamp(this.axis.y, -1f, 1f),
+                z = Mathf.Clamp(this.axis.z, -1f, 1f)
             };
 
-            this.transform.Rotate((this.Axis * this.Step) * (Time.deltaTime * this.Speed), this.Space);
+            this.transform.Rotate((this.axis * this.step) * (Time.deltaTime * this.speed), this.space);
         }
         #endregion
     }

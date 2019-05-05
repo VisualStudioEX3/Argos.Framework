@@ -18,7 +18,7 @@ namespace Argos.Framework
             return property.propertyType == SerializedPropertyType.String;
         }
 
-        #region Events
+        #region Event listeners
         public sealed override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             Rect fieldRect = position;

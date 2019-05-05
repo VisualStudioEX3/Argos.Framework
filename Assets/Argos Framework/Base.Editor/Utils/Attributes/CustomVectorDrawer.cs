@@ -38,16 +38,16 @@ namespace Argos.Framework
                 case SerializedPropertyType.Vector2:
                 case SerializedPropertyType.Vector2Int:
 
-                    return attribute.Names.Length == 2;
+                    return attribute.names.Length == 2;
 
                 case SerializedPropertyType.Vector3:
                 case SerializedPropertyType.Vector3Int:
 
-                    return attribute.Names.Length == 3;
+                    return attribute.names.Length == 3;
 
                 case SerializedPropertyType.Vector4:
 
-                    return attribute.Names.Length == 4;
+                    return attribute.names.Length == 4;
 
                 default:
 
@@ -56,7 +56,7 @@ namespace Argos.Framework
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var vectorAttribute = (CustomVectorAttribute)attribute;
@@ -80,7 +80,7 @@ namespace Argos.Framework
                     contentPosition.width /= CustomVectorDrawer.VECTOR2_FIELD_WITDH_CORRECTION;
                 }
 
-                EditorGUI.MultiPropertyField(contentPosition, vectorAttribute.Names, property.FindPropertyRelative("x"));
+                EditorGUI.MultiPropertyField(contentPosition, vectorAttribute.names, property.FindPropertyRelative("x"));
             }
             EditorGUI.EndProperty();
         }

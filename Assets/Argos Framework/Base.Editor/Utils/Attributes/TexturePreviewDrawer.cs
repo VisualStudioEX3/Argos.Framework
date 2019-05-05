@@ -14,6 +14,13 @@ namespace Argos.Framework
         #endregion
 
         #region Methods & Functions
+        public override bool CanCacheInspectorGUI(SerializedProperty property)
+        {
+            // This grants that the texture always is rendered.
+            // Source: https://answers.unity.com/questions/1311926/texture2d-in-scriptableobjects-property-drawer-exp.html?childToView=1401566#answer-1401566
+            return false;
+        }
+
         public override float GetCustomHeight(SerializedProperty property, GUIContent label)
         {
             return TexturePreviewDrawer.FIELD_SIZE;
@@ -29,14 +36,7 @@ namespace Argos.Framework
         }
         #endregion
 
-        #region Events
-        public override bool CanCacheInspectorGUI(SerializedProperty property)
-        {
-            // This ensure that the texture always is rendered.
-            // Source: https://answers.unity.com/questions/1311926/texture2d-in-scriptableobjects-property-drawer-exp.html?childToView=1401566#answer-1401566
-            return false;
-        }
-
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             Rect prefixRect = position;
@@ -47,7 +47,7 @@ namespace Argos.Framework
             fieldRect.x = fieldRect.xMax - fieldRect.height;
             fieldRect.width = fieldRect.height;
 
-            bool allowSceneObjects = (this.attribute as TexturePreviewAttribute).AllowSceneObjects;
+            bool allowSceneObjects = (this.attribute as TexturePreviewAttribute).allowSceneObjects;
 
             int indent = EditorGUI.indentLevel;
             {

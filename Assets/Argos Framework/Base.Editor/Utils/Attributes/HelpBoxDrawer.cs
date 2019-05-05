@@ -28,7 +28,7 @@ namespace Argos.Framework
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnGUI(Rect position)
         {
             var helpBox = (HelpBoxAttribute)attribute;

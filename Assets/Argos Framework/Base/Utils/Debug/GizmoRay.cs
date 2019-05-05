@@ -13,15 +13,15 @@ namespace Argos.Framework.Utils.Debug
     public sealed class GizmoRay : MonoBehaviour
     {
         #region Public vars
-        public Color Color = Color.red;
-        public float Length = 100f;
+        public Color color = Color.red;
+        public float length = 100f;
         #endregion
 
         #region Update logic
         private void OnDrawGizmos()
         {
-            Gizmos.color = this.Color;
-            Gizmos.DrawRay(this.transform.position, this.transform.forward * this.Length);
+            Gizmos.color = this.color;
+            Gizmos.DrawRay(this.transform.position, this.transform.forward * this.length);
         }
         #endregion
     }

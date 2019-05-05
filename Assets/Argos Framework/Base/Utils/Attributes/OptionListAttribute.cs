@@ -7,10 +7,10 @@ namespace Argos.Framework
     /// <summary>
     /// Attribute used to present a enum field as a check list with all enum possible values like an option list.
     /// </summary>
-    public class OptionListAttribute : PropertyAttribute
+    public class OptionListAttribute : ArgosPropertyAttributeBase
     {
         #region Public vars
-        public readonly bool Split = false;
+        public readonly bool split;
         #endregion
 
         #region Constructors
@@ -18,9 +18,10 @@ namespace Argos.Framework
         /// Constructor.
         /// </summary>
         /// <param name="split">Split the list in two columns.</param>
-        public OptionListAttribute(bool split = false)
+        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
+        public OptionListAttribute(bool split = false, string tooltip = "") : base(tooltip)
         {
-            this.Split = split;
+            this.split = split;
         }
         #endregion
     }

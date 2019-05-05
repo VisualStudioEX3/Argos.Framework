@@ -15,13 +15,13 @@ namespace Argos.Framework
         } 
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             var progressBarAttribute = (ProgressBarAttribute)attribute;
-            Rect rect = progressBarAttribute.ShowLabel ? EditorGUI.PrefixLabel(position, label) : EditorGUI.IndentedRect(position);
+            Rect rect = progressBarAttribute.showLabel ? EditorGUI.PrefixLabel(position, label) : EditorGUI.IndentedRect(position);
 
-            EditorGUI.ProgressBar(rect, property.floatValue, progressBarAttribute.Message);
+            EditorGUI.ProgressBar(rect, property.floatValue, progressBarAttribute.message);
         }
         #endregion
     }

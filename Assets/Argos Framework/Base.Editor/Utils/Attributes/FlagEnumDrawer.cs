@@ -16,7 +16,7 @@ namespace Argos.Framework
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             property.intValue = EditorGUI.MaskField(position, label, property.intValue, property.enumDisplayNames);

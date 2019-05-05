@@ -202,27 +202,27 @@ namespace Argos.Framework.FileSystem
         /// <summary>
         /// Event for notify the save success operation.
         /// </summary>
-        public Action OnSaveSuccess;
+        public event Action OnSaveSuccess;
 
         /// <summary>
         /// Event for notify the save failed operation.
         /// </summary>
-        public Action<FileSlotErrorCodes> OnSaveFailed;
+        public event Action<FileSlotErrorCodes> OnSaveFailed;
 
         /// <summary>
         /// Event for notify the load success operation.
         /// </summary>
-        public Action OnLoadSuccess;
+        public event Action OnLoadSuccess;
 
         /// <summary>
         /// Event for notify the load failed operation.
         /// </summary>
-        public Action<FileSlotErrorCodes> OnLoadFailed;
+        public event Action<FileSlotErrorCodes> OnLoadFailed;
 
         /// <summary>
         /// Event for notify the delete success operation.
         /// </summary>
-        public Action OnDeleteSuccess;
+        public event Action OnDeleteSuccess;
 
         /// <summary>
         /// Event for notify the delete failed operation.

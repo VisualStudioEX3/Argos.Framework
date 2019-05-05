@@ -73,7 +73,7 @@ namespace Argos.Framework
 
             EditorGUI.BeginChangeCheck();
             {
-                EditorGUI.MinMaxSlider(this.minMaxSliderRect, ref value.x, ref value.y, attribute.Range.x, attribute.Range.y);
+                EditorGUI.MinMaxSlider(this.minMaxSliderRect, ref value.x, ref value.y, attribute.range.x, attribute.range.y);
             }
 
             if (EditorGUI.EndChangeCheck())
@@ -83,13 +83,13 @@ namespace Argos.Framework
 
             if (isVector2Int)
             {
-                value.x = this.DrawField(this.minFieldRect, (int)value.x, (int)attribute.Range.x, (int)attribute.Range.y);
-                value.y = this.DrawField(this.maxFieldRect, (int)value.y, (int)attribute.Range.x, (int)attribute.Range.y);
+                value.x = this.DrawField(this.minFieldRect, (int)value.x, (int)attribute.range.x, (int)attribute.range.y);
+                value.y = this.DrawField(this.maxFieldRect, (int)value.y, (int)attribute.range.x, (int)attribute.range.y);
             }
             else
             {
-                value.x = this.DrawField(this.minFieldRect, value.x, attribute.Range.x, attribute.Range.y);
-                value.y = this.DrawField(this.maxFieldRect, value.y, attribute.Range.x, attribute.Range.y);
+                value.x = this.DrawField(this.minFieldRect, value.x, attribute.range.x, attribute.range.y);
+                value.y = this.DrawField(this.maxFieldRect, value.y, attribute.range.x, attribute.range.y);
             }
         }
 
@@ -104,7 +104,7 @@ namespace Argos.Framework
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             bool isVector2Int = (property.propertyType == SerializedPropertyType.Vector2Int);

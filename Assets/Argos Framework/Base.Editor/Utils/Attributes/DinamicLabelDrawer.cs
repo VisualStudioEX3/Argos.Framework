@@ -22,17 +22,17 @@ namespace Argos.Framework
         public override float GetCustomHeight(SerializedProperty property, GUIContent label)
         {
             this._attribute = (DinamicLabelAttribute)attribute;
-            this._style = this._attribute.MiniLabel ? EditorStyles.wordWrappedMiniLabel : EditorStyles.wordWrappedLabel;
+            this._style = this._attribute.miniLabel ? EditorStyles.wordWrappedMiniLabel : EditorStyles.wordWrappedLabel;
             this._style.richText = true;
 
             return this._style.CalcHeight(new GUIContent(property.stringValue), EditorGUIUtility.currentViewWidth);
         }
         #endregion
 
-        #region Events
+        #region Event listeners
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (this._attribute.Selectable)
+            if (this._attribute.selectable)
             {
                 EditorGUI.SelectableLabel(position, property.stringValue, this._style);
             }

@@ -32,8 +32,8 @@ namespace Argos.Framework
         /// <remarks>The list type must be a struct with a string field name 'Name', to store and manage the name ids, and a custom type field named 'Data'. The Data field is the content of each element in the list.</remarks>
         public static ReorderableList CreateNamedList(Editor editorInstance, ReorderableList list, string headerName, string property, string prefixName = "", bool isReorderable = true)
         {
-            const string PROPERTY_NAME = "Name";
-            const string PROPERTY_DATA = "Data";
+            const string PROPERTY_NAME = "name";
+            const string PROPERTY_DATA = "data";
 
             var ret = new ReorderableList(editorInstance.serializedObject, 
                                           editorInstance.serializedObject.FindProperty(property), 

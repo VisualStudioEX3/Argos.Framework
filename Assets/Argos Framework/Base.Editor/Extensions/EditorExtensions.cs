@@ -37,6 +37,17 @@ namespace Argos.Framework
                 editor.serializedObject.ApplyModifiedProperties();
             }
         }
+
+        /// <summary>
+        /// Force to save all pending changes on this Editor/EditorWindow/SerializableObject derived instance. Use with Serialized Objects.
+        /// </summary>
+        /// <param name="instance">This Editor/EditorWindow/SerializableObject derived instance.</param>
+        public static void SaveChangesOnAsset<T>(this T instance) where T : ScriptableObject
+        {
+            EditorUtility.SetDirty(instance);
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
+        }
         #endregion
     }
 }

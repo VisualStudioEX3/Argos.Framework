@@ -241,6 +241,7 @@ GameObject:
   m_Component:
   - component: {fileID: 216075948}
   - component: {fileID: 216075947}
+  - component: {fileID: 216075949}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Untagged
@@ -274,6 +275,37 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &216075949
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 216075946}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 81a231dcdc9ab9c458fa158d790969e9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _list:
+  - name: Element 3
+    age: 36
+    key: 55
+  - name: Element 1
+    age: 47
+    key: 61
+  - name: Element 2
+    age: 47
+    key: 61
+  - name: Element 4
+    age: 47
+    key: 61
+  - name: Element 5
+    age: 47
+    key: 61
+  - name: Element 6
+    age: 47
+    key: 61
 --- !u!1 &407033314
 GameObject:
   m_ObjectHideFlags: 0
@@ -429,7 +461,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionList: 3
-  splitOptionList: 13
+  splitOptionList: 20
 --- !u!4 &889760508
 Transform:
   m_ObjectHideFlags: 0

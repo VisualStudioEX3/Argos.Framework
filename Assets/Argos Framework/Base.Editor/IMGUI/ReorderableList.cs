@@ -7,34 +7,44 @@ using UnityReorderableList = UnityEditorInternal.ReorderableList;
 
 namespace Argos.Framework.IMGUI
 {
-    //UnityEditorInternal.RegistryUtil
-
-    public class ReorderableList
+    public abstract class ReorderableList : IDisposable
     {
         #region Constants
         const float HEADER_NONE_HEIGHT = 3f;
         #endregion
 
+        #region Enums
+        public enum ReorderableListAddButtonType
+        {
+            None,
+            Default,
+            Dropdown
+        } 
+        #endregion
+
         #region Internal vars
         UnityReorderableList _instance;
+        UnityReorderableList.Defaults _defaultBehaviours;
         #endregion
 
         #region Properties
-        public SerializedObject SerializedObject { get; private set; }
-        public SerializedProperty Elements { get { return this._instance.serializedProperty; } set { this._instance.serializedProperty = value; } }
+        public SerializedObject SerializedObject { get { return this.Elements.serializedObject; } }
+        public SerializedProperty Elements { get { return this._instance.serializedProperty; } }
         public SerializedProperty this[int index] { get { return this.Elements.GetArrayElementAtIndex(index); } }
         public int Count { get { return this._instance.count; } }
-        public bool IsDraggable { get { return this._instance.draggable; } set { this._instance.draggable = value; } }
+
+        public bool IsDraggable { get; private set; }
         public bool DisplayHeader { get; set; }
-        public bool DisplayAddButton { get { return this._instance.displayAdd; } set { this._instance.displayAdd = value; } }
-        public bool DisplayRemoveButton { get { return this._instance.displayRemove; } set { this._instance.displayRemove = value; } }
+        public ReorderableListAddButtonType DisplayAddButton { get; private set; }
+        public bool DisplayRemoveButton { get; private set; }
+
         public bool ShowDefaultBackground { get { return this._instance.showDefaultBackground; } set { this._instance.showDefaultBackground = value; } }
         #endregion
 
         #region Constructors & Destructors
-        public ReorderableList(SerializedObject serializedObject, SerializedProperty elements, bool draggable = true, bool displayHeader = false, bool displayAddButton = true, bool displayRemoveButton = true)
+        public ReorderableList(SerializedProperty elements, bool isDraggable = true, bool displayHeader = false, ReorderableListAddButtonType displayAddButton = ReorderableListAddButtonType.Default, bool displayRemoveButton = true)
         {
-            this._instance = new UnityReorderableList(serializedObject, elements, draggable, displayHeader, displayAddButton, displayRemoveButton);
+            this._instance = new UnityReorderableList(elements.serializedObject, elements, isDraggable, displayHeader, displayAddButton != ReorderableListAddButtonType.None, displayRemoveButton);
             {
                 this._instance.drawElementBackgroundCallback += this.OnElementBackgroundGUI;
                 this._instance.drawElementCallback += this.OnElementGUI;
@@ -43,8 +53,15 @@ namespace Argos.Framework.IMGUI
                 this._instance.drawNoneElementCallback += this.OnNoneElementGUI;
                 this._instance.elementHeightCallback += this.OnElementHeight;
 
-                this._instance.onAddCallback += this.OnAddElementInternal;
-                this._instance.onAddDropdownCallback += this.OnAddDropdownInternal;
+                if (displayAddButton == ReorderableListAddButtonType.Default)
+                {
+                    this._instance.onAddCallback += this.OnAddElementInternal;
+                }
+                else if (displayAddButton == ReorderableListAddButtonType.Dropdown)
+                {
+                    this._instance.onAddDropdownCallback += this.OnAddDropdownInternal;
+                }
+
                 this._instance.onCanAddCallback += this.OnCanAddInternal;
                 this._instance.onCanRemoveCallback += this.OnCanRemoveInternal;
                 this._instance.onChangedCallback += this.OnChangedElementInternal;
@@ -54,10 +71,13 @@ namespace Argos.Framework.IMGUI
                 this._instance.onSelectCallback += this.OnSelectElementInternal;
             }
 
+            this.IsDraggable = isDraggable;
             this.DisplayHeader = displayHeader;
+            this.DisplayAddButton = displayAddButton;
+            this.DisplayRemoveButton = displayRemoveButton;
         }
 
-        ~ReorderableList()
+        public void Dispose()
         {
             this._instance.drawElementBackgroundCallback -= this.OnElementBackgroundGUI;
             this._instance.drawElementCallback -= this.OnElementGUI;
@@ -83,6 +103,11 @@ namespace Argos.Framework.IMGUI
         #region Methods & Functions
         void ApplyInternalSetup()
         {
+            if (this._defaultBehaviours == null)
+            {
+                this._defaultBehaviours = new UnityReorderableList.Defaults(); 
+            }
+
             this._instance.headerHeight = this.OnHeaderHeight();
             this._instance.footerHeight = this.OnFooterHeight();
         }
@@ -101,7 +126,7 @@ namespace Argos.Framework.IMGUI
 
         public void AddNewElement()
         {
-            UnityReorderableList.defaultBehaviours.DoAddButton(this._instance);
+            this._defaultBehaviours.DoAddButton(this._instance);
         }
 
         public SerializedProperty AddNewElementAndReturnIt()
@@ -114,7 +139,7 @@ namespace Argos.Framework.IMGUI
 
         public void RemoveSelectedElement()
         {
-            UnityReorderableList.defaultBehaviours.DoRemoveButton(this._instance);
+            this._defaultBehaviours.DoRemoveButton(this._instance);
         }
         #endregion
 
@@ -126,22 +151,22 @@ namespace Argos.Framework.IMGUI
 
         public virtual float OnHeaderHeight()
         {
-            return this.DisplayHeader ? EditorGUIUtility.singleLineHeight : ReorderableList.HEADER_NONE_HEIGHT;
+            return this.DisplayHeader ? EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing : ReorderableList.HEADER_NONE_HEIGHT;
         }
 
         public virtual void OnFooterGUI(Rect rect)
         {
-            UnityReorderableList.defaultBehaviours.DrawFooter(rect, this._instance);
+            this._defaultBehaviours.DrawFooter(rect, this._instance);
         }
 
         public virtual float OnFooterHeight()
         {
-            return UnityReorderableList.defaultBehaviours.footerBackground.fixedHeight;
+            return this._defaultBehaviours.footerBackground.fixedHeight;
         }
 
         public virtual void OnNoneElementGUI(Rect rect)
         {
-            UnityReorderableList.defaultBehaviours.DrawNoneElement(rect, this.IsDraggable);
+            this._defaultBehaviours.DrawNoneElement(rect, this.IsDraggable);
         }
 
         public virtual void OnElementGUI(Rect rect, int index, bool isActive, bool isFocused)
@@ -151,7 +176,7 @@ namespace Argos.Framework.IMGUI
 
         public virtual void OnElementBackgroundGUI(Rect rect, int index, bool isActive, bool isFocused)
         {
-            UnityReorderableList.defaultBehaviours.DrawElementBackground(rect, index, isActive, isFocused, this.IsDraggable);
+            this._defaultBehaviours.DrawElementBackground(rect, index, isActive, isFocused, this.IsDraggable);
         }
 
         public virtual float OnElementHeight(int index)
@@ -236,19 +261,28 @@ namespace Argos.Framework.IMGUI
         void OnSelectElementInternal(UnityReorderableList list)
         {
             this._instance = list;
-            this.OnSelectElement(this[list.index]);
+            if (list.index >= 0)
+            {
+                this.OnSelectElement(this[list.index]); 
+            }
         }
 
         void OnMouseUpElementInternal(UnityReorderableList list)
         {
             this._instance = list;
-            this.OnChangedElement(this[list.index]);
+            if (list.index >= 0)
+            {
+                this.OnChangedElement(this[list.index]); 
+            }
         }
 
         void OnChangedElementInternal(UnityReorderableList list)
         {
             this._instance = list;
-            this.OnChangedElement(this[list.index]);
+            if (list.index >= 0)
+            {
+                this.OnChangedElement(this[list.index]); 
+            }
         }
 
         void OnReorderElementInternal(UnityReorderableList list, int oldIndex, int newIndex)

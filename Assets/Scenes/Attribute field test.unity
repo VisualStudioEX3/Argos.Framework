@@ -288,24 +288,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _list:
-  - name: Element 3
-    age: 36
-    key: 55
   - name: Element 1
-    age: 47
-    key: 61
+    age: 33
+    key: 57
   - name: Element 2
-    age: 47
-    key: 61
-  - name: Element 4
-    age: 47
-    key: 61
-  - name: Element 5
-    age: 47
-    key: 61
-  - name: Element 6
-    age: 47
-    key: 61
+    age: 15
+    key: 38
+  - name: Element 3
+    age: 54
+    key: 52
+  - name: Element 2
+    age: 15
+    key: 38
 --- !u!1 &407033314
 GameObject:
   m_ObjectHideFlags: 0

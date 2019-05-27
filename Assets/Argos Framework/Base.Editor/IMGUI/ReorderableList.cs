@@ -28,7 +28,7 @@ namespace Argos.Framework.IMGUI
         /// <param name="displayAddButton">Show the add element button?</param>
         /// <param name="displayRemoveButton">Show the remove element button?</param>
         public ReorderableList(SerializedProperty elements, string headerCaption = "", bool boldHeaderCaption = false, bool isDraggable = true, bool displayAddButton = true, bool displayRemoveButton = true) :
-                      base(elements, isDraggable, !string.IsNullOrEmpty(headerCaption), displayAddButton ? ReorderableListAddButtonType.Default : ReorderableListAddButtonType.None, displayRemoveButton)
+            base(elements, isDraggable, !string.IsNullOrEmpty(headerCaption), displayAddButton ? ReorderableListAddButtonType.Default : ReorderableListAddButtonType.None, displayRemoveButton)
         {
             this._headerCaption = headerCaption;
             this._boldHeaderCaption = boldHeaderCaption;
@@ -36,10 +36,10 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Event listeners
-        public override void OnHeaderGUI(Rect rect)
+        public sealed override void OnHeaderGUI(Rect rect)
         {
             EditorGUI.LabelField(rect, this._headerCaption, this._boldHeaderCaption ? EditorStyles.boldLabel : EditorStyles.label);
         }
         #endregion
-    } 
+    }
 }

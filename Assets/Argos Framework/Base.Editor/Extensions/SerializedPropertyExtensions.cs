@@ -36,7 +36,7 @@ namespace Argos.Framework
 
             if (start > 0)
             {
-                index = start == end ? int.Parse(property.propertyPath[start].ToString()) : int.Parse(property.propertyPath.Substring(start, end));
+                index = (start == end) ? int.Parse(property.propertyPath[start].ToString()) : int.Parse(property.propertyPath.Substring(start, end));
                 return property.propertyPath.Substring(0, start - 1).EndsWith(ARRAY_DATA_END_MASK);
             }
 

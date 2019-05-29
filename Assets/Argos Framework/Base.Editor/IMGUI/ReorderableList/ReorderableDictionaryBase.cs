@@ -7,15 +7,20 @@ using UnityEditor;
 namespace Argos.Framework.IMGUI
 {
     /// <summary>
-    /// Base class to implement ReorderableLists with Dictionary behaviour.
+    /// Base class to implement ReorderableLists with dictionary behaviour.
     /// </summary>
     public abstract class ReorderableDictionaryBase : ReorderableListBase, IDisposable
     {
+        #region Internal vars
+        string _inputPopupWindowLabel;
+        #endregion
+
         #region Constructors
-        public ReorderableDictionaryBase(SerializedProperty elements, bool isDraggable = true, bool displayHeader = true, ReorderableListAddButtonType displayAddButton = ReorderableListAddButtonType.Default, bool displayRemoveButton = true) :
-            base(elements, isDraggable, displayHeader, displayAddButton, displayRemoveButton)
+        public ReorderableDictionaryBase(SerializedProperty elements, bool isDraggable = true, bool displayHeader = true, bool displayAddButton = true, bool displayRemoveButton = true, string inputPopupWindowLabel = "New item name") :
+            base(elements, isDraggable, displayHeader, displayAddButton ? ReorderableListAddButtonType.Dropdown : ReorderableListAddButtonType.None, displayRemoveButton)
         {
-        } 
+            this._inputPopupWindowLabel = inputPopupWindowLabel;
+        }
         #endregion
 
         #region Methods & Functions
@@ -30,52 +35,64 @@ namespace Argos.Framework.IMGUI
         {
             for (int i = 0; i < this.Elements.arraySize; i++)
             {
-                SerializedProperty element = this.Elements.GetArrayElementAtIndex(i);
-                if (element.hasChildren)
+                if (name.Equals(this.GetStringProperty(this.Elements.GetArrayElementAtIndex(i).Copy()).stringValue))
                 {
-                    string elementName = element.GetArrayElementAtIndex(0).stringValue;
-
-                    if (!string.IsNullOrEmpty(elementName))
-                    {
-                        if (name.Equals(elementName))
-                        {
-                            index = i;
-                            return true;
-                        }
-                    }
-                    else
-                    {
-                        // TODO: Error, the first element must be a string value.
-                        throw new Exception();
-                    }
-                }
-                else
-                {
-                    // TODO: Error, the element must be a structure or class value with public serialized properties.
-                    throw new Exception();
+                    index = i;
+                    return true;
                 }
             }
 
             index = -1;
 
             return false;
-        } 
+        }
+
+        SerializedProperty GetStringProperty(SerializedProperty element)
+        {
+            if (element.propertyType != SerializedPropertyType.String && element.hasChildren)
+            {
+                element.Next(true);
+            }
+
+            if (element.propertyType == SerializedPropertyType.String)
+            {
+                return element.Copy();
+            }
+            else
+            {
+                throw new FieldAccessException("ReorderableDictionaryBase: The property or their first child must be a string type.");
+            }
+        }
         #endregion
 
         #region Event listeners
-        public sealed override void OnAddElement()
+        public override void OnAddDropdown(Rect buttonRect)
         {
-            string name = string.Empty; // TODO: Implement input box dialog for fill data like this.
+            InputPopupWindow.ShowInputStringPopup(buttonRect, this._inputPopupWindowLabel, this.OnInputPopupAccept);
+        }
 
-            if (true)
+        void OnInputPopupAccept(string value)
+        {
+            if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value))
             {
                 int matchIndex;
-                if (this.IsNameExists(name, out matchIndex))
+                if (!this.IsNameExists(value, out matchIndex))
                 {
-                    // TODO: Add new element.
+                    this.OnAddNewElement(value);
+                }
+                else
+                {
+                    EditorUtility.DisplayDialog("Duplicated element", $"The name value already exists in the list (index {matchIndex})", "Ok");
                 }
             }
-        } 
+        }
+
+        public virtual void OnAddNewElement(string name)
+        {
+            SerializedProperty newElement = this.GetStringProperty(this.AddNewElement());
+            newElement.stringValue = name;
+            newElement.serializedObject.ApplyModifiedProperties();
+        }
         #endregion
     }
 }

@@ -297,9 +297,13 @@ MonoBehaviour:
   - name: Element 3
     age: 54
     key: 52
-  - name: Element 2
-    age: 15
-    key: 38
+  - name: dsfasdfd
+    age: 54
+    key: 52
+  _stringArray:
+  - Element 1
+  - Element 2
+  - Element 3
 --- !u!1 &407033314
 GameObject:
   m_ObjectHideFlags: 0

@@ -267,9 +267,11 @@ namespace Argos.Framework.IMGUI
         /// <param name="isFocused">Return if the element has the focus.</param>
         public virtual void OnElementGUI(Rect rect, SerializedProperty element, int index, bool isActive, bool isFocused)
         {
-            EditorGUI.indentLevel++;
+            bool indent = element.hasChildren && element.propertyType != SerializedPropertyType.String;
+
+            EditorGUI.indentLevel += Mathf.Abs(indent.ToInt32());
             EditorGUI.PropertyField(rect, element, true);
-            EditorGUI.indentLevel--;
+            EditorGUI.indentLevel += indent.ToInt32();
         }
 
         /// <summary>
@@ -293,7 +295,7 @@ namespace Argos.Framework.IMGUI
         /// <returns></returns>
         public virtual float OnElementHeight(SerializedProperty element, int index)
         {
-            return EditorGUI.GetPropertyHeight(element, true);
+            return EditorGUI.GetPropertyHeight(element, true) + EditorGUIUtility.standardVerticalSpacing;
         }
 
         /// <summary>

@@ -18,6 +18,7 @@ public class ReorderableListTest : MonoBehaviour
     }
 
     public List<CustomData> _list;
+    public string[] _stringArray;
 
     private void Awake()
     {
@@ -25,7 +26,7 @@ public class ReorderableListTest : MonoBehaviour
     }
 }
 
-public class CustomReorderableList : ReorderableListBase
+public class CustomReorderableList : ReorderableListBase, IDisposable
 {
     public CustomReorderableList(SerializedProperty elements) : base(elements, true, true, ReorderableListAddButtonType.Dropdown)
     {
@@ -124,17 +125,20 @@ public class ReorderableListTestEditor : Editor
 {
     ReorderableList _defaultList;
     CustomReorderableList _list;
+    ReorderableDictionary _dictionary;
 
     private void OnEnable()
     {
         this._defaultList = new ReorderableList(this.serializedObject.FindProperty("_list"), "Default Reorderable List", false);
-
         this._list = new CustomReorderableList(this.serializedObject.FindProperty("_list"));
+        this._dictionary = new ReorderableDictionary(this.serializedObject.FindProperty("_stringArray"));
     }
 
     private void OnDisable()
     {
         this._list?.Dispose();
+        this._defaultList?.Dispose();
+        this._dictionary?.Dispose();
     }
 
     public override void OnInspectorGUI()
@@ -145,6 +149,7 @@ public class ReorderableListTestEditor : Editor
 
         this._defaultList.DoLayoutList();
         this._list.DoLayoutList();
+        this._dictionary.DoLayoutList();
 
         this.serializedObject.ApplyModifiedProperties();
     }

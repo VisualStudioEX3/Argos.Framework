@@ -48,6 +48,17 @@ namespace Argos.Framework
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh(ImportAssetOptions.ForceUpdate);
         }
+
+        /// <summary>
+        /// Logs message to the Unity Console (identical to Debug.Log).
+        /// </summary>
+        /// <param name="instance">This Editor/EditorWindow/SerializableObject derived instance.</param>
+        /// <param name="message">Message to log.</param>
+        /// <remarks>This is a copy of the print() implementation of MonoBehaviour class.</remarks>
+        public static void print<T>(this T instance, object message) where T : ScriptableObject
+        {
+            Debug.Log(message, instance);
+        }
         #endregion
     }
 }

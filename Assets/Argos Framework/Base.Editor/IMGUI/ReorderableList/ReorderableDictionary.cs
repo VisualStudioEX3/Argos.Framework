@@ -6,6 +6,10 @@ using UnityEditor;
 
 namespace Argos.Framework.IMGUI
 {
+    /// <summary>
+    /// Basic ReorderableList object with dictionary behaviour.
+    /// </summary>
+    /// <remarks>A basic implementation of Unity ReorderableList object with dictionary behaviour implemented: optional header caption, optional add and remove buttons, and default render serialized property element behaviour (draws the all child elements).</remarks>
     public sealed class ReorderableDictionary : ReorderableDictionaryBase, IDisposable
     {
         #region Internal vars

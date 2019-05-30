@@ -9,12 +9,20 @@ using Argos.Framework.IMGUI;
 public class ReorderableListTest : MonoBehaviour
 {
     [System.Serializable]
+    public struct CustomData2
+    {
+        public string message;
+        public float value;
+    }
+
+    [System.Serializable]
     public struct CustomData
     {
         public string name;
         [Range(0, 100)]
         public int age;
         public KeyCode key;
+        public CustomData2 customData;
     }
 
     public List<CustomData> _list;
@@ -131,7 +139,7 @@ public class ReorderableListTestEditor : Editor
     {
         this._defaultList = new ReorderableList(this.serializedObject.FindProperty("_list"), "Default Reorderable List", false);
         this._list = new CustomReorderableList(this.serializedObject.FindProperty("_list"));
-        this._dictionary = new ReorderableDictionary(this.serializedObject.FindProperty("_stringArray"));
+        this._dictionary = new ReorderableDictionary(this.serializedObject.FindProperty("_list"));
     }
 
     private void OnDisable()

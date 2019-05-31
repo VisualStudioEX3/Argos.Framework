@@ -35,8 +35,8 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         /// <param name="name">Name to check.</param>
         /// <param name="index">Return the index of the element with the same name. Return -1 when not element match the name parameter.</param>
-        /// <returns>Returns true if the name exists in the list.</returns>
         /// <param name="skipIndexElement">Skip check on this index element. By default is -1 and no skip any index.</param>
+        /// <returns>Returns true if the name exists in the list.</returns>
         /// <remarks>Use this function when implement your custom add element behaviour.</remarks>
         public bool IsNameExists(string name, out int index, int skipIndexElement = -1)
         {
@@ -57,6 +57,11 @@ namespace Argos.Framework.IMGUI
             return false;
         }
 
+        /// <summary>
+        /// Get the first string property of the Serialized Property.
+        /// </summary>
+        /// <param name="element">Serialized Property to check.</param>
+        /// <returns>Return the copy of the string property.</returns>
         SerializedProperty GetStringProperty(SerializedProperty element)
         {
             if (element.propertyType != SerializedPropertyType.String && element.hasChildren)
@@ -74,23 +79,33 @@ namespace Argos.Framework.IMGUI
             }
         }
 
+        /// <summary>
+        /// Check for duplicated name and notify to user if found one.
+        /// </summary>
+        /// <param name="name">Name to check.</param>
+        /// <param name="skipIndex">Optional. Element index to skip on check process. By default is -1 and no skip any index.</param>
+        /// <returns>Returns true if the name exists in the list.</returns>
         bool CheckForDuplicateName(string name, int skipIndex = -1)
         {
             int matchIndex;
             if (this.IsNameExists(name, out matchIndex, skipIndex))
             {
-                EditorUtility.DisplayDialog("Duplicated element", $"The name value already exists in the list (index {matchIndex})", "Ok");
+                //EditorUtility.DisplayDialog("Duplicated element", $"An element with name \"{name}\" already exists in the list (element index {matchIndex}).", "Ok");
                 return true;
             }
 
             return false;
         }
 
+        /// <summary>
+        /// Check for changes on current GUI element.
+        /// </summary>
+        /// <returns>Return true when any property of the GUI element has changed.</returns>
         bool CheckForChanges()
         {
             if (GUI.changed)
             {
-                GUI.changed = false;
+                GUI.changed = false; // At first positive, disabled the state to avoid detect a chain of changes in entire property hierarchy.
 
                 return true;
             }
@@ -107,7 +122,7 @@ namespace Argos.Framework.IMGUI
 
         void OnInputPopupAccept(string value)
         {
-            if (!string.IsNullOrEmpty(value) && !string.IsNullOrWhiteSpace(value))
+            if (!value.IsNullOrEmptyOrWhiteSpace())
             {
                 if (!this.CheckForDuplicateName(value))
                 {
@@ -130,12 +145,18 @@ namespace Argos.Framework.IMGUI
             if (this.CheckForChanges())
             {
                 string newName = this.GetStringProperty(element).stringValue;
-                if (!string.IsNullOrWhiteSpace(newName))
+                bool isEmptyName = newName.IsNullOrEmptyOrWhiteSpace();
+
+                if ((!isEmptyName && this.CheckForDuplicateName(newName, index)) ||
+                    isEmptyName)
                 {
-                    if (this.CheckForDuplicateName(newName, index))
+                    // TODO: Check this!
+                    if (!isEmptyName)
                     {
-                        Undo.PerformUndo();
+                        EditorUtility.DisplayDialog("Duplicated element", $"An element with name \"{newName}\" already exists in the list.", "Ok");
                     }
+
+                    EditorGUIUtility.ExitGUI();
                 }
             }
         }

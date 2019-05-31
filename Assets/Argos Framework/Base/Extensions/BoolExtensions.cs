@@ -2,18 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Method extensions for boolean type.
-/// </summary>
-public static class BoolExtensions
+namespace Argos.Framework
 {
     /// <summary>
-    /// Convert to int value.
+    /// Method extensions for boolean type.
     /// </summary>
-    /// <param name="value">Boolean expresion value.</param>
-    /// <returns>Returns -1 for true or 0 for false.</returns>
-    public static int ToInt32(this bool value)
+    public static class BoolExtensions
     {
-        return value ? -1 : 0;
-    }
+        /// <summary>
+        /// Convert to int value.
+        /// </summary>
+        /// <param name="value">Boolean expresion value.</param>
+        /// <returns>Returns -1 for true or 0 for false.</returns>
+        public static int ToInt32(this bool value)
+        {
+            return value ? -1 : 0;
+        }
+    } 
 }

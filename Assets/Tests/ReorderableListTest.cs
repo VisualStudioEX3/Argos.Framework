@@ -153,7 +153,7 @@ public class ReorderableListTestEditor : Editor
     {
         this.serializedObject.Update();
 
-        this.DrawDefaultInspectorWithoutScriptField();
+        //this.DrawDefaultInspectorWithoutScriptField();
 
         this._defaultList.DoLayoutList();
         this._list.DoLayoutList();

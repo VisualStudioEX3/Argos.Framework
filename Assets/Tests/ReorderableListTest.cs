@@ -12,12 +12,14 @@ public class ReorderableListTest : MonoBehaviour
     public struct CustomData2
     {
         public string message;
+        [Min(0f)]
         public float value;
     }
 
     [System.Serializable]
     public struct CustomData
     {
+        [Delayed]
         public string name;
         [Range(0, 100)]
         public int age;

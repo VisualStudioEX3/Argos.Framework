@@ -15,10 +15,6 @@ namespace Argos.Framework.Input
     [AddComponentMenu("Argos.Framework/Input/Input Manager"), DisallowMultipleComponent]
     public sealed class InputManager : MonoBehaviour
     {
-        #region Singleton
-        public static InputManager Instance { get; private set; }
-        #endregion
-
         #region Constants
         const string MOUSE_X_NAME = "Mouse X";
         const string MOUSE_Y_NAME = "Mouse Y";
@@ -26,7 +22,9 @@ namespace Argos.Framework.Input
 
         const float MIN_MOUSE_X_DELTA = 0.75f;
         const float MIN_MOUSE_Y_DELTA = 0.75f;
-        const float MIN_MOUSE_Z_DELTA = 0.5f; 
+        const float MIN_MOUSE_Z_DELTA = 0.5f;
+
+        const float MIN_TIME_INPUT_CHECK_INTERVAL = 0.001f;
         #endregion
 
         #region Enums
@@ -214,7 +212,7 @@ namespace Argos.Framework.Input
         [Header("General settings")]
         public bool hideMouseCursorInGamepadMode = true;
 
-        [Tooltip("Interval between input type identification checks.")]
+        [Tooltip("Interval between input type identification checks."), Min(InputManager.MIN_TIME_INPUT_CHECK_INTERVAL)]
         public float checkInputTypeInterval = 0.02f;
 
         public GenericGamepadInputLayoutAsset genericGamepadSetup;
@@ -263,6 +261,10 @@ namespace Argos.Framework.Input
         /// </summary>
         /// <remarks>In KeyboardAndMouse mode this return false always.</remarks>
         public bool IsGamepadVibrationEnable { get { return this.enableGamepadVibration && this.CurrentInputType != InputType.KeyboardAndMouse; } }
+        #endregion
+
+        #region Static members
+        public static InputManager Instance { get; private set; } 
         #endregion
 
         #region Initializers

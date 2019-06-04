@@ -16,6 +16,10 @@ namespace Argos.Framework.Input
     [CreateAssetMenu(fileName = "New Gamepad Vibration Effect", menuName = "Argos.Framework/Input/Gamepad Vibration Effect")]
     public sealed class GamepadVibrationEffectAsset : ScriptableObject
     {
+        #region Constants
+        const float MIN_DURATION = 0.01f; 
+        #endregion
+
         #region Enums
         public enum VibratorType
         {
@@ -50,7 +54,7 @@ namespace Argos.Framework.Input
         [Range(0f, 1f)]
         float _weakForce;
 
-        [SerializeField]
+        [SerializeField, Min(GamepadVibrationEffectAsset.MIN_DURATION)]
         float _duration;
 
         [SerializeField]

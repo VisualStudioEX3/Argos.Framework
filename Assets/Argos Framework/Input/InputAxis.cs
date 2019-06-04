@@ -18,8 +18,10 @@ namespace Argos.Framework.Input
         #region Constants
 		const string MOUSE_X_NAME = "Mouse X";
 		const string MOUSE_Y_NAME = "Mouse Y";
+
         const float MIN_SENSITIVITY = 0.5f;
         const float MAX_SENSITIVITY = 30f;
+
         const float DEFAULT_SENSITIVITY = 10f;
         #endregion
 

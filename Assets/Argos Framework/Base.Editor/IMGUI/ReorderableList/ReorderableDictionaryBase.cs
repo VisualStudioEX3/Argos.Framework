@@ -147,10 +147,8 @@ namespace Argos.Framework.IMGUI
                 string newName = this.GetStringProperty(element).stringValue;
                 bool isEmptyName = newName.IsNullOrEmptyOrWhiteSpace();
 
-                if ((!isEmptyName && this.CheckForDuplicateName(newName, index)) ||
-                    isEmptyName)
+                if ((!isEmptyName && this.CheckForDuplicateName(newName, index)) || isEmptyName)
                 {
-                    // TODO: Check this!
                     if (!isEmptyName)
                     {
                         EditorUtility.DisplayDialog("Duplicated element", $"An element with name \"{newName}\" already exists in the list.", "Ok");

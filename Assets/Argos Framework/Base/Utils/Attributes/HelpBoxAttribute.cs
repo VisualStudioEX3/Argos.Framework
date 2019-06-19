@@ -22,7 +22,7 @@ namespace Argos.Framework
     /// Based on code at https://forum.unity.com/threads/helpattribute-allows-you-to-use-helpbox-in-the-unity-inspector-window.462768/#post-3014998
     /// </remarks>
     [System.AttributeUsage(System.AttributeTargets.Field, AllowMultiple = true)]
-    public class HelpBoxAttribute : PropertyAttribute
+    public class HelpBoxAttribute : ArgosPropertyAttributeBase
     {
         #region Public vars
         public readonly string text;
@@ -35,7 +35,8 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="text">The message text.</param>
         /// <param name="messageType">The type of message.</param>
-        public HelpBoxAttribute(string text, HelpBoxMessageType messageType = HelpBoxMessageType.None)
+        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
+        public HelpBoxAttribute(string text, HelpBoxMessageType messageType = HelpBoxMessageType.None, string tooltip = "") : base(tooltip)
         {
             this.text = text;
             this.messageType = messageType;

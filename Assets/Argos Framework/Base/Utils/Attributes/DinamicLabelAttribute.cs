@@ -7,7 +7,7 @@ namespace Argos.Framework
     /// <summary>
     /// Attribute used to make a string variable in a script be a dinamic multi-line richtext label.
     /// </summary>
-    public class DinamicLabelAttribute : PropertyAttribute
+    public class DinamicLabelAttribute : ArgosPropertyAttributeBase
     {
         #region Public vars
         public readonly bool miniLabel;
@@ -20,7 +20,8 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="miniLabel">Show as mini label style.</param>
         /// <param name="selectable">The content is selectable?</param>
-        public DinamicLabelAttribute(bool miniLabel = false, bool selectable = false)
+        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
+        public DinamicLabelAttribute(bool miniLabel = false, bool selectable = false, string tooltip = "") : base(tooltip)
         {
             this.miniLabel = miniLabel;
             this.selectable = selectable;

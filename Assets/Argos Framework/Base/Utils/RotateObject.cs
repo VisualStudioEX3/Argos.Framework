@@ -3,6 +3,9 @@ using Argos.Framework;
 
 namespace Argos.Framework.Utils
 {
+    /// <summary>
+    /// Component to rotate a game object.
+    /// </summary>
     [AddComponentMenu("Argos.Framework/Utils/Rotate Object"), DisallowMultipleComponent]
     public sealed class RotateObject : MonoBehaviour
     {
@@ -17,13 +20,7 @@ namespace Argos.Framework.Utils
         #region Update logic
         void Update()
         {
-            this.axis = new Vector3()
-            {
-                x = Mathf.Clamp(this.axis.x, -1f, 1f),
-                y = Mathf.Clamp(this.axis.y, -1f, 1f),
-                z = Mathf.Clamp(this.axis.z, -1f, 1f)
-            };
-
+            this.axis.Clamp(Vector3.one * -1f, Vector3.one);
             this.transform.Rotate((this.axis * this.step) * (Time.deltaTime * this.speed), this.space);
         }
         #endregion

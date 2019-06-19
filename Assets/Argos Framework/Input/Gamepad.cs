@@ -253,7 +253,21 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Generic gamepad setup shortcut.
         /// </summary>
-        public GenericGamepadInputLayout GenericGamepadSetup { get { return InputManager.Instance.genericGamepadSetup.map; } }
+        public GenericGamepadInputLayout GenericGamepadSetup
+        {
+            get
+            {
+                if (InputManager.Instance && InputManager.Instance.genericGamepadSetup)
+                {
+                    return InputManager.Instance.genericGamepadSetup.map; 
+                }
+                else
+                {
+                    Logger.Log($"Not GenericGamepadSetup asset found.", LogLevel.Error);
+                    return new GenericGamepadInputLayout();
+                }
+            }
+        }
 
         /// <summary>
         /// Use the Nintendo Switch Pro controller button layout or XBox button layout.

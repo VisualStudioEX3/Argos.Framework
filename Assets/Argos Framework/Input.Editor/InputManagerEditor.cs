@@ -56,7 +56,7 @@ namespace Argos.Framework.Input
             this.serializedObject.Update();
             this._inputMapList.DoLayoutList();
             this.serializedObject.ApplyModifiedProperties();
-
+            
             EditorGUILayout.Space();
         }
         #endregion

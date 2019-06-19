@@ -17,7 +17,7 @@ namespace Argos.Framework
         /// <summary>
         /// Draw the default inspector without render the Script field.
         /// </summary>
-        /// <param name="editor">The Editor instance.</param>
+        /// <param name="editor">The <see cref="Editor"/> instance.</param>
         public static void DrawDefaultInspectorWithoutScriptField(this Editor editor)
         {
             editor.serializedObject.Update();
@@ -39,9 +39,9 @@ namespace Argos.Framework
         }
 
         /// <summary>
-        /// Force to save all pending changes on this Editor/EditorWindow/SerializableObject derived instance. Use with Serialized Objects.
+        /// Force to save all pending changes on this <see cref="Editor"/>/<see cref="EditorWindow"/>/<see cref="ScriptableObject"/>derived instance. Use with Serialized Objects.
         /// </summary>
-        /// <param name="instance">This Editor/EditorWindow/SerializableObject derived instance.</param>
+        /// <param name="instance">This <see cref="Editor"/>/<see cref="EditorWindow"/>/<see cref="ScriptableObject"/> derived instance.</param>
         public static void SaveChangesOnAsset<T>(this T instance) where T : ScriptableObject
         {
             EditorUtility.SetDirty(instance);
@@ -52,12 +52,21 @@ namespace Argos.Framework
         /// <summary>
         /// Logs message to the Unity Console (identical to Debug.Log).
         /// </summary>
-        /// <param name="instance">This Editor/EditorWindow/SerializableObject derived instance.</param>
+        /// <param name="instance">This <see cref="Editor"/>/<see cref="EditorWindow"/>/<see cref="ScriptableObject"/> derived instance.</param>
         /// <param name="message">Message to log.</param>
-        /// <remarks>This is a copy of the print() implementation of MonoBehaviour class.</remarks>
-        public static void print<T>(this T instance, object message) where T : ScriptableObject
+        /// <remarks>This is a copy of the <see cref="MonoBehaviour.print(object)"/> implementation of <see cref="MonoBehaviour"/> class.</remarks>
+        public static void Print(this ScriptableObject instance, object message)
         {
             Debug.Log(message, instance);
+        }
+
+        /// <summary>
+        /// Draws the Unity native component inspector.
+        /// </summary>
+        /// <param name="component"><see cref="UnityEngine.Object"/> instance.</param>
+        public static void DrawNativeComponentInspector(this UnityEngine.Object component)
+        {
+            Editor.CreateEditor(component).OnInspectorGUI();
         }
         #endregion
     }

@@ -200,27 +200,29 @@ public class Test : MonoBehaviour
 
     void Start()
     {
-        var ui = InputManager.Instance.GetInputMap("UI");
+        //var ui = InputManager.Instance.GetInputMap("UI");
 
-        ui.GetAction("Submit").OnKeyDown += this.OnEventSubmitTest;
-        ui.GetAction("Cancel").OnKeyDown += this.OnEventCancelTest;
+        //ui.GetAction("Submit").OnKeyDown += this.OnEventSubmitTest;
+        //ui.GetAction("Cancel").OnKeyDown += this.OnEventCancelTest;
+
+        this.Log($"{this.GetClassName()}");
     }
 
     void Update()
     {
-        var player = InputManager.Instance.GetInputMap("Player");
+        //var player = InputManager.Instance.GetInputMap("Player");
 
-        InputManager.Instance.SetGamepadVibration(player.GetAxis("Movement"));
+        //InputManager.Instance.SetGamepadVibration(player.GetAxis("Movement"));
 
-        if (player.GetAction("NextWeapon"))
-        {
-            print("Next weapon.");
-        }
+        //if (player.GetAction("NextWeapon"))
+        //{
+        //    print("Next weapon.");
+        //}
 
-        if (player.GetAction("PreviousWeapon"))
-        {
-            print("Previous weapon.");
-        }
+        //if (player.GetAction("PreviousWeapon"))
+        //{
+        //    print("Previous weapon.");
+        //}
     }
 
     void OnEventSubmitTest()

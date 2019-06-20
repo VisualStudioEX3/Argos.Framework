@@ -37,7 +37,7 @@ namespace Argos.Framework
         }
 
         /// <summary>
-        /// Event raised when the user click on the button.
+        /// Event raised when the user click on button.
         /// </summary>
         public abstract void OnButtonClick(SerializedProperty property);
         #endregion

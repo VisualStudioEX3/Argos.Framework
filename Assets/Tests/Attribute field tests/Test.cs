@@ -133,8 +133,14 @@ public class Test : MonoBehaviour
     [DinamicLabel(false, true)]
     public string DinamicSelectableLabel = "Dinamic selectable label.";
 
-    [DinamicLabel]
+    [DinamicLabel(true, true)]
     public string DinamicSelectableMiniLabel = "Dinamic selectable mini label.";
+
+    [FormatBytes]
+    public int IntBytes = 1234567890;
+
+    [FormatBytes]
+    public float FloatBytes = 2048.512f;
 
     [Multiline(10), Tooltip("Test")]
     public string Multiline;

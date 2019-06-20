@@ -20,7 +20,7 @@ namespace Argos.Framework
         public override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             long value = (long)(property.propertyType == SerializedPropertyType.Integer ? property.intValue : property.floatValue);
-            EditorGUI.LabelField(position, label, EditorUtility.FormatBytes(value));
+            EditorGUI.LabelField(position, label, new GUIContent(EditorUtility.FormatBytes(value)));
         }
         #endregion
     }

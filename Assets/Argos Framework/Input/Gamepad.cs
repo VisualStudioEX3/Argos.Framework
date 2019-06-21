@@ -263,7 +263,6 @@ namespace Argos.Framework.Input
                 }
                 else
                 {
-                    Logger.Log($"Not GenericGamepadSetup asset found.", LogLevel.Error);
                     return new GenericGamepadInputLayout();
                 }
             }

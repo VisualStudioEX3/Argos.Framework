@@ -212,6 +212,11 @@ public class Test : MonoBehaviour
         //ui.GetAction("Cancel").OnKeyDown += this.OnEventCancelTest;
 
         this.Log($"{this.GetClassName()}");
+
+        foreach (var layer in SortingLayer.layers)
+        {
+            print($"{layer.id}, {layer.name}, {layer.value}");
+        }
     }
 
     void Update()

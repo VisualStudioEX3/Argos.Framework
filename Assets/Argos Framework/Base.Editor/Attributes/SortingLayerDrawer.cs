@@ -26,9 +26,12 @@ namespace Argos.Framework
 
             //int index = 
 
+            //EditorGUI.LayerField()
+
             property.intValue = EditorGUI.Popup(position, label.text, property.intValue, this.GetSortingLayerNames());
 
             // TODO: Maybe is better idea works with Sorting Layer name instead of id or value.
+            // TODO: Add support to SortingLayer struct type.
         }
 
         string[] GetSortingLayerNames()

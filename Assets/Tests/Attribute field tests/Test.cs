@@ -91,7 +91,8 @@ public class Test : MonoBehaviour
     [Layer("Test")]
     public int LayerField;
 
-    public SortingLayer SortingLayer;
+    [SortingLayer]
+    public int SortingLayerField;
 
     [CustomVector(new string[] {"L", "R"}, "Test")]
     public Vector2 CustomVector2;
@@ -112,7 +113,7 @@ public class Test : MonoBehaviour
     [CustomVector("R", "G", "B", "A")]
     public Vector4 CustomVector4;
 
-    [ProgressBar("Test")]
+    [ProgressBar("", false, "Test")]
     public float ProgressBarField;
 
     [ProgressBar("This is a full width ProgressBar field with message")]
@@ -124,16 +125,16 @@ public class Test : MonoBehaviour
     [ProgressBar("ProgressBar message", true)]
     public float LabeledProgressBarFieldWithMessage;
 
-    [DinamicLabel]
+    [DynamicLabel]
     public string DinamicLabel = "Dinamic label.";
 
-    [DinamicLabel(true)]
+    [DynamicLabel(true)]
     public string DinamicMiniLabel = "Dinamic mini label.";
 
-    [DinamicLabel(false, true)]
+    [DynamicLabel(false, true)]
     public string DinamicSelectableLabel = "Dinamic selectable label.";
 
-    [DinamicLabel(true, true)]
+    [DynamicLabel(true, true)]
     public string DinamicSelectableMiniLabel = "Dinamic selectable mini label.";
 
     [FormatBytes]

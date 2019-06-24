@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Argos.Framework;
 
-namespace Argos.Framework.Utils
+namespace Argos.Framework
 {
     /// <summary>
     /// Component to rotate a game object.

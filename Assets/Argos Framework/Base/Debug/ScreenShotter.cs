@@ -19,7 +19,7 @@ namespace Argos.Framework.Utils.Debug
         string _path;
         string _lastName;
 #pragma warning disable 414
-        [SerializeField, DinamicLabel(true, true)]
+        [SerializeField, DynamicLabel(true, true)]
         string _finalName;
 #pragma warning restore
         #endregion

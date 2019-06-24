@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Argos.Framework;
 
-namespace Argos.Framework.Utils
+namespace Argos.Framework
 {
     /// <summary>
     /// Ragdoll Controller.
@@ -18,11 +18,11 @@ namespace Argos.Framework.Utils
 
         #region Serialized fields
 #pragma warning disable 0649
-        [SerializeField, HelpBox("This controller set to true the property enableProjection in all CharacterJoints to improve the ragdoll stability under extreme circumstances (such as spawning partially inside a wall or pushed with a large force).", HelpBoxMessageType.Info)]
+        [Space, SerializeField, HelpBox("This controller set to true the property enableProjection in all CharacterJoints to improve the ragdoll stability under extreme circumstances (such as spawning partially inside a wall or pushed with a large force).", HelpBoxMessageType.Info)]
         bool _overrideCollidersTag = false;
         [SerializeField, Tag]
         string _collidersTag;
-        [SerializeField]
+        [Space, SerializeField]
         bool _overrideCollidersLayer = false;
         [SerializeField, Layer]
         int _collidersLayer;
@@ -30,13 +30,17 @@ namespace Argos.Framework.Utils
         #endregion
 
         #region Properties
-        public bool Active
+        /// <summary>
+        /// Is Ragdoll components active?
+        /// </summary>
+        /// <remarks>This property return the <see cref="Rigidbody.isKinematic"/> value from the first <see cref="Transform"/>.</remarks>
+        public bool IsRagdollActive
         {
             get
             {
                 return this._rigidBodies[0].isKinematic;
             }
-            set
+            private set
             {
                 foreach (var r in this._rigidBodies)
                 {
@@ -73,6 +77,26 @@ namespace Argos.Framework.Utils
                 } 
             }
         }
+        #endregion
+
+        #region Methods & Functions
+        /// <summary>
+        /// Enable ragdoll.
+        /// </summary>
+        /// <remarks>This call setup all <see cref="Rigidbody.isKinematic"/> to true.</remarks>
+        public void EnableRagdoll()
+        {
+            this.IsRagdollActive = true;
+        }
+
+        /// <summary>
+        /// Disable ragdoll.
+        /// </summary>
+        /// <remarks>This call setup all <see cref="Rigidbody.isKinematic"/> to false.</remarks>
+        public void DisableRagdoll()
+        {
+            this.IsRagdollActive = false;
+        } 
         #endregion
     }
 }

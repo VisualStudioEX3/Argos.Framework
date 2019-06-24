@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Argos.Framework.Utils
+namespace Argos.Framework
 {
     #region Enums
     /// <summary>

@@ -7,17 +7,20 @@ using Argos.Framework;
 [CustomEditor(typeof(ComponentTest))]
 public class ComponentTestEditor : Editor
 {
-
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
 
-        EditorGUILayout.BeginVertical("Box");
+        this.serializedObject.Update();
         {
-            EditorGUI.indentLevel++;
-            this.serializedObject.FindProperty("audioSource").objectReferenceValue.DrawNativeComponentInspector();
+            EditorGUILayout.BeginVertical("Box");
+            {
+                EditorGUI.indentLevel++;
+                this.serializedObject.FindProperty("audioSource").objectReferenceValue.DrawNativeComponentInspector();
+            }
+            EditorGUILayout.EndVertical();
         }
-        EditorGUILayout.EndVertical();
+        this.serializedObject.ApplyModifiedProperties();
     }
 }
 

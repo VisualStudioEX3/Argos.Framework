@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
@@ -22,8 +23,8 @@ namespace Argos.Framework
         /// <summary>
         /// The type of the field.
         /// </summary>
-        /// <remarks>A simple shortcut of this.fieldInfo.FieldType.</remarks>
-        public System.Type FieldType { get { return this.fieldInfo.FieldType; } }
+        /// <remarks>A simple shortcut of <see cref="PropertyDrawer.fieldInfo.FieldType"/>.</remarks>
+        public Type FieldType { get { return this.fieldInfo.FieldType; } }
         #endregion
 
         #region Methods & Functions
@@ -32,7 +33,7 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="property">Serialized property that has the field content.</param>
         /// <returns>Return true if the type is valid.</returns>
-        /// <remarks>For basic type checkings, use the SerializedProperty "propertyType" property value.</remarks>
+        /// <remarks>For basic type checkings, use <see cref="SerializedProperty.propertyType"/> value.</remarks>
         public virtual bool CheckPropertyType(SerializedProperty property)
         {
             return true;
@@ -53,7 +54,7 @@ namespace Argos.Framework
         }
 
         /// <summary>
-        /// Use this function to customize the property height (like the original GetPropertyHeight() function).
+        /// Use this function to customize the property height (like the original <see cref="PropertyDrawer.GetPropertyHeight(SerializedProperty, GUIContent)"/> function).
         /// </summary>
         /// <param name="property">Serialized property that has the field content.</param>
         /// <param name="label">The field label displayed on GUI.</param>
@@ -94,7 +95,7 @@ namespace Argos.Framework
         }
 
         /// <summary>
-        /// Use this event to customize the property content (like the original OnGUI() event).
+        /// Use this event to customize the property content (like the original <see cref="PropertyDrawer.OnGUI(Rect, SerializedProperty, GUIContent)"/> event).
         /// </summary>
         /// <param name="position">The area ocupped by the property content.</param>
         /// <param name="property">Serialized property that has the field content.</param>

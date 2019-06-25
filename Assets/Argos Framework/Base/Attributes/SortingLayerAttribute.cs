@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Attribute used to make an integer variable in a script be restricted to SortingLayer values.
+    /// Attribute used to make an integer or string variable in a script be restricted to SortingLayer values, also support SortingLayer variable types too.
     /// </summary>
     public class SortingLayerAttribute : ArgosPropertyAttributeBase
     {

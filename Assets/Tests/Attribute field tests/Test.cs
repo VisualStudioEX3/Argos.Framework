@@ -91,8 +91,13 @@ public class Test : MonoBehaviour
     [Layer("Test")]
     public int LayerField;
 
+    public SortingLayer SortingLayerField;
+
     [SortingLayer]
-    public int SortingLayerField;
+    public int IntSortingLayerField;
+
+    [SortingLayer]
+    public string StringSortingLayerField;
 
     [CustomVector(new string[] {"L", "R"}, "Test")]
     public Vector2 CustomVector2;

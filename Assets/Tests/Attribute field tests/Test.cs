@@ -91,8 +91,6 @@ public class Test : MonoBehaviour
     [Layer("Test")]
     public int LayerField;
 
-    public SortingLayer SortingLayerField;
-
     [SortingLayer]
     public int IntSortingLayerField;
 

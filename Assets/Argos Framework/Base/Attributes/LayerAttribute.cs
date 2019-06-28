@@ -13,8 +13,7 @@ namespace Argos.Framework
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public LayerAttribute(string tooltip = "") : base(tooltip)
+        public LayerAttribute()
         {
         } 
         #endregion

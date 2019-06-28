@@ -37,8 +37,7 @@ namespace Argos.Framework
         /// <param name="directory">Initial directory to target the open file dialog. By default is empty.</param>
         /// <param name="defaultName">Default filename. Use only for SaveFile type. By default is empty.</param>
         /// <param name="message">Message displayed in dialog. Only for SaveFileInProject (and only for OSX dialogs). By default is empty.</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public FileAttribute(string dialogTitle, FileDialogTypes dialogType, string fileExtension, string directory = "", string defaultName = "", string message = "", string tooltip = "") : base(tooltip)
+        public FileAttribute(string dialogTitle, FileDialogTypes dialogType, string fileExtension, string directory = "", string defaultName = "", string message = "")
         {
             this.dialogTitle = dialogTitle;
             this.dialogType = dialogType;

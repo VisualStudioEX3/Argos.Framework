@@ -17,6 +17,7 @@ namespace Argos.Framework
 
         #region Internal vars
         GUIStyle _errorMessageStyle;
+        string _tooltip = string.Empty;
         #endregion
         
         #region Properties
@@ -28,6 +29,20 @@ namespace Argos.Framework
         #endregion
 
         #region Methods & Functions
+        string GetTooltipAttributeValue()
+        {
+            if (string.IsNullOrEmpty(this._tooltip))
+            {
+                var customAttributes = this.fieldInfo.GetCustomAttributes(typeof(TooltipAttribute), false);
+                if (customAttributes.Length > 0)
+                {
+                    this._tooltip = (customAttributes[0] as TooltipAttribute).tooltip;
+                }
+            }
+
+            return this._tooltip;
+        }
+
         /// <summary>
         /// Use this function to evaluate if the field type is correct.
         /// </summary>
@@ -68,14 +83,7 @@ namespace Argos.Framework
         #region Event listeners
         public sealed override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
-            if (this.attribute is ArgosPropertyAttributeBase)
-            {
-                label.tooltip = (this.attribute as ArgosPropertyAttributeBase).tooltip; 
-            }
-            //else if (this.attribute is TooltipAttribute) // TooltipAttribute is not detected in PropertyDrawers ¿?
-            //{
-            //    label.tooltip = (this.attribute as TooltipAttribute).tooltip;
-            //}
+            label.tooltip = this.GetTooltipAttributeValue();
 
             if (this.CheckPropertyType(property))
             {

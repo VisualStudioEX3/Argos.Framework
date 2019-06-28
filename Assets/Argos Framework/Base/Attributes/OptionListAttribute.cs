@@ -18,8 +18,7 @@ namespace Argos.Framework
         /// Constructor.
         /// </summary>
         /// <param name="split">Split the list in two columns.</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public OptionListAttribute(bool split = false, string tooltip = "") : base(tooltip)
+        public OptionListAttribute(bool split = false)
         {
             this.split = split;
         }

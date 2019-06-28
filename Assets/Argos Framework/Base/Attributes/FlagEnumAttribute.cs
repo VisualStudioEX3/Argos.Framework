@@ -10,8 +10,7 @@ namespace Argos.Framework
         /// <summary>
         /// Constructor.
         /// </summary>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public FlagEnumAttribute(string tooltip = "") : base(tooltip)
+        public FlagEnumAttribute()
         {
         } 
         #endregion

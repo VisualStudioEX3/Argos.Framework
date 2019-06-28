@@ -20,8 +20,7 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="message">Message show into the progressbar.</param>
         /// <param name="showLabel">Show field prefix label.</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public ProgressBarAttribute(string message = "", bool showLabel = false, string tooltip = "") : base(tooltip)
+        public ProgressBarAttribute(string message = "", bool showLabel = false)
         {
             this.message = message;
             this.showLabel = showLabel;

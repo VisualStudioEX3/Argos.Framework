@@ -20,8 +20,7 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="min">The minimum allowed value.</param>
         /// <param name="max">The maximum allowed value.</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public MinMaxSliderAttribute(float min = 0f, float max = 1f, string tooltip = "") : base(tooltip)
+        public MinMaxSliderAttribute(float min = 0f, float max = 1f)
         {
             this.range = new Vector2(min, max);
         }

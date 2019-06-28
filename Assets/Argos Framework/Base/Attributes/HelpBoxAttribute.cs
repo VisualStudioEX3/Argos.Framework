@@ -35,8 +35,7 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="text">The message text.</param>
         /// <param name="messageType">The type of message.</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public HelpBoxAttribute(string text, HelpBoxMessageType messageType = HelpBoxMessageType.None, string tooltip = "") : base(tooltip)
+        public HelpBoxAttribute(string text, HelpBoxMessageType messageType = HelpBoxMessageType.None)
         {
             this.text = text;
             this.messageType = messageType;

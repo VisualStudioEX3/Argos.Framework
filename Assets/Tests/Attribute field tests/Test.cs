@@ -76,19 +76,19 @@ public class Test : MonoBehaviour
     public FileSlotAsset File;
 
     [HelpBox("Argos Helpbox", HelpBoxMessageType.Warning)]
-    [MinMaxSlider(0f, 5f, "Test")]
+    [MinMaxSlider(0f, 5f)]
     public Vector2 Vector2MinMaxSliderField;
 
-    [MinMaxSlider(0f, 5f, "Test")]
+    [MinMaxSlider(0f, 5f), Tooltip("Test")]
     public Vector2Int Vector2IntMinMaxSliderField;
 
-    [Tooltip("Test")] // TooltipAttribute is not detected in PropertyDrawers ¿?
+    [Tooltip("Test")]
     public SceneAsset SceneField;
 
-    [Tag("Test")]
+    [Tag]
     public string TagField;
 
-    [Layer("Test")]
+    [Layer]
     public int LayerField;
 
     [SortingLayer]
@@ -97,7 +97,10 @@ public class Test : MonoBehaviour
     [SortingLayer]
     public string StringSortingLayerField;
 
-    [CustomVector(new string[] {"L", "R"}, "Test")]
+    [Password]
+    public string PasswordField;
+
+    [CustomVector("L", "R")]
     public Vector2 CustomVector2;
 
     [Label("Label field.")]
@@ -116,7 +119,7 @@ public class Test : MonoBehaviour
     [CustomVector("R", "G", "B", "A")]
     public Vector4 CustomVector4;
 
-    [ProgressBar("", false, "Test")]
+    [ProgressBar("", false)]
     public float ProgressBarField;
 
     [ProgressBar("This is a full width ProgressBar field with message")]
@@ -149,7 +152,7 @@ public class Test : MonoBehaviour
     [Multiline(10), Tooltip("Test")]
     public string Multiline;
 
-    [Button("", GUIButtonSize.Normal, GUIButtonDisableEvents.Never, "Test")]
+    [Button("", GUIButtonSize.Normal, GUIButtonDisableEvents.Never)]
     public string DefaultButton = "ButtonTest";
 
     [Button("Large Button", GUIButtonSize.Large)]
@@ -158,7 +161,7 @@ public class Test : MonoBehaviour
     [Button("Mini Button", GUIButtonSize.Mini)]
     public string MiniButton = "ButtonTest";
 
-    [File("Open file", FileDialogTypes.OpenFile, "PNG", "", "", "", "Test")]
+    [File("Open file", FileDialogTypes.OpenFile, "PNG", "", "", "")]
     public string OpenFileField;
 
     [File("Save file", FileDialogTypes.SaveFile, "PNG")]
@@ -167,7 +170,7 @@ public class Test : MonoBehaviour
     [File("Save file", FileDialogTypes.SaveFileInProject, "PNG", "" , "New image.png", "Save image in project.")]
     public string SaveFileInProjectField;
 
-    [Folder("Open folder", FolderDialogTypes.OpenFolder, "", "", "Test")]
+    [Folder("Open folder", FolderDialogTypes.OpenFolder, "", "")]
     public string OpenFolderField;
 
     [Folder("Save folder", FolderDialogTypes.SaveFolder)]
@@ -176,10 +179,10 @@ public class Test : MonoBehaviour
     [OptionList]
     public PrimitiveType OptionList;
 
-    [OptionList(true, "Test")]
+    [OptionList(true)]
     public RuntimePlatform SplittedOptionList;
 
-    [TexturePreview(false, "Test")]
+    [TexturePreview]
     public Texture Texture;
 
     [TexturePreview]
@@ -214,13 +217,6 @@ public class Test : MonoBehaviour
 
         //ui.GetAction("Submit").OnKeyDown += this.OnEventSubmitTest;
         //ui.GetAction("Cancel").OnKeyDown += this.OnEventCancelTest;
-
-        this.Log($"{this.GetClassName()}");
-
-        foreach (var layer in SortingLayer.layers)
-        {
-            print($"{layer.id}, {layer.name}, {layer.value}");
-        }
     }
 
     void Update()

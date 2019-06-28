@@ -68,6 +68,31 @@ namespace Argos.Framework
         {
             Editor.CreateEditor(component).OnInspectorGUI();
         }
+
+        static bool IsConfirmationKeyPressed()
+        {
+            return Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter;
+        }
+
+        /// <summary>
+        /// Check if <see cref="KeyCode.Return"/> or <see cref="KeyCode.KeypadEnter"/> is pressed.
+        /// </summary>
+        /// <param name="scriptable"><see cref="UnityEngine.Object"/> instance.</param>
+        /// <returns>Return true if <see cref="KeyCode.Return"/> or <see cref="KeyCode.KeypadEnter"/> is pressed.</returns>
+        public static bool IsConfirmationKeyPressed(this ScriptableObject scriptable)
+        {
+            return EditorExtensions.IsConfirmationKeyPressed();
+        }
+
+        /// <summary>
+        /// Check if <see cref="KeyCode.Return"/> or <see cref="KeyCode.KeypadEnter"/> is pressed.
+        /// </summary>
+        /// <param name="scriptable"><see cref="UnityEngine.Object"/> instance.</param>
+        /// <returns>Return true if <see cref="KeyCode.Return"/> or <see cref="KeyCode.KeypadEnter"/> is pressed.</returns>
+        public static bool IsConfirmationKeyPressed(this PopupWindowContent instance)
+        {
+            return EditorExtensions.IsConfirmationKeyPressed();
+        }
         #endregion
     }
 }

@@ -5,15 +5,15 @@ using UnityEngine;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Attribute used to an int or float variable in a script shows a label with formatted the vlaue in bytes.
+    /// Attribute used to make a string variable in a script be a password field, replacing all characters by asterisks.
     /// </summary>
-    public class FormatBytesAttribute : ArgosPropertyAttributeBase
+    public class PasswordAttribute : ArgosPropertyAttributeBase
     {
         #region Constructors
         /// <summary>
         /// Constructor.
         /// </summary>
-        public FormatBytesAttribute()
+        public PasswordAttribute()
         {
         }
         #endregion

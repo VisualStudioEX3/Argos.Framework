@@ -6,14 +6,9 @@ namespace Argos.Framework
 {
     public abstract class ArgosPropertyAttributeBase : PropertyAttribute
     {
-        #region Public vars
-        public readonly string tooltip;
-        #endregion
-
         #region Constructors
-        public ArgosPropertyAttributeBase(string tooltip = "")
+        public ArgosPropertyAttributeBase()
         {
-            this.tooltip = tooltip;
         } 
         #endregion
     } 

@@ -18,16 +18,7 @@ namespace Argos.Framework
         /// Constructor.
         /// </summary>
         /// <param name="names">Names of each vector element (one character).</param>
-        public CustomVectorAttribute(params string[] names) : this(names, "")
-        {
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="names">Names of each vector element (one character).</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public CustomVectorAttribute(string[] names, string tooltip = "") : base(tooltip)
+        public CustomVectorAttribute(params string[] names)
         {
             this.names = new GUIContent[names.Length];
             for (int i = 0; i < names.Length; i++)

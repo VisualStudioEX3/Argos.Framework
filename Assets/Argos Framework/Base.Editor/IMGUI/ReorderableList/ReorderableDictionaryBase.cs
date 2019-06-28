@@ -80,24 +80,6 @@ namespace Argos.Framework.IMGUI
         }
 
         /// <summary>
-        /// Check for duplicated name and notify to user if found one.
-        /// </summary>
-        /// <param name="name">Name to check.</param>
-        /// <param name="skipIndex">Optional. Element index to skip on check process. By default is -1 and no skip any index.</param>
-        /// <returns>Returns true if the name exists in the list.</returns>
-        bool CheckForDuplicateName(string name, int skipIndex = -1)
-        {
-            int matchIndex;
-            if (this.IsNameExists(name, out matchIndex, skipIndex))
-            {
-                //EditorUtility.DisplayDialog("Duplicated element", $"An element with name \"{name}\" already exists in the list (element index {matchIndex}).", "Ok");
-                return true;
-            }
-
-            return false;
-        }
-
-        /// <summary>
         /// Check for changes on current GUI element.
         /// </summary>
         /// <returns>Return true when any property of the GUI element has changed.</returns>
@@ -106,11 +88,15 @@ namespace Argos.Framework.IMGUI
             if (GUI.changed)
             {
                 GUI.changed = false; // At first positive, disabled the state to avoid detect a chain of changes in entire property hierarchy.
-
                 return true;
             }
 
             return false;
+        }
+
+        void ShowDuplicatedErrorMessageBox(string duplicatedName, int index)
+        {
+            EditorUtility.DisplayDialog("Duplicated element", $"An element with name \"{duplicatedName}\" already exists in the list (Element index {index})", "Ok");
         }
         #endregion
 
@@ -124,9 +110,14 @@ namespace Argos.Framework.IMGUI
         {
             if (!value.IsNullOrEmptyOrWhiteSpace())
             {
-                if (!this.CheckForDuplicateName(value))
+                int matchIndex;
+                if (!this.IsNameExists(value, out matchIndex))
                 {
                     this.OnAddNewElement(value);
+                }
+                else
+                {
+                    this.ShowDuplicatedErrorMessageBox(value, matchIndex);
                 }
             }
         }
@@ -146,12 +137,13 @@ namespace Argos.Framework.IMGUI
             {
                 string newName = this.GetStringProperty(element).stringValue;
                 bool isEmptyName = newName.IsNullOrEmptyOrWhiteSpace();
+                int matchIndex = -1;
 
-                if ((!isEmptyName && this.CheckForDuplicateName(newName, index)) || isEmptyName)
+                if ((!isEmptyName && this.IsNameExists(newName, out matchIndex, index)) || isEmptyName)
                 {
                     if (!isEmptyName)
                     {
-                        EditorUtility.DisplayDialog("Duplicated element", $"An element with name \"{newName}\" already exists in the list.", "Ok");
+                        this.ShowDuplicatedErrorMessageBox(newName, matchIndex);
                     }
 
                     EditorGUIUtility.ExitGUI();

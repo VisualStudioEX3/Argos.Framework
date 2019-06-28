@@ -32,8 +32,7 @@ namespace Argos.Framework
         /// <param name="dialogType">Dialog behaviour type.</param>
         /// <param name="folder">Initial directory to target the open folder dialog. By default is empty.</param>
         /// <param name="defaultName">Default folder name. By default empty.</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public FolderAttribute(string dialogTitle, FolderDialogTypes dialogType, string folder = "", string defaultName = "", string tooltip = "") : base(tooltip)
+        public FolderAttribute(string dialogTitle, FolderDialogTypes dialogType, string folder = "", string defaultName = "")
         {
             this.dialogTitle = dialogTitle;
             this.dialogType = dialogType;

@@ -18,8 +18,7 @@ namespace Argos.Framework
         /// Constructor.
         /// </summary>
         /// <param name="allowSceneObjects">Allow assigning Scene objects.</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public TexturePreviewAttribute(bool allowSceneObjects = false, string tooltip = "") : base(tooltip)
+        public TexturePreviewAttribute(bool allowSceneObjects = false)
         {
             this.allowSceneObjects = allowSceneObjects;
         } 

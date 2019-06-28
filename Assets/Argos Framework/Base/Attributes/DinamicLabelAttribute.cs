@@ -20,8 +20,7 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="miniLabel">Show as mini label style.</param>
         /// <param name="selectable">The content is selectable?</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public DynamicLabelAttribute(bool miniLabel = false, bool selectable = false, string tooltip = "") : base(tooltip)
+        public DynamicLabelAttribute(bool miniLabel = false, bool selectable = false)
         {
             this.miniLabel = miniLabel;
             this.selectable = selectable;

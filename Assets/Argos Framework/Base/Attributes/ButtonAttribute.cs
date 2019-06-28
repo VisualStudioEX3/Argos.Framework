@@ -49,8 +49,7 @@ namespace Argos.Framework
         /// <param name="customLabel">Custom label to show in the button. By default using the variable name.</param>
         /// <param name="size">The button size. By default using the default button size.</param>
         /// <param name="disableOn">Disable the button when enter in the selected mode (by default is enable for play and editor modes).</param>
-        /// <param name="tooltip">Specify a tooltip for the field. Left empty for non display tooltip.</param>
-        public ButtonAttribute(string customLabel = "", GUIButtonSize size = GUIButtonSize.Normal, GUIButtonDisableEvents disableOn = GUIButtonDisableEvents.Never, string tooltip = "") : base(tooltip)
+        public ButtonAttribute(string customLabel = "", GUIButtonSize size = GUIButtonSize.Normal, GUIButtonDisableEvents disableOn = GUIButtonDisableEvents.Never)
         {
             this.customLabel = customLabel;
             this.size = size;

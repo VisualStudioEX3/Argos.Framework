@@ -14,6 +14,7 @@ namespace Argos.Framework.IMGUI
     {
         #region Constants
         const string ACCEPT_BUTTON_CAPTION = "Save";
+        static readonly Vector2 WINDOW_SIZE = new Vector2(400f, 48f);
         #endregion
 
         #region Internal vars
@@ -81,12 +82,12 @@ namespace Argos.Framework.IMGUI
         #region Event listeners
         public sealed override Vector2 GetWindowSize()
         {
-            return new Vector2(400f, 48f);
+            return InputPopupWindow<T>.WINDOW_SIZE;
         }
 
         public sealed override void OnGUI(Rect rect)
         {
-            EditorGUILayout.GetControlRect(false, 1f); // Fix layout position of rest of controls.
+            EditorGUILayout.GetControlRect(false, 1f); // Fix layout position for the other controls.
 
             if (typeof(T) == typeof(int))
             {
@@ -101,7 +102,7 @@ namespace Argos.Framework.IMGUI
                 this._value = (T)(object)EditorGUILayout.TextField(this._label, (string)(object)this._value);
             }
 
-            if (GUILayout.Button(this._acceptButtonCaption))
+            if (GUILayout.Button(this._acceptButtonCaption) || this.IsConfirmationKeyPressed())
             {
                 this._onAcceptCallback?.Invoke(this._value);
                 this.editorWindow.Close();

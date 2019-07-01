@@ -1,12 +1,12 @@
 ﻿using UnityEngine;
-using Argos.Framework;
+using Argos.Framework.Utils;
 
 namespace Argos.Framework
 {
     /// <summary>
     /// Component to rotate a game object.
     /// </summary>
-    [AddComponentMenu("Argos.Framework/Utils/Rotate Object"), DisallowMultipleComponent]
+    [AddComponentMenu("Argos.Framework/Utils/Rotate Object"), DisallowMultipleComponent, ExecuteInEditMode]
     public sealed class RotateObject : MonoBehaviour
     {
         #region Public vars
@@ -20,8 +20,12 @@ namespace Argos.Framework
         #region Update logic
         void Update()
         {
-            this.axis.Clamp(Vector3.one * -1f, Vector3.one);
-            this.transform.Rotate((this.axis * this.step) * (Time.deltaTime * this.speed), this.space);
+            this.axis = VectorUtility.Clamp(this.axis, Vector3.one * -1f, Vector3.one);
+
+            if (Application.isPlaying)
+            {
+                this.transform.Rotate((this.axis * this.step) * (Time.deltaTime * this.speed), this.space); 
+            }
         }
         #endregion
     }

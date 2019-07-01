@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Argos.Framework.Helpers;
+using Argos.Framework.Utils;
 
 namespace Argos.Framework
 {
@@ -28,7 +28,7 @@ namespace Argos.Framework
 
             if (this._split)
             {
-                this._splitCount = (int)(Math.ForceEvenValue(property.enumDisplayNames.Length) * 0.5f);
+                this._splitCount = (int)(MathUtility.ForceEvenValue(property.enumDisplayNames.Length) * 0.5f);
 
                 height += (this._splitCount * EditorGUIUtility.singleLineHeight);
             }

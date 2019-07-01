@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEditor;
-using Argos.Framework.Helpers;
+using Argos.Framework.Utils;
 
 namespace Argos.Framework
 {
@@ -144,7 +144,7 @@ namespace Argos.Framework
         /// <param name="label">New label.</param>
         public void EditHeaderToolbarButtonLabel(int buttonIndex, string label)
         {
-            if (Helpers.Math.IsClamped(buttonIndex, 0, this._toolbar.Count - 1))
+            if (Utils.MathUtility.IsClamped(buttonIndex, 0, this._toolbar.Count - 1))
             {
                 var button = this._toolbar[buttonIndex];
                 button.Label = label;

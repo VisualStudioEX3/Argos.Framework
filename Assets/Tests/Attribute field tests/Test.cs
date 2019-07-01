@@ -6,7 +6,7 @@ using Argos.Framework.Input;
 using Argos.Framework.Input.Extensions;
 using System;
 using Argos.Framework.FileSystem;
-using Argos.Framework.Helpers;
+using Argos.Framework.Utils;
 
 public class Test : MonoBehaviour
 {
@@ -143,11 +143,11 @@ public class Test : MonoBehaviour
     [DynamicLabel(true, true)]
     public string DinamicSelectableMiniLabel = "Dinamic selectable mini label.";
 
-    [FormatBytes]
+    [FormatBytes(true)]
     public int IntBytes = 1234567890;
 
-    [FormatBytes]
-    public float FloatBytes = 2048.512f;
+    [FormatBytes(false)]
+    public int IntBytes2 = 740;
 
     [Multiline(10), Tooltip("Test")]
     public string Multiline;

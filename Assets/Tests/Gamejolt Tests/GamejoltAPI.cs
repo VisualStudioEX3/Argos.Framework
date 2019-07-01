@@ -6,7 +6,7 @@ using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 using Argos.Framework;
-using Argos.Framework.Helpers;
+using Argos.Framework.Utils;
 
 public static class GamejoltAPI
 {
@@ -181,7 +181,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         }
 
         string urlPrivateKey = $"{url.ToString()}{GamejoltAPI.PrivateKey}";
-        url.Append($"&signature={Argos.Framework.Helpers.Application.CalculateMD5Hash(urlPrivateKey)}");
+        url.Append($"&signature={Argos.Framework.Utils.ApplicationUtility.CalculateMD5Hash(urlPrivateKey)}");
 
         return url.ToString(); ;
     }
@@ -200,7 +200,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         paramList.Append(GamejoltAPI.PrivateKey);
 
         string urlPrivateKey = $"{url}{paramList.ToString()}";
-        string signature = $"&signature={Argos.Framework.Helpers.Application.CalculateMD5Hash(urlPrivateKey)}";
+        string signature = $"&signature={Argos.Framework.Utils.ApplicationUtility.CalculateMD5Hash(urlPrivateKey)}";
 
         return $"{url}{signature}";
     }

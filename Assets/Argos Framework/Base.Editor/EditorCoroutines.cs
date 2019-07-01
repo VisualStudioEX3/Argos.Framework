@@ -8,65 +8,81 @@ using UnityEngine.Networking;
 
 namespace Argos.Framework
 {
-    /// <summary>
-    /// Coroutines for Editor scripts, just like regular coroutines.
-    /// </summary>
-    /// <remarks>Original source: https://github.com/marijnz/unity-editor-coroutines </remarks>
     #region Interfaces
     public interface IEditorCoroutineYield
     {
-        bool IsDone(float deltaTime);
+        #region Methods & Functions
+        bool IsDone(float deltaTime); 
+        #endregion
     }
     #endregion
 
     #region Structs
     struct EditorYieldDefault : IEditorCoroutineYield
     {
+        #region Methods & Functions
         public bool IsDone(float deltaTime)
         {
             return true;
-        }
+        } 
+        #endregion
     }
 
     struct EditorYieldWaitForSeconds : IEditorCoroutineYield
     {
+        #region Public vars
         public float timeLeft;
+        #endregion
 
+        #region Methods & Functions
         public bool IsDone(float deltaTime)
         {
             timeLeft -= deltaTime;
             return timeLeft < 0;
-        }
+        } 
+        #endregion
     }
 
     struct EditorYieldWWW : IEditorCoroutineYield
     {
+        #region Public vars
         public UnityWebRequest Www;
+        #endregion
 
+        #region Methods & Functions
         public bool IsDone(float deltaTime)
         {
             return Www.isDone;
-        }
+        } 
+        #endregion
     }
 
     struct EditorYieldAsync : IEditorCoroutineYield
     {
+        #region Public vars
         public AsyncOperation asyncOperation;
+        #endregion
 
+        #region Methods & Functions
         public bool IsDone(float deltaTime)
         {
             return asyncOperation.isDone;
-        }
+        } 
+        #endregion
     }
 
     struct EditorYieldNestedCoroutine : IEditorCoroutineYield
     {
+        #region Public vars
         public EditorCoroutine coroutine;
+        #endregion
 
+        #region Methods & Functions
         public bool IsDone(float deltaTime)
         {
             return coroutine.finished;
-        }
+        } 
+        #endregion
     }
     #endregion
 
@@ -78,7 +94,7 @@ namespace Argos.Framework
         public IEnumerator routine;
         public string routineUniqueHash;
         public string ownerUniqueHash;
-        public string MethodName;
+        public string methodName;
 
         public int ownerHash;
         public string ownerType;
@@ -92,58 +108,66 @@ namespace Argos.Framework
             this.routine = routine;
             this.ownerHash = ownerHash;
             this.ownerType = ownerType;
-            ownerUniqueHash = $"{ownerHash}_{ownerType}";
+            this.ownerUniqueHash = $"{ownerHash}_{ownerType}";
 
             if (routine != null)
             {
                 string[] split = routine.ToString().Split('<', '>');
                 if (split.Length == 3)
                 {
-                    this.MethodName = split[1];
+                    this.methodName = split[1];
                 }
             }
 
-            routineUniqueHash = $"{ownerHash}_{ownerType}_{MethodName}";
+            this.routineUniqueHash = $"{ownerHash}_{ownerType}_{methodName}";
         }
 
         public EditorCoroutine(string methodName, int ownerHash, string ownerType)
         {
-            MethodName = methodName;
+            this.methodName = methodName;
             this.ownerHash = ownerHash;
             this.ownerType = ownerType;
-            ownerUniqueHash = $"{ownerHash}_{ownerType}";
-            routineUniqueHash = $"{ownerHash}_{ownerType}_{MethodName}";
+            this.ownerUniqueHash = $"{ownerHash}_{ownerType}";
+            this.routineUniqueHash = $"{ownerHash}_{ownerType}_{methodName}";
         }
         #endregion
     }
     #endregion
 
+    /// <summary>
+    /// Coroutines for Editor scripts, just like regular coroutines.
+    /// </summary>
+    /// <remarks>Original source: https://github.com/marijnz/unity-editor-coroutines </remarks>
     public sealed class EditorCoroutines
     {
         #region Internal vars
-        Dictionary<string, List<EditorCoroutine>> coroutineDict = new Dictionary<string, List<EditorCoroutine>>();
-        List<List<EditorCoroutine>> tempCoroutineList = new List<List<EditorCoroutine>>();
+        Dictionary<string, List<EditorCoroutine>> _coroutineDict = new Dictionary<string, List<EditorCoroutine>>();
+        List<List<EditorCoroutine>> _tempCoroutineList = new List<List<EditorCoroutine>>();
 
-        Dictionary<string, Dictionary<string, EditorCoroutine>> coroutineOwnerDict = new Dictionary<string, Dictionary<string, EditorCoroutine>>();
+        Dictionary<string, Dictionary<string, EditorCoroutine>> _coroutineOwnerDict = new Dictionary<string, Dictionary<string, EditorCoroutine>>();
 
-        DateTime previousTimeSinceStartup;
+        DateTime _previousTimeSinceStartup;
         #endregion
 
         #region Singleton
-        static EditorCoroutines instance = null;
+        static EditorCoroutines _instance = null;
         #endregion
 
         #region Static Methods & Functions
-        /// <summary>Starts a coroutine.</summary>
+        /// <summary>
+        /// Starts a coroutine.
+        /// </summary>
         /// <param name="routine">The coroutine to start.</param>
         /// <param name="thisReference">Reference to the instance of the class containing the method.</param>
         public static EditorCoroutine StartCoroutine(IEnumerator routine, object thisReference)
         {
-            CreateInstanceIfNeeded();
-            return instance.GoStartCoroutine(routine, thisReference);
+            EditorCoroutines.CreateInstanceIfNeeded();
+            return _instance.GoStartCoroutine(routine, thisReference);
         }
 
-        /// <summary>Starts a coroutine.</summary>
+        /// <summary>
+        /// Starts a coroutine.
+        /// </summary>
         /// <param name="methodName">The name of the coroutine method to start.</param>
         /// <param name="thisReference">Reference to the instance of the class containing the method.</param>
         public static EditorCoroutine StartCoroutine(string methodName, object thisReference)
@@ -151,18 +175,21 @@ namespace Argos.Framework
             return StartCoroutine(methodName, null, thisReference);
         }
 
-        /// <summary>Starts a coroutine.</summary>
+        /// <summary>
+        /// Starts a coroutine.
+        /// </summary>
         /// <param name="methodName">The name of the coroutine method to start.</param>
         /// <param name="value">The parameter to pass to the coroutine.</param>
         /// <param name="thisReference">Reference to the instance of the class containing the method.</param>
         public static EditorCoroutine StartCoroutine(string methodName, object value, object thisReference)
         {
             MethodInfo methodInfo = thisReference.GetType().GetMethod(methodName, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            object returnValue;
+
             if (methodInfo == null)
             {
                 UnityEngine.Debug.LogErrorFormat("Coroutine '{0}' couldn't be started, the method doesn't exist!", methodName);
             }
-            object returnValue;
 
             if (value == null)
             {
@@ -175,8 +202,8 @@ namespace Argos.Framework
 
             if (returnValue is IEnumerator)
             {
-                CreateInstanceIfNeeded();
-                return instance.GoStartCoroutine((IEnumerator)returnValue, thisReference);
+                EditorCoroutines.CreateInstanceIfNeeded();
+                return EditorCoroutines._instance.GoStartCoroutine((IEnumerator)returnValue, thisReference);
             }
             else
             {
@@ -186,40 +213,44 @@ namespace Argos.Framework
             return null;
         }
 
-        /// <summary>Stops all coroutines being the routine running on the passed instance.</summary>
+        /// <summary>
+        /// Stops all coroutines being the routine running on the passed instance.
+        /// </summary>
         /// <param name="routine"> The coroutine to stop.</param>
         /// <param name="thisReference">Reference to the instance of the class containing the method.</param>
         public static void StopCoroutine(IEnumerator routine, object thisReference)
         {
-            CreateInstanceIfNeeded();
-            instance.GoStopCoroutine(routine, thisReference);
+            EditorCoroutines.CreateInstanceIfNeeded();
+            EditorCoroutines._instance.GoStopCoroutine(routine, thisReference);
         }
 
         /// <summary>
-        /// Stops all coroutines named methodName running on the passed instance.</summary>
+        /// Stops all coroutines named methodName running on the passed instance.
+        /// </summary>
         /// <param name="methodName"> The name of the coroutine method to stop.</param>
         /// <param name="thisReference">Reference to the instance of the class containing the method.</param>
         public static void StopCoroutine(string methodName, object thisReference)
         {
-            CreateInstanceIfNeeded();
-            instance.GoStopCoroutine(methodName, thisReference);
+            EditorCoroutines.CreateInstanceIfNeeded();
+            EditorCoroutines._instance.GoStopCoroutine(methodName, thisReference);
         }
 
         /// <summary>
-        /// Stops all coroutines running on the passed instance.</summary>
+        /// Stops all coroutines running on the passed instance.
+        /// </summary>
         /// <param name="thisReference">Reference to the instance of the class containing the method.</param>
         public static void StopAllCoroutines(object thisReference)
         {
-            CreateInstanceIfNeeded();
-            instance.GoStopAllCoroutines(thisReference);
+            EditorCoroutines.CreateInstanceIfNeeded();
+            EditorCoroutines._instance.GoStopAllCoroutines(thisReference);
         }
 
         static void CreateInstanceIfNeeded()
         {
-            if (instance == null)
+            if (EditorCoroutines._instance == null)
             {
-                instance = new EditorCoroutines();
-                instance.Initialize();
+                EditorCoroutines._instance = new EditorCoroutines();
+                EditorCoroutines._instance.Initialize();
             }
         }
 
@@ -227,23 +258,24 @@ namespace Argos.Framework
         {
             if (coroutine.routine.MoveNext())
             {
-                return Process(coroutine);
+                return EditorCoroutines.Process(coroutine);
             }
 
             return false;
         }
 
-        // returns false if no next, returns true if OK
+        // Returns false if no next, returns true if OK.
         static bool Process(EditorCoroutine coroutine)
         {
             object current = coroutine.routine.Current;
+
             if (current == null)
             {
                 coroutine.currentYield = new EditorYieldDefault();
             }
             else if (current is WaitForSeconds)
             {
-                float seconds = float.Parse(GetInstanceField(typeof(WaitForSeconds), current, "m_Seconds").ToString());
+                float seconds = float.Parse(EditorCoroutines.GetInstanceField(typeof(WaitForSeconds), current, "m_Seconds").ToString());
                 coroutine.currentYield = new EditorYieldWaitForSeconds() { timeLeft = (float)seconds };
             }
             else if (current is UnityWebRequest)
@@ -264,16 +296,16 @@ namespace Argos.Framework
             }
             else
             {
-                UnityEngine.Debug.LogException(new Exception($"<{coroutine.MethodName}> yielded an unknown or unsupported type! ({current.GetType()})"), null);
+                UnityEngine.Debug.LogException(new Exception($"<{coroutine.methodName}> yielded an unknown or unsupported type! ({current.GetType()})"), null);
                 coroutine.currentYield = new EditorYieldDefault();
             }
+
             return true;
         }
 
         static object GetInstanceField(Type type, object instance, string fieldName)
         {
-            BindingFlags bindFlags = BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static;
-            FieldInfo field = type.GetField(fieldName, bindFlags);
+            FieldInfo field = type.GetField(fieldName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Static);
             return field.GetValue(instance);
         }
         #endregion
@@ -281,39 +313,40 @@ namespace Argos.Framework
         #region Methods & Functions
         void Initialize()
         {
-            previousTimeSinceStartup = DateTime.Now;
+            this._previousTimeSinceStartup = DateTime.Now;
             EditorApplication.update += OnUpdate;
         }
 
         void GoStopCoroutine(IEnumerator routine, object thisReference)
         {
-            GoStopActualRoutine(CreateCoroutine(routine, thisReference));
+            this.GoStopActualRoutine(this.CreateCoroutine(routine, thisReference));
         }
 
         void GoStopCoroutine(string methodName, object thisReference)
         {
-            GoStopActualRoutine(CreateCoroutineFromString(methodName, thisReference));
+            this.GoStopActualRoutine(this.CreateCoroutineFromString(methodName, thisReference));
         }
 
         void GoStopActualRoutine(EditorCoroutine routine)
         {
-            if (coroutineDict.ContainsKey(routine.routineUniqueHash))
+            if (this._coroutineDict.ContainsKey(routine.routineUniqueHash))
             {
-                coroutineOwnerDict[routine.ownerUniqueHash].Remove(routine.routineUniqueHash);
-                coroutineDict.Remove(routine.routineUniqueHash);
+                this._coroutineOwnerDict[routine.ownerUniqueHash].Remove(routine.routineUniqueHash);
+                this._coroutineDict.Remove(routine.routineUniqueHash);
             }
         }
 
         void GoStopAllCoroutines(object thisReference)
         {
-            EditorCoroutine coroutine = CreateCoroutine(null, thisReference);
-            if (coroutineOwnerDict.ContainsKey(coroutine.ownerUniqueHash))
+            EditorCoroutine coroutine = this.CreateCoroutine(null, thisReference);
+
+            if (this._coroutineOwnerDict.ContainsKey(coroutine.ownerUniqueHash))
             {
-                foreach (var couple in coroutineOwnerDict[coroutine.ownerUniqueHash])
+                foreach (var couple in this._coroutineOwnerDict[coroutine.ownerUniqueHash])
                 {
-                    coroutineDict.Remove(couple.Value.routineUniqueHash);
+                    this._coroutineDict.Remove(couple.Value.routineUniqueHash);
                 }
-                coroutineOwnerDict.Remove(coroutine.ownerUniqueHash);
+                this._coroutineOwnerDict.Remove(coroutine.ownerUniqueHash);
             }
         }
 
@@ -323,34 +356,34 @@ namespace Argos.Framework
             {
                 UnityEngine.Debug.LogException(new Exception("IEnumerator is null!"), null);
             }
-            EditorCoroutine coroutine = CreateCoroutine(routine, thisReference);
-            GoStartCoroutine(coroutine);
+
+            EditorCoroutine coroutine = this.CreateCoroutine(routine, thisReference);
+            this.GoStartCoroutine(this.CreateCoroutine(routine, thisReference));
+
             return coroutine;
         }
 
         void GoStartCoroutine(EditorCoroutine coroutine)
         {
-            if (!coroutineDict.ContainsKey(coroutine.routineUniqueHash))
+            if (!_coroutineDict.ContainsKey(coroutine.routineUniqueHash))
             {
-                List<EditorCoroutine> newCoroutineList = new List<EditorCoroutine>();
-                coroutineDict.Add(coroutine.routineUniqueHash, newCoroutineList);
+                this._coroutineDict.Add(coroutine.routineUniqueHash, new List<EditorCoroutine>());
             }
-            coroutineDict[coroutine.routineUniqueHash].Add(coroutine);
+            this._coroutineDict[coroutine.routineUniqueHash].Add(coroutine);
 
-            if (!coroutineOwnerDict.ContainsKey(coroutine.ownerUniqueHash))
+            if (!this._coroutineOwnerDict.ContainsKey(coroutine.ownerUniqueHash))
             {
-                Dictionary<string, EditorCoroutine> newCoroutineDict = new Dictionary<string, EditorCoroutine>();
-                coroutineOwnerDict.Add(coroutine.ownerUniqueHash, newCoroutineDict);
+                this._coroutineOwnerDict.Add(coroutine.ownerUniqueHash, new Dictionary<string, EditorCoroutine>());
             }
 
             // If the method from the same owner has been stored before, it doesn't have to be stored anymore,
             // One reference is enough in order for "StopAllCoroutines" to work
-            if (!coroutineOwnerDict[coroutine.ownerUniqueHash].ContainsKey(coroutine.routineUniqueHash))
+            if (!this._coroutineOwnerDict[coroutine.ownerUniqueHash].ContainsKey(coroutine.routineUniqueHash))
             {
-                coroutineOwnerDict[coroutine.ownerUniqueHash].Add(coroutine.routineUniqueHash, coroutine);
+                this._coroutineOwnerDict[coroutine.ownerUniqueHash].Add(coroutine.routineUniqueHash, coroutine);
             }
 
-            MoveNext(coroutine);
+            EditorCoroutines.MoveNext(coroutine);
         }
 
         EditorCoroutine CreateCoroutine(IEnumerator routine, object thisReference)
@@ -362,26 +395,28 @@ namespace Argos.Framework
         {
             return new EditorCoroutine(methodName, thisReference.GetHashCode(), thisReference.GetType().ToString());
         }
+        #endregion
 
+        #region Event listeners
         void OnUpdate()
         {
-            float deltaTime = (float)(DateTime.Now.Subtract(previousTimeSinceStartup).TotalMilliseconds / 1000.0f);
+            float deltaTime = (float)(DateTime.Now.Subtract(_previousTimeSinceStartup).TotalMilliseconds / 1000.0f);
 
-            previousTimeSinceStartup = DateTime.Now;
-            if (coroutineDict.Count == 0)
+            this._previousTimeSinceStartup = DateTime.Now;
+            if (this._coroutineDict.Count == 0)
             {
                 return;
             }
 
-            tempCoroutineList.Clear();
-            foreach (var pair in coroutineDict)
+            this._tempCoroutineList.Clear();
+            foreach (var pair in this._coroutineDict)
             {
-                tempCoroutineList.Add(pair.Value);
+                this._tempCoroutineList.Add(pair.Value);
             }
 
-            for (var i = tempCoroutineList.Count - 1; i >= 0; i--)
+            for (var i = this._tempCoroutineList.Count - 1; i >= 0; i--)
             {
-                List<EditorCoroutine> coroutines = tempCoroutineList[i];
+                List<EditorCoroutine> coroutines = this._tempCoroutineList[i];
 
                 for (int j = coroutines.Count - 1; j >= 0; j--)
                 {
@@ -392,7 +427,7 @@ namespace Argos.Framework
                         continue;
                     }
 
-                    if (!MoveNext(coroutine))
+                    if (!EditorCoroutines.MoveNext(coroutine))
                     {
                         coroutines.RemoveAt(j);
                         coroutine.currentYield = null;
@@ -401,11 +436,11 @@ namespace Argos.Framework
 
                     if (coroutines.Count == 0)
                     {
-                        coroutineDict.Remove(coroutine.ownerUniqueHash);
+                        this._coroutineDict.Remove(coroutine.ownerUniqueHash);
                     }
                 }
             }
-        }
+        } 
         #endregion
     }
 }

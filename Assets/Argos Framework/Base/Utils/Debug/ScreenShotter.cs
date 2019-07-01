@@ -49,7 +49,7 @@ namespace Argos.Framework.Utils.Debug
         void Update()
         {
             // TODO: Study how to implement in a way to apply for other platforms like consoles.
-            if (Helpers.Application.IsDesktopPlatform)
+            if (Utils.ApplicationUtility.IsDesktopPlatform)
             {
                 if (string.IsNullOrEmpty(this.name))
                 {

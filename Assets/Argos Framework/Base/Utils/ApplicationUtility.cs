@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using UnityEngine;
 
-namespace Argos.Framework.Helpers
+namespace Argos.Framework.Utils
 {
     #region Enums
     /// <summary>
@@ -32,9 +32,9 @@ namespace Argos.Framework.Helpers
     #endregion
 
     /// <summary>
-    /// General helper class.
+    /// General utility class.
     /// </summary>
-    public static class Application
+    public static class ApplicationUtility
     {
         #region Properties
         /// <summary>
@@ -105,12 +105,12 @@ namespace Argos.Framework.Helpers
         /// <summary>
         /// Determine if the current platform a desktop platform.
         /// </summary>
-        public static bool IsDesktopPlatform { get { return ArgosSupportedPlatforms.Desktop.HasFlag(Application.CurrentPlatform); } }
+        public static bool IsDesktopPlatform { get { return ArgosSupportedPlatforms.Desktop.HasFlag(ApplicationUtility.CurrentPlatform); } }
 
         /// <summary>
         /// Determine if the current platform a console platform.
         /// </summary>
-        public static bool IsConsolePlatform { get { return ArgosSupportedPlatforms.Console.HasFlag(Application.CurrentPlatform); } }
+        public static bool IsConsolePlatform { get { return ArgosSupportedPlatforms.Console.HasFlag(ApplicationUtility.CurrentPlatform); } }
         #endregion
 
         #region Methods & Functions
@@ -162,7 +162,7 @@ namespace Argos.Framework.Helpers
 
             for (int i = 0; i < ragdoll.childCount; i++)
             {
-                Application.SetRagdollPose(ragdoll.GetChild(i), character.GetChild(i));
+                ApplicationUtility.SetRagdollPose(ragdoll.GetChild(i), character.GetChild(i));
             }
         }
 

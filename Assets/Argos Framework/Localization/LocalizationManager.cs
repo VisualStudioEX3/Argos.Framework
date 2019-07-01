@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 using System.Linq;
-using Argos.Framework.Helpers;
+using Argos.Framework.Utils;
 
 namespace Argos.Framework.Localization
 {

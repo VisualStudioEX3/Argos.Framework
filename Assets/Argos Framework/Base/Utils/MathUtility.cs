@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace Argos.Framework.Helpers
+namespace Argos.Framework.Utils
 {
     /// <summary>
     /// Math helper class.
     /// </summary>
-    public static class Math
+    public static class MathUtility
     {
         #region Constants
         const float DELTA_COMPARER_TOLERANCE = 0.000001f;
@@ -88,7 +88,7 @@ namespace Argos.Framework.Helpers
         /// <param name="tolerance">Tolerance to similarity.</param>
         /// <returns>Return true if the first value is similar to second value.</returns>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static bool CompareFloats(float a, float b, float tolerance = Math.DELTA_COMPARER_TOLERANCE)
+        public static bool CompareFloats(float a, float b, float tolerance = MathUtility.DELTA_COMPARER_TOLERANCE)
         {
             return Mathf.Abs(a - b) < tolerance;
         }
@@ -101,7 +101,7 @@ namespace Argos.Framework.Helpers
         /// <param name="tolerance">Tolerance to similarity.</param>
         /// <returns>Return true if the first vector is similar to second vector.</returns>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static bool CompareVector(Vector2 a, Vector2 b, float tolerance = Math.DELTA_COMPARER_TOLERANCE)
+        public static bool CompareVector(Vector2 a, Vector2 b, float tolerance = MathUtility.DELTA_COMPARER_TOLERANCE)
         {
             return Vector2.SqrMagnitude(a - b) < tolerance;
         }
@@ -114,7 +114,7 @@ namespace Argos.Framework.Helpers
         /// <param name="tolerance">Tolerance to similarity.</param>
         /// <returns>Return true if the first vector is similar to second vector.</returns>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static bool CompareVector(Vector3 a, Vector3 b, float tolerance = Math.DELTA_COMPARER_TOLERANCE)
+        public static bool CompareVector(Vector3 a, Vector3 b, float tolerance = MathUtility.DELTA_COMPARER_TOLERANCE)
         {
             return Vector3.SqrMagnitude(a - b) < tolerance;
         }

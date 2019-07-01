@@ -5,12 +5,12 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using UnityEngine;
 
-namespace Argos.Framework.Helpers
+namespace Argos.Framework.Utils
 {
     /// <summary>
-    /// Collections helper class.
+    /// Collections utility class.
     /// </summary>
-    public static class Collections
+    public static class CollectionUtility
     {
         #region Methods & Functions
         /// <summary>
@@ -45,7 +45,7 @@ namespace Argos.Framework.Helpers
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static void Shuffle<T>(ref T[] array)
         {
-            var rng = new System.Random(Application.GenerateSafeRandomSeed());
+            var rng = new System.Random(ApplicationUtility.GenerateSafeRandomSeed());
             int n = array.Length;
             while (n > 1)
             {
@@ -65,7 +65,7 @@ namespace Argos.Framework.Helpers
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static void Shuffle<T>(ref List<T> list)
         {
-            var rng = new System.Random(Application.GenerateSafeRandomSeed());
+            var rng = new System.Random(ApplicationUtility.GenerateSafeRandomSeed());
             int n = list.Count;
             while (n > 1)
             {

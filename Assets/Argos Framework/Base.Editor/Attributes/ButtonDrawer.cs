@@ -41,7 +41,7 @@ namespace Argos.Framework
 
         GUIContent GetButtonLabel(GUIContent label)
         {
-            return string.IsNullOrEmpty(this._attribute.customLabel) ? label : new GUIContent(this._attribute.customLabel, this._attribute.tooltip);
+            return string.IsNullOrEmpty(this._attribute.customLabel) ? label : new GUIContent(this._attribute.customLabel);
         }
         #endregion
 

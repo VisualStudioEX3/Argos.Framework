@@ -10,6 +10,7 @@ namespace Argos.Framework
     /// </summary>
     public static class MonoBehaviourExtensions
     {
+        #region Methods & Functions
         /// <summary>
         /// Get the name of this class.
         /// </summary>
@@ -20,5 +21,26 @@ namespace Argos.Framework
         {
             return instance.GetType().Name;
         }
+
+        /// <summary>
+        /// Take screenshot at the end of the current frame.
+        /// </summary>
+        /// <param name="instance"><see cref="MonoBehaviour"/> instance.</param>
+        /// <param name="onEndOfFrame">Event listener that receive the <see cref="Texture2D"/> result of the screenshot at the end of the current frame.</param>
+        /// <remarks>This method ease the task to take a screenshot just when the current frame is finished to render entirely and store in a variable.</remarks>
+        public static void TakeScreenshot(this MonoBehaviour instance, Action<Texture2D> onEndOfFrame)
+        {
+            if (onEndOfFrame != null)
+            {
+                instance.StartCoroutine(MonoBehaviourExtensions.TakeScreenshotCoroutine(onEndOfFrame)); 
+            }
+        }
+
+        static IEnumerator TakeScreenshotCoroutine(Action<Texture2D> onEndOfFrame)
+        {
+            yield return new WaitForEndOfFrame();
+            onEndOfFrame.Invoke(ScreenCapture.CaptureScreenshotAsTexture());
+        } 
+        #endregion
     }
 }

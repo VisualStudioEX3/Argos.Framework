@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace Argos.Framework.Helpers
+namespace Argos.Framework.Utils
 {
     /// <summary>
     /// Color constants based on CSS3 specfication.
     /// Based on this source: https://gist.github.com/LotteMakesStuff/f7ce43f11e545a151b95b5e87f76304c
     /// </summary>
-    public static class Colors
+    public static class ColorUtility
     {
         #region Constants
         // NOTE: The follwing color names come from the CSS3 specification, Section 4.3 Extended Color Keywords

@@ -6,12 +6,12 @@ using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using UnityEngine;
 
-namespace Argos.Framework.Helpers
+namespace Argos.Framework.Utils
 {
     /// <summary>
-    /// String helper class.
+    /// String utility class.
     /// </summary>
-    public static class Strings
+    public static class StringUtility
     {
         #region Methods & Functions
         /// <summary>

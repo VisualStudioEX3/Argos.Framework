@@ -11,7 +11,7 @@ public class ScreenshotTest : MonoBehaviour
     public string takeScreenshot = "TakeScreenshot";
     [Button]
     public string saveToPng = "SaveToPNG";
-    
+
     void TakeScreenshot()
     {
         this.TakeScreenshot(this.OnEndOfFrame);

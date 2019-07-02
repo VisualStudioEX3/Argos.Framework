@@ -54,11 +54,18 @@ namespace Argos.Framework
 
             if (GUI.Button(EditorGUI.IndentedRect(position), this.GetButtonLabel(label), this._attribute.size == GUIButtonSize.Mini ? EditorStyles.miniButton : GUI.skin.button))
             {
-                (property.serializedObject.targetObject as MonoBehaviour).Invoke(property.stringValue, 0f);
-
-                if (!EditorApplication.isPlaying && !EditorApplication.isCompiling)
+                if (!string.IsNullOrEmpty(property.stringValue))
                 {
-                    EditorUtility.SetDirty(property.serializedObject.targetObject); // Force in edit mode to update the Monobehaviour Update logic (needed to Invoke() call can be executed).
+                    (property.serializedObject.targetObject as MonoBehaviour).Invoke(property.stringValue, 0f);
+
+                    if (!EditorApplication.isPlaying && !EditorApplication.isCompiling)
+                    {
+                        EditorUtility.SetDirty(property.serializedObject.targetObject); // Force in edit mode to update the Monobehaviour Update logic (needed to Invoke() call can be executed).
+                    } 
+                }
+                else
+                {
+                    Debug.LogWarning("ButtonAttribute: The target method name is empty! Check if the string variable has value!");
                 }
             }
 

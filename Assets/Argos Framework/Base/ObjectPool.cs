@@ -5,11 +5,23 @@ using UnityEngine;
 
 namespace Argos.Framework
 {
-    public abstract class ObjectPool<T> : IDisposable, IEnumerable<T> where T : Component
+    /// <summary>
+    /// Object Pool base class.
+    /// </summary>
+    /// <typeparam name="T">Type of the object to instantiate.</typeparam>
+    public abstract class ObjectPool<T> : MonoBehaviour, IEnumerable<T> where T : Component
     {
         #region Internal vars
-        T[] _prefabs;
         T[] _instances;
+        #endregion
+
+        #region Inspector fields
+        [SerializeField]
+        T[] _prefabs;
+        [SerializeField]
+        int _maxInstances;
+        [SerializeField, Tooltip("The parent for all instances. If the parent is null, this game object is the parent.")]
+        Transform _parent;
         #endregion
 
         #region Properties
@@ -52,62 +64,35 @@ namespace Argos.Framework
         public T this[int index] { get { return this._instances[index]; } private set { this._instances[index] = value; } }
         #endregion
 
-        #region Events
-        event Action<T> onNewInstance;
-        #endregion
-
-        #region Constructors & Destructors
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="prefab">Prefab used as model to create instances.</param>
-        /// <param name="maxInstances">Max instances created by this object pool.</param>
-        /// <param name="onNewInstance">Event listener where customize the instance initialization.</param>
-        /// <param name="parent">Optional. Set the parent of all instances. By default is null (not parent assigned).</param>
-        public ObjectPool(T prefab, int maxInstances, Action<T> onNewInstance, Transform parent = null) 
-            : this(new T[1] { prefab }, maxInstances, onNewInstance, parent)
+        #region Initializers
+        public virtual void Awake()
         {
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="prefabs">Prefabs used as model to create instances.</param>
-        /// <param name="maxInstances">Max instances created by this object pool.</param>
-        /// <param name="onNewInstance">Event listener where customize the instance initialization.</param>
-        /// <param name="parent">Optional. Set the parent of all instances. By default is null (not parent assigned).</param>
-        public ObjectPool(T[] prefabs, int maxInstances, Action<T> onNewInstance, Transform parent = null)
-        {
-            this._prefabs = prefabs;
-            this._instances = new T[maxInstances];
+            this._instances = new T[this._maxInstances];
 
             for (int i = 0; i < this.Total; i++)
             {
-                this[i] = UnityEngine.Object.Instantiate<T>(this._prefabs[UnityEngine.Random.Range(0, maxInstances)], Vector3.zero, Quaternion.identity, parent);
+                this[i] = Instantiate(this._prefabs[UnityEngine.Random.Range(0, this._prefabs.Length)], Vector3.zero, Quaternion.identity, this._parent ?? this.transform);
                 this[i].gameObject.SetActive(false);
             }
-
-            this.onNewInstance = onNewInstance;
         }
 
-        public void Dispose()
+        public virtual void OnDestroy()
         {
             foreach (var instance in this)
             {
-                UnityEngine.Object.Destroy(instance);
+                Destroy(instance);
             }
 
             this._instances = null;
-            this.onNewInstance = null;
         }
         #endregion
 
         #region Methods & Functions
         /// <summary>
-        /// Get a new available instance and run the <see cref="onNewInstance"/> event.
+        /// Get a new available instance and run the <see cref="OnNewInstance(T)"/> event.
         /// </summary>
         /// <returns>Return the first available instance. If not has available instance, return null.</returns>
-        public T GetNewInstance(IEnumerator terminationCoroutine = null)
+        public T GetNewInstance()
         {
             if (this.Availables > 0)
             {
@@ -116,10 +101,9 @@ namespace Argos.Framework
                     if (!this[i].gameObject.activeSelf)
                     {
                         this[i].gameObject.SetActive(true);
-                        this.onNewInstance?.Invoke(this[i]);
 
-                        // TODO: Fix how to call a coroutine from here! https://answers.unity.com/questions/1260116/tartcoroutine-cant-be-called-from-a-gameobject-am.html?childToView=1260187#comment-1260187
-                        //this[i].GetComponent<T>()
+                        this.OnNewInstance(this[i]);
+                        StartCoroutine(this.TerminateInstance(this[i]));
 
                         return this[i];
                     }
@@ -148,7 +132,15 @@ namespace Argos.Framework
         IEnumerator IEnumerable.GetEnumerator()
         {
             return ((IEnumerable<T>)_instances).GetEnumerator();
-        } 
+        }
         #endregion
-    } 
+
+        #region Coroutines
+        public abstract IEnumerator TerminateInstance(T instance); 
+        #endregion
+
+        #region Event listeners
+        public abstract void OnNewInstance(T instance); 
+        #endregion
+    }
 }

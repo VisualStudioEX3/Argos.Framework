@@ -13,6 +13,7 @@ namespace Argos.Framework
     public struct SceneAsset
     {
         #region Inspector fields
+#pragma warning disable 649
         [SerializeField]
         UnityEngine.Object _asset;
         [SerializeField]
@@ -21,6 +22,7 @@ namespace Argos.Framework
         string _scenePath;
         [SerializeField]
         int _sceneIndex;
+#pragma warning restore
         #endregion
 
         #region Properties

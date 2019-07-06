@@ -31,7 +31,7 @@ namespace Argos.Framework.Input
             {
                 EditorGUILayout.PropertyField(this._effect);
                 EditorGUILayout.PropertyField(this._fixedUpdate);
-                this._useUnScaledTime.boolValue = EditorGUILayout.Popup("Update mode", this._useUnScaledTime.boolValue ? 1 : 0, new string[] { "Normal", "Unscaled Time" }) == 0 ? false : true;
+                this._useUnScaledTime.boolValue = EditorGUILayout.Popup("Update mode", this._useUnScaledTime.boolValue ? 1 : 0, new string[] { "Normal", "Unscaled Time" }) != 0;
                 EditorGUILayout.PropertyField(this._playOnStart);
 
                 if (this._target.effect)

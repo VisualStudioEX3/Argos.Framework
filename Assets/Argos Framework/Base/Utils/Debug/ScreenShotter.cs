@@ -27,7 +27,7 @@ namespace Argos.Framework.Utils.Debug
         #region Public vars
         [Tooltip("Only works in play mode. Use \"Take Screenshot\" button in editor mode.")]
         public KeyCode screenshotKey = KeyCode.F12;
-        public string name = DEFAULT_NAME;
+        public new string name = DEFAULT_NAME;
         #endregion
 
         #region Properties

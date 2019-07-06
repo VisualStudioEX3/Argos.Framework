@@ -16,12 +16,14 @@ namespace Argos.Framework
         #endregion
 
         #region Inspector fields
+#pragma warning disable 649
         [SerializeField]
         T[] _prefabs;
         [SerializeField]
         int _maxInstances;
         [SerializeField, Tooltip("The parent for all instances. If the parent is null, this game object is the parent.")]
         Transform _parent;
+#pragma warning restore
         #endregion
 
         #region Properties
@@ -89,7 +91,7 @@ namespace Argos.Framework
 
         #region Methods & Functions
         /// <summary>
-        /// Get a new available instance and run the <see cref="OnNewInstance(T)"/> event.
+        /// Get a new available instance and throw the <see cref="OnNewInstance(T)"/> event.
         /// </summary>
         /// <returns>Return the first available instance. If not has available instance, return null.</returns>
         public T GetNewInstance()

@@ -65,7 +65,7 @@ namespace Argos.Framework.Input
 
             ForceFeedback.CheckForAvailableJoystick();
 
-            this._timer = new Timer(TimerModes.EditorMode);
+            this._timer = new Timer(TimerModes.EditorMode, false);
         }
 
         private void OnDisable()
@@ -290,7 +290,7 @@ namespace Argos.Framework.Input
 
                             if (this._target.Loop && this._timer.Value >= this._target.Duration)
                             {
-                                this._timer.Reset(true);
+                                this._timer.Reset();
                             }
                         }
                     }

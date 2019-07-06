@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.Text;
-using Argos.Framework.Utils;
 
 namespace Argos.Framework.Input
 {
@@ -28,21 +26,13 @@ namespace Argos.Framework.Input
         #region Initializers
         private void Start()
         {
-            this._timer = new Timer(this.useUnScaledTime ? TimerModes.UnScaledTime : TimerModes.ScaledTime);
+            this._timer = new Timer(this.useUnScaledTime ? TimerModes.UnScaledTime : TimerModes.ScaledTime, false);
             this._wait = this.fixedUpdate ? (YieldInstruction)new WaitForFixedUpdate() : (YieldInstruction)new WaitForEndOfFrame();
 
             if (this.playOnStart)
             {
                 this.Play();
             }
-        } 
-        #endregion
-
-        #region Events
-        private void OnDisable()
-        {
-            StopAllCoroutines();
-            InputManager.Instance.SetGamepadVibration(Vector2.zero);
         }
 
         private void OnDestroy()
@@ -68,6 +58,14 @@ namespace Argos.Framework.Input
         }
         #endregion
 
+        #region Event listener
+        private void OnDisable()
+        {
+            StopAllCoroutines();
+            InputManager.Instance.SetGamepadVibration(Vector2.zero);
+        }
+        #endregion
+
         #region Coroutines
         IEnumerator VibrationCoroutine()
         {
@@ -81,7 +79,7 @@ namespace Argos.Framework.Input
             while (this.IsPlaying)
             {
                 intensity = Vector2.zero;
-                currentTime = _timer.Value;
+                currentTime = this._timer.Value;
 
                 if (currentTime >= duration)
                 {
@@ -108,7 +106,7 @@ namespace Argos.Framework.Input
 
                 InputManager.Instance.SetGamepadVibration(intensity);
 
-                yield return _wait;
+                yield return this._wait;
             }
 
             InputManager.Instance.SetGamepadVibration(Vector2.zero);

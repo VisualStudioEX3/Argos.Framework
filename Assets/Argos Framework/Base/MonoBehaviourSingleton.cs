@@ -6,29 +6,29 @@ using UnityEngine;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Base class to implement MonoBehaviour derived classes as singleton instances.
+    /// Base class to implement <see cref="MonoBehaviour"/> derived classes as singleton instances.
     /// </summary>
     /// <typeparam name="T">Type of the MonoBehaviour derived class.</typeparam>
     public abstract class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
         #region Properties
-        public T Instance { get; private set; } 
+        public static T Instance { get; private set; } 
         #endregion
 
         #region Initializers
         public virtual void Awake()
         {
-            if (Instance != null)
+            if (MonoBehaviourSingleton<T>.Instance != null)
             {
-                throw new InvalidOperationException($"MonoBehaviourSingleton<{this.GetClassName()}>: Error to initialize singleton instance. A previous instance is created!");
+                throw new InvalidOperationException($"MonoBehaviourSingleton<{typeof(T)}>: Error to initialize singleton instance. A previous instance is created on \"{this.gameObject.scene.name}\" scene on \"{this.gameObject.name}\" game object!");
             }
 
-            Instance = this as T;
+            MonoBehaviourSingleton<T>.Instance = this as T;
         }
 
         public virtual void OnDestroy()
         {
-            Instance = null;
+            MonoBehaviourSingleton<T>.Instance = null;
         } 
         #endregion
     } 

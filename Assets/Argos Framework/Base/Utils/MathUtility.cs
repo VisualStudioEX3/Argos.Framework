@@ -68,16 +68,45 @@ namespace Argos.Framework.Utils
         }
 
         /// <summary>
-        /// Get unclamped angle between two vectors.
+        /// Get angle between two vector positions.
         /// </summary>
-        /// <param name="a">First vector.</param>
-        /// <param name="b">Second vector.</param>
-        /// <returns>Return the unclampled angle.</returns>
-        /// <remarks>Return angle in inverse clockwise direction (the opposite as Unity GetAngle functions).</remarks>
+        /// <param name="a">First <see cref="Vector2"/>.</param>
+        /// <param name="b">Second <see cref="Vector2"/>.</param>
+        /// <returns>Return the angle in degrees between positions.</returns>
+        /// <remarks>This function calculate the angle in degrees between two vectors ignoring their vector directions.</remarks>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static float GetAngle(Vector3 a, Vector3 b)
+        public static float GetAngle(Vector2 a, Vector2 b)
         {
-            return Mathf.Atan2(b.y - a.y, b.x - a.x) / Mathf.PI * 180f;
+            return Mathf.Atan2(b.y - a.y, b.x - a.x) * Mathf.Rad2Deg;
+        }
+
+        /// <summary>
+        /// Get angle between two vector positions.
+        /// </summary>
+        /// <param name="a">First <see cref="Vector3"/>.</param>
+        /// <param name="b">Second <see cref="Vector3"/>.</param>
+        /// <param name="axis">World rotation axis between vectors. Only accepts <see cref="Vector3.up"/> and <see cref="Vector3.right"/>, any other value must be interpreted as <see cref="Vector3.forward"/>.</param>
+        /// <returns>Return the angle in degrees between positions.</returns>
+        /// <remarks>This function calculate the angle in degrees between two vectors ignoring their vector directions.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float GetAngle(Vector3 a, Vector3 b, Vector3 axis)
+        {
+            Vector2 vA, vB;
+
+            if (axis == Vector3.up)
+            {
+                vA = new Vector2(a.x, a.z); vB = new Vector2(b.x, b.z);
+            }
+            else if (axis == Vector3.right)
+            {
+                vA = new Vector2(a.z, a.y); vB = new Vector2(b.z, b.y);
+            }
+            else
+            {
+                vA = a; vB = b;
+            }
+
+            return MathUtility.GetAngle(vA, vB);
         }
 
         /// <summary>

@@ -14,17 +14,17 @@ namespace Argos.Framework
         [Tooltip("Step defined in degrees.")]
         public float step = 1f;
         public Vector3 axis = Vector3.zero;
-        public Space space = Space.Self;
+        public Space relativeTo = Space.Self;
         #endregion
 
         #region Update logic
         void Update()
         {
-            this.axis = VectorUtility.Clamp(this.axis, Vector3.one * -1f, Vector3.one);
+            this.axis = VectorsUtility.Clamp(this.axis, Vector3.one * -1f, Vector3.one);
 
             if (Application.isPlaying)
             {
-                this.transform.Rotate((this.axis * this.step) * (Time.deltaTime * this.speed), this.space); 
+                this.transform.Rotate((this.axis * this.step) * (Time.deltaTime * this.speed), this.relativeTo); 
             }
         }
         #endregion

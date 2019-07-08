@@ -130,7 +130,7 @@ namespace Argos.Framework.Utils
         /// Created a safe random seed for intializing the System.Random class.
         /// </summary>
         /// <returns>Return a random seed.</returns>
-        /// <remarks>This functions calculated the seed using the System.Security.Cryptography.RandomNumberGenerator.</remarks>
+        /// <remarks>This functions calculated the seed using the <see cref="System.Security.Cryptography.RandomNumberGenerator"/>.</remarks>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static int GenerateSafeRandomSeed()
         {
@@ -169,9 +169,9 @@ namespace Argos.Framework.Utils
         /// <summary>
         /// Cleanup memory and unused assets.
         /// </summary>
-        /// <param name="discardGCCollect">Discard System.GC.Collect() call during the cleanup process.</param>
+        /// <param name="discardGCCollect">Discard <see cref="System.GC.Collect()"/> call during the cleanup process.</param>
         /// <returns>Return an AsyncOperation for controlling the wait period during the cleanup process.</returns>
-        /// <remarks>This function is only a shortcut to call an System.GC.Collect() and UnityEngine.Resources.UnloadUnussedAssets() functions.</remarks>
+        /// <remarks>This function is only a shortcut to call a <see cref="System.GC.Collect()"/> and <see cref="UnityEngine.Resources.UnloadUnussedAssets()"/> functions.</remarks>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static AsyncOperation CleanUpMemoryAndAssets(bool discardGCCollect = false)
         {

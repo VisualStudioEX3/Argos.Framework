@@ -217,6 +217,11 @@ public class Test : MonoBehaviour
 
         //ui.GetAction("Submit").OnKeyDown += this.OnEventSubmitTest;
         //ui.GetAction("Cancel").OnKeyDown += this.OnEventCancelTest;
+
+        SingletonTest.Instance.TestMethod();
+        SingletonTest2.Instance.TestMethod();
+
+        var mb = GetComponent<MonoBehaviour>();
     }
 
     void Update()
@@ -234,6 +239,22 @@ public class Test : MonoBehaviour
         //{
         //    print("Previous weapon.");
         //}
+
+        //Vector3.Lerp
+        //Vector3.LerpUnclamped
+        //Vector3.MoveTowards
+        //Vector3.Slerp
+        //Vector3.SlerpUnclamped
+        //Vector3.SmoothDamp
+
+        //Vector3.RotateTowards
+        //Vector3.Distance
+        //Vector3.Angle
+        //Vector3.SignedAngle
+
+        //Quaternion.LookRotation
+        //Quaternion.Slerp
+
     }
 
     void OnEventSubmitTest()

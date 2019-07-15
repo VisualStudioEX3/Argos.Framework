@@ -25,23 +25,7 @@ namespace Argos.Framework.Input
         const float MIN_MOUSE_Z_DELTA = 0.5f;
 
         const float MIN_TIME_INPUT_CHECK_INTERVAL = 0.001f;
-        #endregion
 
-        #region Enums
-        /// <summary>
-        /// Input controller types.
-        /// </summary>
-        public enum InputType
-        {
-            KeyboardAndMouse,
-            GenericGamepad,
-            XBoxController,
-            PS4Controller,
-            NintendoSwitchProController
-        }
-        #endregion
-
-        #region Static members
         /// <summary>
         /// Array of not assignable keys during the input assignations.
         /// </summary>
@@ -192,10 +176,31 @@ namespace Argos.Framework.Input
         static readonly KeyCode[] ASSIGNABLE_NINTENDO_SWITCH_BUTTONS = (KeyCode[])Enum.GetValues(typeof(NintendoSwitchProControllerButtons));
         #endregion
 
+        #region Enums
+        /// <summary>
+        /// Input controller types.
+        /// </summary>
+        public enum InputType
+        {
+            KeyboardAndMouse,
+            GenericGamepad,
+            XBoxController,
+            PS4Controller,
+            NintendoSwitchProController
+        }
+        #endregion
+
+        #region Classes
+        [Serializable]
+        public sealed class InputMapDictionary : SerializableDictionary<string, InputMapAsset>
+        {
+        }
+        #endregion
+
         #region Internal vars
 #pragma warning disable 649
         [SerializeField, HideInInspector]
-        SerializableDictionary<string, InputMapAsset> _inputMaps;
+        InputMapDictionary _inputMaps;
 #pragma warning restore
         #endregion
 
@@ -306,7 +311,7 @@ namespace Argos.Framework.Input
             // Update the input maps:
             foreach (var map in this._inputMaps)
             {
-                map.Update();
+                //map.Update();
             }
         }
         #endregion
@@ -507,5 +512,18 @@ namespace Argos.Framework.Input
             }
         }
         #endregion
+
+        private void OnEnable()
+        {
+            if (this._inputMaps == null)
+            {
+                this._inputMaps = new InputMapDictionary();
+            }
+        }
+
+        private void Reset()
+        {
+            this._inputMaps = new InputMapDictionary();
+        }
     }
 }

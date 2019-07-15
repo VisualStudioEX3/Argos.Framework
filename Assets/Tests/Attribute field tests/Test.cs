@@ -85,6 +85,8 @@ public class Test : MonoBehaviour
     [Tooltip("Test")]
     public SceneAsset SceneField;
 
+    public List<SerializableKeyValuePair<string, InputMapAsset>> _assetMaptest;
+
     [Tag]
     public string TagField;
 

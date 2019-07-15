@@ -6,21 +6,60 @@ using UnityEngine;
 
 namespace Argos.Framework
 {
+    #region Structs
     /// <summary>
-    /// Serializable dictionary, specifically designed to use with inspectors and read-only operations in runtime.
+    /// Serializable key value pair base class, specifically designed to use with inspectors and read-only operations in runtime.
+    /// </summary>
+    /// <typeparam name="TKey">Type of the key field.</typeparam>
+    /// <typeparam name="TValue">Type of the value field.</typeparam>
+    [Serializable]
+    public abstract class SerializableKeyValuePair<TKey, TValue>
+    {
+        #region Public vars
+        public TKey key;
+        public TValue value;
+        #endregion
+
+        #region Operators
+        public static explicit operator KeyValuePair<TKey, TValue>(SerializableKeyValuePair<TKey, TValue> data)
+        {
+            return new KeyValuePair<TKey, TValue>(data.key, data.value);
+        }
+        #endregion
+    }
+    #endregion
+
+    /// <summary>
+    /// Serializable dictionary base class, specifically designed to use with inspectors and read-only operations in runtime.
     /// </summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
     [Serializable]
-    public sealed class SerializableDictionary<TKey, TValue> : IEnumerable<TValue>
+    public abstract class SerializableDictionary<TKey, TValue> : IEnumerable<TValue>
     {
         #region Internal vars
         IReadOnlyDictionary<TKey, TValue> _internalDictionary;
         #endregion
 
+        #region Classes
+        [Serializable]
+        public sealed class KeyValuePair : SerializableKeyValuePair<TKey, TValue>
+        {
+        } 
+        #endregion
+
         #region Inspector fields
+#pragma warning disable 649
         [SerializeField]
-        SerializableKeyValuePair<TKey, TValue>[] _elements;
+        List<KeyValuePair> _elements;
+#pragma warning restore
+        #endregion
+
+        #region Constructors
+        public SerializableDictionary()
+        {
+            this._elements = new List<KeyValuePair>();
+        } 
         #endregion
 
         #region Properties
@@ -29,7 +68,7 @@ namespace Argos.Framework
         /// <summary>
         /// Number of elements in dictionary.
         /// </summary>
-        public int Count { get { return Application.isPlaying ? this._internalDictionary.Count : this._elements.Length; } }
+        public int Count { get { return Application.isPlaying ? this._internalDictionary.Count : this._elements.Count; } }
 
         /// <summary>
         /// Read-only access to dictiorary element.
@@ -118,24 +157,21 @@ namespace Argos.Framework
         /// </summary>
         public void GenerateRuntimeDictionary()
         {
-            if (this._elements.Length > 0)
+            var dic = new Dictionary<TKey, TValue>();
+
+            foreach (var map in this._elements)
             {
-                var dic = new Dictionary<TKey, TValue>();
-
-                foreach (var map in this._elements)
+                if (this._internalDictionary.ContainsKey(map.key))
                 {
-                    if (this._internalDictionary.ContainsKey(map.key))
-                    {
-                        Logger.Log($"{this.InstanceClassName}: The key \"{map.key}\" already exists in the dictionary! Skip to add to dictionary.", LogLevel.Error);
-                    }
-                    else
-                    {
-                        dic.Add(map.key, map.value);
-                    }
+                    Logger.Log($"{this.InstanceClassName}: The key \"{map.key}\" already exists in the dictionary! Skip to add to dictionary.", LogLevel.Error);
                 }
-
-                this._internalDictionary = dic;
+                else
+                {
+                    dic.Add(map.key, map.value);
+                }
             }
+
+            this._internalDictionary = dic;
         }
 
         IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()

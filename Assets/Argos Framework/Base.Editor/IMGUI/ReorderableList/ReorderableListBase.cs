@@ -41,6 +41,7 @@ namespace Argos.Framework.IMGUI
         #region Internal vars
         UnityReorderableList _instance;
         UnityReorderableList.Defaults _defaultBehaviours;
+        bool _disposed;
         #endregion
 
         #region Properties
@@ -101,6 +102,12 @@ namespace Argos.Framework.IMGUI
         /// <param name="displayRemoveButton">Shows remove element button.</param>
         public ReorderableListBase(SerializedProperty elements, bool isDraggable = true, bool displayHeader = false, ReorderableListAddButtonType displayAddButton = ReorderableListAddButtonType.Default, bool displayRemoveButton = true)
         {
+            if (elements == null)
+            {
+                this.Dispose();
+                throw new ArgumentNullException(nameof(elements), "(ReorderableListBase) Parameter can't be null!");
+            }
+
             this._instance = new UnityReorderableList(elements.serializedObject, elements, isDraggable, displayHeader, displayAddButton != ReorderableListAddButtonType.None, displayRemoveButton);
             {
                 this._instance.drawElementBackgroundCallback += this.OnElementBackgroundGUIInternal;
@@ -134,29 +141,47 @@ namespace Argos.Framework.IMGUI
             this.DisplayRemoveButton = displayRemoveButton;
         }
 
+        ~ReorderableListBase()
+        {
+            this.Dispose(false);
+        }
+
         /// <summary>
         /// Release all internal event listeners and memory used before the instance is destroyed.
         /// </summary>
         public void Dispose()
         {
-            this._instance.drawElementBackgroundCallback -= this.OnElementBackgroundGUIInternal;
-            this._instance.drawElementCallback -= this.OnElementGUIInternal;
-            this._instance.drawFooterCallback -= this.OnFooterGUI;
-            this._instance.drawHeaderCallback -= this.OnHeaderGUI;
-            this._instance.drawNoneElementCallback -= this.OnNoneElementGUI;
-            this._instance.elementHeightCallback -= this.OnElementHeightInternal;
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
 
-            this._instance.onAddCallback -= this.OnAddElementInternal;
-            this._instance.onAddDropdownCallback -= this.OnAddDropdownInternal;
-            this._instance.onCanAddCallback -= this.OnCanAddInternal;
-            this._instance.onCanRemoveCallback -= this.OnCanRemoveInternal;
-            this._instance.onChangedCallback -= this.OnChangedElementInternal;
-            this._instance.onMouseUpCallback -= this.OnMouseUpElementInternal;
-            this._instance.onRemoveCallback -= this.OnRemoveElementInternal;
-            this._instance.onReorderCallbackWithDetails -= this.OnReorderElementInternal;
-            this._instance.onSelectCallback -= this.OnSelectElementInternal;
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!this._disposed)
+            {
+                if (this._instance != null)
+                {
+                    this._instance.drawElementBackgroundCallback -= this.OnElementBackgroundGUIInternal;
+                    this._instance.drawElementCallback -= this.OnElementGUIInternal;
+                    this._instance.drawFooterCallback -= this.OnFooterGUI;
+                    this._instance.drawHeaderCallback -= this.OnHeaderGUI;
+                    this._instance.drawNoneElementCallback -= this.OnNoneElementGUI;
+                    this._instance.elementHeightCallback -= this.OnElementHeightInternal;
 
-            this._instance = null;
+                    this._instance.onAddCallback -= this.OnAddElementInternal;
+                    this._instance.onAddDropdownCallback -= this.OnAddDropdownInternal;
+                    this._instance.onCanAddCallback -= this.OnCanAddInternal;
+                    this._instance.onCanRemoveCallback -= this.OnCanRemoveInternal;
+                    this._instance.onChangedCallback -= this.OnChangedElementInternal;
+                    this._instance.onMouseUpCallback -= this.OnMouseUpElementInternal;
+                    this._instance.onRemoveCallback -= this.OnRemoveElementInternal;
+                    this._instance.onReorderCallbackWithDetails -= this.OnReorderElementInternal;
+                    this._instance.onSelectCallback -= this.OnSelectElementInternal;
+                }
+                this._instance = null;
+
+                this._disposed = true;
+            }
         }
         #endregion
 

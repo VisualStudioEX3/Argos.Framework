@@ -26,13 +26,22 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Internal vars
-        ReorderableDictionary _inputMapList;
+        InputMapDictionaryControl _inputMapList;
         #endregion
 
         #region Event listeners
         private void OnEnable()
         {
-            this._inputMapList = new ReorderableDictionary(this.serializedObject.FindProperty(InputManagerEditor.PROPERTY_NAME));
+            var obj = this.serializedObject.FindProperty(InputManagerEditor.PROPERTY_NAME);//.FindPropertyRelative("_elements");
+
+            var ite = obj.Copy();
+            //ite.Next(true);
+            while (ite.NextVisible(true))
+            {
+                Debug.Log(ite.propertyPath);
+            }
+
+            this._inputMapList = new InputMapDictionaryControl(obj);
         }
 
         public override void OnInspectorGUI()
@@ -54,7 +63,10 @@ namespace Argos.Framework.Input
             EditorGUILayout.Space();
 
             this.serializedObject.Update();
-            this._inputMapList.DoLayoutList();
+
+            EditorGUILayout.LabelField("Input Maps", EditorStyles.boldLabel);
+            this._inputMapList?.DoLayoutList();
+
             this.serializedObject.ApplyModifiedProperties();
             
             EditorGUILayout.Space();

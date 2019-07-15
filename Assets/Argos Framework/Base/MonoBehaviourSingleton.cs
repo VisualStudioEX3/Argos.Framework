@@ -8,7 +8,7 @@ namespace Argos.Framework
     /// <summary>
     /// Base class to implement <see cref="MonoBehaviour"/> derived classes as singleton instances.
     /// </summary>
-    /// <typeparam name="T">Type of the MonoBehaviour derived class.</typeparam>
+    /// <typeparam name="T">Type of the <see cref="MonoBehaviour"/> derived class.</typeparam>
     /// <remarks>Remember call base.<see cref="Awake"/> and base.<see cref="OnDestroy"/> events, when overload these events, to the right work of the singleton.</remarks>
     public abstract class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {

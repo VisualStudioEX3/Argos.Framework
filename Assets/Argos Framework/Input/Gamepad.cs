@@ -207,25 +207,8 @@ namespace Argos.Framework.Input
     /// Multiplatform single player gamepad mapper for works natively with the XBox 360/One, PS4 controllers and Nintendo Switch Pro controller maps on PC (Windows, Linux & Mac), and support for manual setup of any generic gamepad or joystick.
     /// FYI: The PS4 Controller is not supported natively on Linux, and the XBox 360 controller (and wired XBox One 1º Gen) not supported on OSX. Maybe add support for third party drivers for these cases in the future.
     /// </remarks>
-    public sealed class Gamepad
+    public sealed class Gamepad : Singleton<Gamepad>
     {
-        #region Singleton
-        static Gamepad _instance;
-
-        public static Gamepad Instance
-        {
-            get
-            {
-                if (Gamepad._instance == null)
-                {
-                    Gamepad._instance = new Gamepad();
-                }
-
-                return Gamepad._instance;
-            }
-        }
-        #endregion
-
         #region Constants
         public const int MAX_AXIS_INDEX = 10;
         public const int MIN_AXIS_INDEX = 1;
@@ -364,7 +347,7 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Constructors
-        Gamepad()
+        public Gamepad()
         {
             this._axisNames = new string[Gamepad.MAX_AXIS_INDEX];
             for (int i = 0; i < this._axisNames.Length; i++)

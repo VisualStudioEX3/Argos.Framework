@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Argos.Framework
 {
     /// <summary>
-    /// MonoBehaviour method extensions.
+    /// <see cref="MonoBehaviour"/> method extensions.
     /// </summary>
     public static class MonoBehaviourExtensions
     {
@@ -35,7 +35,9 @@ namespace Argos.Framework
                 instance.StartCoroutine(MonoBehaviourExtensions.TakeScreenshotCoroutine(onEndOfFrame)); 
             }
         }
+        #endregion
 
+        #region Coroutines
         static IEnumerator TakeScreenshotCoroutine(Action<Texture2D> onEndOfFrame)
         {
             yield return new WaitForEndOfFrame();

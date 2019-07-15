@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using UnityEditorInternal;
+using Argos.Framework.IMGUI;
 
 namespace Argos.Framework.Input
 {
@@ -26,13 +26,13 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Internal vars
-        ReorderableList _inputMapList;
+        ReorderableDictionary _inputMapList;
         #endregion
 
         #region Event listeners
         private void OnEnable()
         {
-            this._inputMapList = ReorderableListHelper.CreateNamedList(this, this._inputMapList, InputManagerEditor.HEADER_NAME, InputManagerEditor.PROPERTY_NAME, InputManagerEditor.PREFIX_NAME, false);
+            this._inputMapList = new ReorderableDictionary(this.serializedObject.FindProperty(InputManagerEditor.PROPERTY_NAME));
         }
 
         public override void OnInspectorGUI()

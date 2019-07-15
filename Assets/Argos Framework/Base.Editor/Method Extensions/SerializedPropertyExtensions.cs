@@ -6,7 +6,7 @@ using UnityEditor;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Extension methods for Serialized Property variables.
+    /// <see cref="SerializedProperty"/> method extension.
     /// </summary>
     public static class SerializedPropertyExtensions
     {

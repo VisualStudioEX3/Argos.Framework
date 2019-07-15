@@ -17,23 +17,23 @@ namespace Argos.Framework
 
         #region Inspector fields
 #pragma warning disable 649
-        [SerializeField]
+        [SerializeField, HelpBox("You can setup different prefabs to randomly instantiate in the object pool.", HelpBoxMessageType.Info)]
         T[] _prefabs;
         [SerializeField]
         int _maxInstances;
-        [SerializeField, Tooltip("The parent for all instances. If the parent is null, this game object is the parent.")]
+        [SerializeField, HelpBox("The parent for all instances. If the parent is null, this game object is the parent.", HelpBoxMessageType.Info)]
         Transform _parent;
 #pragma warning restore
         #endregion
 
         #region Properties
         /// <summary>
-        /// Total instances of this object pool.
+        /// Total instances in this object pool.
         /// </summary>
         public int Total { get { return this._instances.Length; } }
 
         /// <summary>
-        /// Active instances.
+        /// Active instances in this object pool.
         /// </summary>
         public int Actives
         {
@@ -54,7 +54,7 @@ namespace Argos.Framework
         }
 
         /// <summary>
-        /// Available instances.
+        /// Available instances in this object pool.
         /// </summary>
         public int Availables { get { return this.Total - this.Actives; } }
 
@@ -80,6 +80,8 @@ namespace Argos.Framework
 
         public virtual void OnDestroy()
         {
+            StopAllCoroutines();
+
             foreach (var instance in this)
             {
                 Destroy(instance);
@@ -91,9 +93,9 @@ namespace Argos.Framework
 
         #region Methods & Functions
         /// <summary>
-        /// Get a new available instance and throw the <see cref="OnNewInstance(T)"/> event.
+        /// Get a new available instance.
         /// </summary>
-        /// <returns>Return the first available instance. If not has available instance, return null.</returns>
+        /// <returns>Returns the first available instance. If not has available instance, returns null.</returns>
         public T GetNewInstance()
         {
             if (this.Availables > 0)
@@ -103,10 +105,6 @@ namespace Argos.Framework
                     if (!this[i].gameObject.activeSelf)
                     {
                         this[i].gameObject.SetActive(true);
-
-                        this.OnNewInstance(this[i]);
-                        StartCoroutine(this.TerminateInstance(this[i]));
-
                         return this[i];
                     }
                 }
@@ -116,10 +114,74 @@ namespace Argos.Framework
         }
 
         /// <summary>
+        /// Get a new available instance with life time to disable it.
+        /// </summary>
+        /// <param name="lifeTime">The life time of this instance.</param>
+        /// <returns>Returns the first available instance. If not has available instance, returns null.</returns>
+        public T GetNewInstance(float lifeTime)
+        {
+            return this.GetNewInstance(lifeTime, null);
+        }
+
+        /// <summary>
+        /// Get a new available instance with condition to disable it.
+        /// </summary>
+        /// <param name="condition">Condition to disable the instance after life time delay passed.</param>
+        /// <returns>Returns the first available instance. If not has available instance, returns null.</returns>
+        public T GetNewInstance(Func<bool> condition)
+        {
+            return this.GetNewInstance(-1, condition);
+        }
+
+        /// <summary>
+        /// Get a new available instance with life time and condition to disable it.
+        /// </summary>
+        /// <param name="lifeTime">The life time of this instance.</param>
+        /// <param name="condition">Condition to disable the instance after life time delay passed.</param>
+        /// <returns>Returns the first available instance. If not has available instance, returns null.</returns>
+        public T GetNewInstance(float lifeTime, Func<bool> condition)
+        {
+            T instance = this.GetNewInstance();
+            if (instance)
+            {
+                if (lifeTime > 0f && condition == null)
+                {
+                    StartCoroutine(this.DisableInstanceCoroutine(instance, lifeTime));
+                }
+                else if (lifeTime < 0f && condition != null)
+                {
+                    StartCoroutine(this.DisableInstanceCoroutine(instance, condition));
+                }
+                else if (lifeTime > 0f && condition != null)
+                {
+                    StartCoroutine(this.DisableInstanceCoroutine(instance, lifeTime, condition));
+                }
+            }
+            return instance;
+        }
+
+        /// <summary>
+        /// Get a new available instance with custom coroutine to disable it.
+        /// </summary>
+        /// <param name="conditionRoutine">Coroutine to disable instance.</param>
+        /// <returns>Returns the first available instance. If not has available instance, returns null.</returns>
+        public T GetNewInstance(IEnumerator conditionRoutine)
+        {
+            T instance = this.GetNewInstance();
+            if (instance)
+            {
+                StartCoroutine(conditionRoutine); 
+            }
+            return instance;
+        }
+
+        /// <summary>
         /// Reset all instances and make them availables.
         /// </summary>
         public void RestoreAllInstances()
         {
+            StopAllCoroutines();
+
             foreach (var instance in this)
             {
                 instance.gameObject.SetActive(false);
@@ -138,11 +200,26 @@ namespace Argos.Framework
         #endregion
 
         #region Coroutines
-        public abstract IEnumerator TerminateInstance(T instance); 
-        #endregion
+        IEnumerator DisableInstanceCoroutine(T instance, float lifeTime)
+        {
+            yield return new WaitForSeconds(lifeTime);
+            instance.gameObject.SetActive(false);
+        }
 
-        #region Event listeners
-        public abstract void OnNewInstance(T instance); 
+        IEnumerator DisableInstanceCoroutine(T instance, Func<bool> condition)
+        {
+            yield return new WaitUntil(condition);
+            instance.gameObject.SetActive(false);
+        }
+
+        IEnumerator DisableInstanceCoroutine(T instance, float lifeTime, Func<bool> condition)
+        {
+            var timer = new Timer();
+
+            yield return new WaitWhile(() => { return timer.Value >= lifeTime || condition.Invoke(); });
+
+            instance.gameObject.SetActive(false);
+        }
         #endregion
     }
 }

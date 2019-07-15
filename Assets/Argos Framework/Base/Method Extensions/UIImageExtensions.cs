@@ -6,7 +6,7 @@ using UnityEngine.UI;
 namespace Argos.Framework
 {
     /// <summary>
-    /// UI Image method extensions.
+    /// <see cref="MaskableGraphic"/> method extensions.
     /// </summary>
     public static class UIImageExtensions
     {

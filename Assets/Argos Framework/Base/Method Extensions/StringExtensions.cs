@@ -1,18 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace Argos.Framework
 {
     /// <summary>
-    /// Method extensions for boolean type.
+    /// <see cref="string"/> method extensions.
     /// </summary>
     public static class StringExtensions
     {
         /// <summary>
         /// This string is null, empty or white space?
         /// </summary>
-        /// <param name="value">string instance.</param>
+        /// <param name="value"><see cref="string"/> instance.</param>
         /// <returns>Return true if the string is null, empty or white space.</returns>
         public static bool IsNullOrEmptyOrWhiteSpace(this string value)
         {

@@ -319,7 +319,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a24ba39fea6b248429cec52ca23d52af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _inputMaps: []
   hideMouseCursorInGamepadMode: 1
   checkInputTypeInterval: 0.02
   genericGamepadSetup: {fileID: 0}

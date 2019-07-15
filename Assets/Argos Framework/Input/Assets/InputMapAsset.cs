@@ -15,30 +15,19 @@ namespace Argos.Framework.Input
     [CreateAssetMenu(fileName = "New Input Map", menuName = "Argos.Framework/Input/Input Map")]
     public class InputMapAsset : ScriptableObject
     {
-        #region Structs
-        [Serializable]
-        public struct InputMapAxisData
-        {
-            public string Name;
-            public InputAxis Data;
-        }
-
-        [Serializable]
-        public struct InputMapActionData
-        {
-            public string Name;
-            public InputAction Data;
-        }
-        #endregion
-
         #region Inspector fields
 #pragma warning disable 0649
         [SerializeField]
-        List<InputMapAxisData> _axes;
+        SerializableDictionary<string, InputAxis> _axes;
 
         [SerializeField]
-        List<InputMapActionData> _actions;
+        SerializableDictionary<string, InputAction> _actions;
 #pragma warning restore
+        #endregion
+
+        #region Properties
+        public SerializableDictionary<string, InputAxis> Axes => this._axes;
+        public SerializableDictionary<string, InputAction> Actions => this._actions;
         #endregion
 
         #region Update logic
@@ -48,14 +37,14 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public void Update()
         {
-            for (int i = 0; i < this._axes.Count; i++)
+            foreach (var axis in this._axes)
             {
-                this._axes[i].Data.Update();
+                axis.Update();
             }
 
-            for (int i = 0; i < this._actions.Count; i++)
+            foreach (var action in this._actions)
             {
-                this._actions[i].Data.Update();
+                action.Update();
             }
         }
         #endregion
@@ -69,15 +58,12 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public InputAxis GetAxis(string name)
         {
-            for (int i = 0; i < this._axes.Count; i++)
+            if (this._axes.ContainsKey(name))
             {
-                if (this._axes[i].Name == name)
-                {
-                    return this._axes[i].Data;
-                }
+                return this._axes[name];
             }
 
-            throw new KeyNotFoundException($"The axis '{name}' not exists.");
+            throw new KeyNotFoundException($"{this.GetClassName()}: The axis '{name}' not exists.");
         }
 
         /// <summary>
@@ -88,15 +74,12 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public InputAction GetAction(string name)
         {
-            for (int i = 0; i < this._actions.Count; i++)
+            if (this._actions.ContainsKey(name))
             {
-                if (this._actions[i].Name == name)
-                {
-                    return this._actions[i].Data;
-                }
+                return this._actions[name];
             }
 
-            throw new KeyNotFoundException($"The action '{name}' not exists.");
+            throw new KeyNotFoundException($"{this.GetClassName()}The action '{name}' not exists.");
         }
         #endregion
     }

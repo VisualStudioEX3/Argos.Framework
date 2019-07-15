@@ -13,7 +13,7 @@ namespace Argos.Framework.Input
     /// </summary>
     /// <remarks>This input manager allow to define input maps for keyboard, mouse & gamepads (XBox360/One, PS4 and Nintendo Switch (Pro) Controllers), input actions, input axis, and allow to change input bindings in runtime.</remarks>
     [AddComponentMenu("Argos.Framework/Input/Input Manager"), DisallowMultipleComponent]
-    public sealed class InputManager : MonoBehaviour
+    public sealed class InputManager : MonoBehaviourSingleton<InputManager>
     {
         #region Constants
         const string MOUSE_X_NAME = "Mouse X";
@@ -39,15 +39,6 @@ namespace Argos.Framework.Input
             PS4Controller,
             NintendoSwitchProController
         }
-        #endregion
-
-        #region Structs
-        [Serializable]
-        public struct InputMapData
-        {
-            public string name;
-            public InputMapAsset data;
-        } 
         #endregion
 
         #region Static members
@@ -204,7 +195,7 @@ namespace Argos.Framework.Input
         #region Internal vars
 #pragma warning disable 649
         [SerializeField, HideInInspector]
-        List<InputMapData> _inputMaps;
+        SerializableDictionary<string, InputMapAsset> _inputMaps;
 #pragma warning restore
         #endregion
 
@@ -249,7 +240,15 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Return true if the mouse was move on the current frame.
         /// </summary>
-        public bool HasMotionFromMouse { get; private set; }
+        public bool HasMotionFromMouse
+        {
+            get
+            {
+                return Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_X_NAME)) > InputManager.MIN_MOUSE_X_DELTA ||
+                       Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Y_NAME)) > InputManager.MIN_MOUSE_Y_DELTA ||
+                       Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Z_NAME)) > InputManager.MIN_MOUSE_Z_DELTA;
+            }
+        }
 
         /// <summary>
         /// Return true if any key from keyboard or button from mouse is pressed down on current frame.
@@ -261,22 +260,15 @@ namespace Argos.Framework.Input
         /// </summary>
         /// <remarks>In KeyboardAndMouse mode this return false always.</remarks>
         public bool IsGamepadVibrationEnable { get { return this.enableGamepadVibration && this.CurrentInputType != InputType.KeyboardAndMouse; } }
-        #endregion
 
-        #region Static members
-        public static InputManager Instance { get; private set; } 
+        /// <summary>
+        /// Access to Input Map dictionary.
+        /// </summary>
+        public SerializableDictionary<string, InputMapAsset> InputMaps { get { return this._inputMaps; } }
         #endregion
 
         #region Initializers
-        private void Reset()
-        {
-            if (GameObject.FindObjectsOfType<InputManager>().Length > 1)
-            {
-                throw new InvalidOperationException("Found one or more Input Manager instances in scene. Only one instance is allowed.");
-            }
-        }
-
-        private void Awake()
+        public override void Awake()
         {
             Gamepad.Instance.TryToIndentifyGamepad();
 
@@ -286,28 +278,25 @@ namespace Argos.Framework.Input
             // Check for a generic joystick and initialize it for support Force Feedback:
             ForceFeedback.CheckForAvailableJoystick();
 
-            InputManager.Instance = this;
+            base.Awake();
+        }
 
-            DontDestroyOnLoad(this);
+        private void OnApplicationQuit()
+        {
+            this.SetGamepadVibration(Vector2.zero);
+
+            // Release a generic joystick and stop active Force Feedback effect:
+            ForceFeedback.ReleaseJoystick();
         }
         #endregion
 
         #region Update logic
         private void Update()
         {
-            if (this.checkInputTypeInterval < 0.01f)
-            {
-                this.checkInputTypeInterval = 0.01f;
-            }
-
             if (Gamepad.Instance.UseNintendoButtonLayout != this.useNintendoButtonLayout)
             {
                 Gamepad.Instance.UseNintendoButtonLayout = this.useNintendoButtonLayout;
             }
-
-            this.HasMotionFromMouse = Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_X_NAME)) > InputManager.MIN_MOUSE_X_DELTA ||
-                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Y_NAME)) > InputManager.MIN_MOUSE_Y_DELTA ||
-                                      Mathf.Abs(UnityEngine.Input.GetAxisRaw(InputManager.MOUSE_Z_NAME)) > InputManager.MIN_MOUSE_Z_DELTA;
 
             this.IsAnyKeyDown = UnityEngine.Input.anyKeyDown;
 
@@ -315,41 +304,35 @@ namespace Argos.Framework.Input
             Gamepad.Instance.Update();
 
             // Update the input maps:
-            for (int i = 0; i < this._inputMaps.Count; i++)
+            foreach (var map in this._inputMaps)
             {
-                this._inputMaps[i].data.Update();
+                map.Update();
             }
         }
         #endregion
 
-        #region Event listeners
-        private void OnApplicationQuit()
-        {
-            this.SetGamepadVibration(Vector2.zero);
-
-            // Release a generic joystick and stop active Force Feedback effect:
-            ForceFeedback.ReleaseJoystick();
-        } 
-        #endregion
-
         #region Methods & Functions
+        public override bool IsPersistentBetweenScenes()
+        {
+            return true;
+        }
+
         /// <summary>
-        /// Get the input map with the desired name.
+        /// Get the input map by their name.
         /// </summary>
         /// <param name="name">Input map name.</param>
-        /// <returns>Return the first ocurrence.</returns>
+        /// <returns>Return the <see cref="InputMapAsset"/> reference.</returns>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public InputMapAsset GetInputMap(string name)
         {
-            for (int i = 0; i < this._inputMaps.Count; i++)
+            if (this._inputMaps.ContainsKey(name))
             {
-                if (this._inputMaps[i].name == name)
-                {
-                    return this._inputMaps[i].data;
-                }
+                return this._inputMaps[name];
             }
-
-            throw new KeyNotFoundException($"The input map '{name}' not exists.");
+            else
+            {
+                throw new KeyNotFoundException($"{this.GetClassName()}: The input map '{name}' not exists.");
+            }
         }
 
         /// <summary>
@@ -462,7 +445,7 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         IEnumerator CheckCurrentInputTypeCoroutine()
         {
-            var wait = new WaitForSecondsRealtime(this.checkInputTypeInterval);
+            var wait = new WaitForSecondsRealtime(Mathf.Max(this.checkInputTypeInterval, InputManager.MIN_TIME_INPUT_CHECK_INTERVAL));
             while (true)
             {
                 var current = this.CurrentInputType;
@@ -516,7 +499,7 @@ namespace Argos.Framework.Input
 
                     if (Application.isEditor && current != this.CurrentInputType)
                     {
-                        print($"Current Input type: {this.CurrentInputType}");
+                        print($"{this.GetClassName()}: Current Input type: {this.CurrentInputType}");
                     }
                 }
 

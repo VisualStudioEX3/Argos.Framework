@@ -8,7 +8,7 @@ using Argos.Framework.IMGUI;
 
 public class ReorderableListTest : MonoBehaviour
 {
-    [System.Serializable]
+    [Serializable]
     public struct CustomData2
     {
         public string message;
@@ -16,7 +16,7 @@ public class ReorderableListTest : MonoBehaviour
         public float value;
     }
 
-    [System.Serializable]
+    [Serializable]
     public struct CustomData
     {
         [Delayed]

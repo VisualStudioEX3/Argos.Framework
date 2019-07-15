@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Transform method extensions.
+    /// <see cref="Transform"/> method extensions.
     /// </summary>
     public static class TransformExtensions
     {

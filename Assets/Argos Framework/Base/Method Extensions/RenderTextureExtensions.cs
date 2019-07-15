@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Argos.Framework
 {
     /// <summary>
-    /// RenderTexture method extensions.
+    /// <see cref="RenderTexture"/> method extensions.
     /// </summary>
     public static class RenderTextureExtensions
     {

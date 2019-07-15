@@ -5,7 +5,7 @@ using Argos.Framework;
 
 public class CustomObjectPool : ObjectPool<RotateObject>
 {
-    [Button("Create new instance", GUIButtonSize.Normal, GUIButtonDisableEvents.EditorMode)]
+    [Space, Button("Create new instance", GUIButtonSize.Normal, GUIButtonDisableEvents.EditorMode)]
     public string button = "CreateNewObject";
 
     [DynamicLabel]
@@ -13,22 +13,11 @@ public class CustomObjectPool : ObjectPool<RotateObject>
 
     void CreateNewObject()
     {
-        this.GetNewInstance();
+        this.GetNewInstance(5f).transform.position = Random.insideUnitSphere * Random.Range(1f, 5f);
     }
 
     private void Update()
     {
         this.label = $"Total: {this.Total}, actives: {this.Actives}, availables: {this.Availables}";
-    }
-
-    public override void OnNewInstance(RotateObject instance)
-    {
-        instance.transform.position = Random.insideUnitSphere * Random.Range(1, 5);
-    }
-
-    public override IEnumerator TerminateInstance(RotateObject instance)
-    {
-        yield return new WaitForSeconds(5f);
-        instance.gameObject.SetActive(false);
     }
 }

@@ -4,7 +4,7 @@ using UnityEditor;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Coroutines for Editor scripts, just like regular coroutines.
+    /// Coroutines for <see cref="Editor"/> scripts, just like regular coroutines.
     /// </summary>
     /// <remarks>Original source: https://github.com/marijnz/unity-editor-coroutines </remarks>
     public static class EditorCoroutineExtensions

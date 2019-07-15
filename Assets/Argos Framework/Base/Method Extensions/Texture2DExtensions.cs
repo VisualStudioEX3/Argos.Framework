@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Texture2D method extensions.
+    /// <see cref="Texture2D"/> method extensions.
     /// </summary>
     public static class Texture2DExtensions
     {

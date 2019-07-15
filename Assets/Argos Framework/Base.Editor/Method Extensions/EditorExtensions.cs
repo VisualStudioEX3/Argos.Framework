@@ -9,7 +9,7 @@ using UnityEditor;
 namespace Argos.Framework
 {
     /// <summary>
-    /// Method extensions for Editor scripts.
+    /// <see cref="Editor"/> method extensions.
     /// </summary>
     public static class EditorExtensions
     {

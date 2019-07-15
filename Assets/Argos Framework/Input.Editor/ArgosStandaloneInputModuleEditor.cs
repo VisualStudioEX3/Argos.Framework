@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 
@@ -10,11 +11,6 @@ namespace Argos.Framework.Input
     {
         #region Constants
         const string INPUT_MAP_PROPERTY = "_inputMap";
-        const string INPUT_MAP_LIST_PROPERTY = "_inputMaps";
-        const string NAME_PROPERTY = "Name";
-        const string DATA_PROPERTY = "Data";
-        const string INPUT_MAP_AXES_LIST_PROPERTY = "_axes";
-        const string INPUT_MAP_ACTIONS_LIST_PROPERTY = "_actions";
 
         const string NAVIGATION_PROPERTY = "_navigation";
 
@@ -38,16 +34,72 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Internal vars
-        InputManager _inputManager;
-        SerializedProperty _serializedInputMaps;
-        InputManager.InputMapData[] _inputMaps;
         string[] _inputMapNames = new string[0];
         string[] _axesNames = new string[0];
         string[] _actionsNames = new string[0];
+
         SerializedProperty _inputMapSelected;
         SerializedProperty _navigation;
         SerializedProperty _submit, _cancel, _setToDefault, _delete;
         SerializedProperty _onSubmit, _onCancel, _onSetToDefault, _onDelete;
+        #endregion
+
+        #region Methods & Functions
+        void GetLocalSerializedProperties()
+        {
+            this._inputMapSelected = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.INPUT_MAP_PROPERTY);
+
+            this._navigation = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.NAVIGATION_PROPERTY);
+
+            this._submit = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.SUBMIT_PROPERTY);
+            this._cancel = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.CANCEL_PROPERTY);
+            this._delete = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.DELETE_PROPERTY);
+            this._setToDefault = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.DEFAULT_PROPERTY);
+
+            this._onSubmit = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.ON_SUBMIT_EVENT_PROPERTY);
+            this._onCancel = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.ON_CANCEL_EVENT_PROPERTY);
+            this._onDelete = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.ON_DELETE_EVENT_PROPERTY);
+            this._onSetToDefault = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.ON_SET_DEFAULTS_EVENT_PROPERTY);
+        }
+
+        void GetInputMapsFromInputManagerInstance()
+        {
+            if (InputManager.Instance)
+            {
+                this._inputMapNames = InputManager.Instance.InputMaps.Keys.ToArray();
+            }
+        }
+
+        void UpdateArrayNames()
+        {
+            var map = InputManager.Instance.InputMaps[this._inputMapSelected.stringValue];
+            this._axesNames = map.Axes.Keys.ToArray();
+            this._actionsNames = map.Actions.Keys.ToArray();
+        }
+
+        bool DrawFieldPopup(string label, SerializedProperty field, string[] values)
+        {
+            int index; for (index = 0; index < values.Length; index++)
+            {
+                if (values[index] == field.stringValue) break;
+            }
+
+            string previous = field.stringValue;
+
+            index = EditorGUILayout.Popup(string.IsNullOrEmpty(label) ? field.displayName : label, index, values);
+
+            if (index >= values.Length)
+            {
+                index = 0;
+            }
+
+            if (values.Length > 0)
+            {
+                field.stringValue = values[index];
+            }
+
+            return previous != field.stringValue;
+        }
         #endregion
 
         #region Event listeners
@@ -62,7 +114,7 @@ namespace Argos.Framework.Input
         {
             this.serializedObject.Update();
             {
-                if (this._inputManager)
+                if (InputManager.Instance)
                 {
                     EditorGUILayout.Space();
                     if (this.DrawFieldPopup(string.Empty, this._inputMapSelected, this._inputMapNames))
@@ -94,97 +146,5 @@ namespace Argos.Framework.Input
             this.serializedObject.ApplyModifiedProperties();
         }
         #endregion
-
-        #region Methods & Functions
-        void GetLocalSerializedProperties()
-        {
-            this._inputMapSelected = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.INPUT_MAP_PROPERTY);
-
-            this._navigation = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.NAVIGATION_PROPERTY);
-
-            this._submit = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.SUBMIT_PROPERTY);
-            this._cancel = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.CANCEL_PROPERTY);
-            this._delete = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.DELETE_PROPERTY);
-            this._setToDefault = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.DEFAULT_PROPERTY);
-
-            this._onSubmit = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.ON_SUBMIT_EVENT_PROPERTY);
-            this._onCancel = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.ON_CANCEL_EVENT_PROPERTY);
-            this._onDelete = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.ON_DELETE_EVENT_PROPERTY);
-            this._onSetToDefault = this.serializedObject.FindProperty(ArgosStandaloneInputModuleEditor.ON_SET_DEFAULTS_EVENT_PROPERTY);
-        }
-
-        void GetInputMapsFromInputManagerInstance()
-        {
-            this._inputManager = GameObject.FindObjectOfType<InputManager>();
-
-            if (this._inputManager)
-            {
-                this._serializedInputMaps = new SerializedObject(this._inputManager).FindProperty(ArgosStandaloneInputModuleEditor.INPUT_MAP_LIST_PROPERTY);
-
-                this._inputMaps = new InputManager.InputMapData[this._serializedInputMaps.arraySize];
-                for (int i = 0; i < this._inputMaps.Length; i++)
-                {
-                    this._inputMaps[i].name = this._serializedInputMaps.GetArrayElementAtIndex(i).FindPropertyRelative(ArgosStandaloneInputModuleEditor.NAME_PROPERTY).stringValue;
-                    this._inputMaps[i].data = (InputMapAsset)this._serializedInputMaps.GetArrayElementAtIndex(i).FindPropertyRelative(ArgosStandaloneInputModuleEditor.DATA_PROPERTY).objectReferenceValue;
-                }
-
-                this._inputMapNames = new string[this._inputMaps.Length];
-                for (int i = 0; i < this._inputMapNames.Length; i++)
-                {
-                    this._inputMapNames[i] = this._inputMaps[i].name;
-                }
-            }
-        }
-
-        void UpdateArrayNames()
-        {
-            this.FillArrayNamesFromSelectedInputMap(ref this._axesNames, ArgosStandaloneInputModuleEditor.INPUT_MAP_AXES_LIST_PROPERTY);
-            this.FillArrayNamesFromSelectedInputMap(ref this._actionsNames, ArgosStandaloneInputModuleEditor.INPUT_MAP_ACTIONS_LIST_PROPERTY);
-        }
-
-        void FillArrayNamesFromSelectedInputMap(ref string[] array, string serializedPropertyArrayName)
-        {
-            if (this._inputManager)
-            {
-                for (int i = 0; i < this._inputMaps.Length; i++)
-                {
-                    if (this._inputMaps[i].name == this._inputMapSelected.stringValue)
-                    {
-                        var serializedAxes = new SerializedObject(this._inputMaps[i].data).FindProperty(serializedPropertyArrayName);
-                        array = new string[serializedAxes.arraySize];
-                        for (int j = 0; j < array.Length; j++)
-                        {
-                            array[j] = serializedAxes.GetArrayElementAtIndex(j).FindPropertyRelative(ArgosStandaloneInputModuleEditor.NAME_PROPERTY).stringValue;
-                        }
-                        return;
-                    }
-                }
-            }
-        }
-
-        bool DrawFieldPopup(string label, SerializedProperty field, string[] values)
-        {
-            int index; for (index = 0; index < values.Length; index++)
-            {
-                if (values[index] == field.stringValue) break;
-            }
-
-            string previous = field.stringValue;
-
-            index = EditorGUILayout.Popup(string.IsNullOrEmpty(label) ? field.displayName : label, index, values);
-
-            if (index >= values.Length)
-            {
-                index = 0;
-            }
-
-            if (values.Length > 0)
-            {
-                field.stringValue = values[index];
-            }
-
-            return previous != field.stringValue;
-        }
-        #endregion
-    } 
+    }
 }

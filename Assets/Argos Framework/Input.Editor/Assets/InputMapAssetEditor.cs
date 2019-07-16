@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using UnityEditorInternal;
+using Argos.Framework.IMGUI;
 
 namespace Argos.Framework.Input
 {
@@ -10,15 +10,22 @@ namespace Argos.Framework.Input
     public class InputMapAssetEditor : ArgosCustomEditorBase
     {
         #region Internal vars
-        private ReorderableList _axisList;
-        private ReorderableList _actionList;
+        SerializedProperty _axes;
+        SerializedProperty _actions;
+
+        ReorderableDictionary _axisList;
+        ReorderableDictionary _actionList;
         #endregion
 
         #region Event listeners
         private void OnEnable()
         {
-            this._axisList = ReorderableListHelper.CreateNamedList(this, this._axisList, "Axes", "_axes", "Axis Setup", false);
-            this._actionList = ReorderableListHelper.CreateNamedList(this, this._actionList, "Actions", "_actions", "Keys", false);
+            this._axes = this.serializedObject.FindProperty("_axes._elements");
+            this._actions = this.serializedObject.FindProperty("_actions._elements");
+
+            this._axisList = new ReorderableDictionary(this._axes, "Axes");
+            this._actionList = new ReorderableDictionary(this._actions, "Actions");
+
             this.HeaderTitle = "Input Map";
         }
 
@@ -26,7 +33,9 @@ namespace Argos.Framework.Input
         {
             this.serializedObject.Update();
             {
+                EditorGUILayout.Space();
                 this._axisList.DoLayoutList();
+
                 EditorGUILayout.Space();
                 this._actionList.DoLayoutList();
             }

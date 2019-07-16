@@ -6,7 +6,7 @@ using UnityEngine;
 namespace Argos.Framework.Input
 {
     [Serializable]
-    public sealed class InputMapDictionary : SerializableDictionary<string, InputMapAsset>
+    public sealed class InputAxisDictionary : SerializableDictionary<string, InputAxis>
     {
         #region Structs
         [Serializable]
@@ -14,13 +14,13 @@ namespace Argos.Framework.Input
         {
             #region Public vars
             public string key;
-            public InputMapAsset value; 
+            public InputAxis value;
             #endregion
 
             #region Operators
-            public static implicit operator KeyValuePair<string, InputMapAsset>(CustomKeyValuePair data)
+            public static implicit operator KeyValuePair<string, InputAxis>(CustomKeyValuePair data)
             {
-                return new KeyValuePair<string, InputMapAsset>(data.key, data.value);
+                return new KeyValuePair<string, InputAxis>(data.key, data.value);
             }
             #endregion
         }
@@ -28,7 +28,20 @@ namespace Argos.Framework.Input
 
         #region Inspector fields
         [SerializeField]
-        CustomKeyValuePair[] _elements; 
+        CustomKeyValuePair[] _elements;
+        #endregion
+
+        #region Methods & Functions
+        /// <summary>
+        /// Update logic of the all axes.
+        /// </summary>
+        public void Update()
+        {
+            foreach (var item in this.Values)
+            {
+                item.Update();
+            }
+        } 
         #endregion
 
         #region Event listeners
@@ -38,7 +51,7 @@ namespace Argos.Framework.Input
             {
                 this.Add(item);
             }
-        } 
+        }
         #endregion
     }
 }

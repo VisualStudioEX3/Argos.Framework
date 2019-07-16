@@ -434,7 +434,7 @@ namespace Argos.Framework.IMGUI
             }
         }
 
-        public virtual float OnElementHeightInternal(int index)
+        float OnElementHeightInternal(int index)
         {
             return this.OnElementHeight(this[index], index);
         }

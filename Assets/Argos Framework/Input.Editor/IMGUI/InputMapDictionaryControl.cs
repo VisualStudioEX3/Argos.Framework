@@ -9,34 +9,38 @@ namespace Argos.Framework.Input
 {
     public sealed class InputMapDictionaryControl : ReorderableDictionaryBase
     {
+        #region Constants
+        const float FIELD_WIDTH_MULTIPLIER = 0.4975f;
+        const string NEW_ITEM_LABEL = "New Input Map name";
+        const string PROPERTY_ITEM_KEY = "key";
+        const string PROPERTY_ITEM_VALUE = "value";
+        #endregion
+
         #region Constructors
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="elements">Serialized Property reference to element list.</param>
-        /// <param name="headerCaption">Optional header caption title. Leave empty for avoid draw header.</param>
-        /// <param name="boldHeaderCaption">Draw the header caption with bold style?</param>
-        /// <param name="isDraggable">Allow to reorder the elements by mouse dragging?</param>
-        /// <param name="displayAddButton">Show the add element button?</param>
-        /// <param name="displayRemoveButton">Show the remove element button?</param>
         public InputMapDictionaryControl(SerializedProperty elements) :
-            base(elements, true, false, true, true, "New Input Map name")
+            base(elements, true, false, true, true, InputMapDictionaryControl.NEW_ITEM_LABEL)
         {
         }
         #endregion
 
         #region Event listeners
+        public override float OnElementHeight(SerializedProperty element, int index)
+        {
+            return EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+        }
+
         public override void OnElementGUI(Rect rect, SerializedProperty element, int index, bool isActive, bool isFocused)
         {
-            Rect controlRect = EditorGUI.PrefixLabel(rect, new GUIContent("Name"));
-
-            Rect nameFieldRect = controlRect;
-            nameFieldRect.width *= 0.5f;
-            EditorGUI.PropertyField(nameFieldRect, element.FindPropertyRelative("_key"));
+            Rect nameFieldRect = rect;
+            nameFieldRect.width *= InputMapDictionaryControl.FIELD_WIDTH_MULTIPLIER;
+            nameFieldRect.height = EditorGUIUtility.singleLineHeight;
+            EditorGUI.DelayedTextField(nameFieldRect, element.FindPropertyRelative(InputMapDictionaryControl.PROPERTY_ITEM_KEY), GUIContent.none);
 
             Rect inputMapRect = nameFieldRect;
-            inputMapRect.x += nameFieldRect.width;
-            EditorGUI.PropertyField(inputMapRect, element.FindPropertyRelative("_value"));
+            inputMapRect.x = rect.xMax - nameFieldRect.width;
+            EditorGUI.ObjectField(inputMapRect, element.FindPropertyRelative(InputMapDictionaryControl.PROPERTY_ITEM_VALUE), GUIContent.none);
+
+            this.CheckElementKeyValue(element, index);
         }
         #endregion
     }

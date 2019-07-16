@@ -190,13 +190,6 @@ namespace Argos.Framework.Input
         }
         #endregion
 
-        #region Classes
-        [Serializable]
-        public sealed class InputMapDictionary : SerializableDictionary<string, InputMapAsset>
-        {
-        }
-        #endregion
-
         #region Internal vars
 #pragma warning disable 649
         [SerializeField, HideInInspector]
@@ -275,13 +268,16 @@ namespace Argos.Framework.Input
         #region Initializers
         public override void Awake()
         {
-            Gamepad.Instance.TryToIndentifyGamepad();
+            if (Application.isPlaying)
+            {
+                Gamepad.Instance.TryToIndentifyGamepad();
 
-            // Check in defined intervals the current active input:
-            StartCoroutine(this.CheckCurrentInputTypeCoroutine()); 
+                // Check in defined intervals the current active input:
+                StartCoroutine(this.CheckCurrentInputTypeCoroutine());
 
-            // Check for a generic joystick and initialize it for support Force Feedback:
-            ForceFeedback.CheckForAvailableJoystick();
+                // Check for a generic joystick and initialize it for support Force Feedback:
+                ForceFeedback.CheckForAvailableJoystick(); 
+            }
 
             base.Awake();
         }

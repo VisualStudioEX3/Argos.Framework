@@ -6,69 +6,40 @@ using UnityEngine;
 
 namespace Argos.Framework
 {
-    #region Structs
-    /// <summary>
-    /// Serializable key value pair base class, specifically designed to use with inspectors and read-only operations in runtime.
-    /// </summary>
-    /// <typeparam name="TKey">Type of the key field.</typeparam>
-    /// <typeparam name="TValue">Type of the value field.</typeparam>
-    [Serializable]
-    public abstract class SerializableKeyValuePair<TKey, TValue>
-    {
-        #region Public vars
-        public TKey key;
-        public TValue value;
-        #endregion
-
-        #region Operators
-        public static explicit operator KeyValuePair<TKey, TValue>(SerializableKeyValuePair<TKey, TValue> data)
-        {
-            return new KeyValuePair<TKey, TValue>(data.key, data.value);
-        }
-        #endregion
-    }
-    #endregion
-
     /// <summary>
     /// Serializable dictionary base class, specifically designed to use with inspectors and read-only operations in runtime.
     /// </summary>
     /// <typeparam name="TKey">Key type.</typeparam>
     /// <typeparam name="TValue">Value type.</typeparam>
     [Serializable]
-    public abstract class SerializableDictionary<TKey, TValue> : IEnumerable<TValue>
+    public abstract class SerializableDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     {
         #region Internal vars
-        IReadOnlyDictionary<TKey, TValue> _internalDictionary;
-        #endregion
-
-        #region Classes
-        [Serializable]
-        public sealed class KeyValuePair : SerializableKeyValuePair<TKey, TValue>
-        {
-        } 
-        #endregion
-
-        #region Inspector fields
-#pragma warning disable 649
-        [SerializeField]
-        protected List<KeyValuePair> _elements;
-#pragma warning restore
-        #endregion
-
-        #region Constructors
-        public SerializableDictionary()
-        {
-            this._elements = new List<KeyValuePair>();
-        } 
+        bool _isDirty = true;
+        Dictionary<TKey, TValue> _dictionary = new Dictionary<TKey, TValue>();
         #endregion
 
         #region Properties
         string InstanceClassName => $"{nameof(SerializableDictionary<TKey, TValue>)}";
 
-        /// <summary>
-        /// Number of elements in dictionary.
-        /// </summary>
-        public int Count { get { return Application.isPlaying ? this._internalDictionary.Count : this._elements.Count; } }
+        Dictionary<TKey, TValue> Dictionary
+        {
+            get
+            {
+                if (this._isDirty)
+                {
+                    this._dictionary.Clear();
+                    this.OnSerialize();
+                    this._isDirty = false;
+
+#if UNITY_EDITOR
+                    Application.quitting += () => { this._isDirty = true; };
+#endif
+                }
+
+                return this._dictionary;
+            }
+        }
 
         /// <summary>
         /// Read-only access to dictiorary element.
@@ -79,20 +50,17 @@ namespace Argos.Framework
         {
             get
             {
-                if (this.Count > 0)
+                try
                 {
-                    if (this.ContainsKey(key))
-                    {
-                        return Application.isPlaying ? this._internalDictionary[key] : this._elements.Where(e => e.key.Equals(key)).FirstOrDefault().value;
-                    }
-                    else
-                    {
-                        throw new KeyNotFoundException($"{this.InstanceClassName}: The key \"{key}\" was not found!");
-                    }
+                    return this.Dictionary[key];
                 }
-                else
+                catch (ArgumentNullException ex)
                 {
-                    throw new Exception($"{this.InstanceClassName}: The map list is empty!");
+                    throw new ArgumentNullException($"{this.InstanceClassName}: {ex.Message}");
+                }
+                catch (KeyNotFoundException ex)
+                {
+                    throw new KeyNotFoundException($"{this.InstanceClassName}: {ex.Message}");
                 }
             }
         }
@@ -100,41 +68,68 @@ namespace Argos.Framework
         /// <summary>
         /// Returns a read-only key collection of this dictionary.
         /// </summary>
-        public IEnumerable<TKey> Keys
-        {
-            get
-            {
-                if (Application.isPlaying)
-                {
-                    return this._internalDictionary.Keys;
-                }
-                else
-                {
-                    return this._elements.Select(e => e.key);
-                }
-            }
-        }
+        public IEnumerable<TKey> Keys => this.Dictionary.Keys;
 
         /// <summary>
         /// Returns a read-only value colleciton of this dictionary.
         /// </summary>
-        public IEnumerable<TValue> Values
-        {
-            get
-            {
-                if (Application.isPlaying)
-                {
-                    return this._internalDictionary.Values;
-                }
-                else
-                {
-                    return this._elements.Select(e => e.value);
-                }
-            }
-        }
+        public IEnumerable<TValue> Values => this.Dictionary.Values;
+
+        /// <summary>
+        /// Number of elements in dictionary.
+        /// </summary>
+        public int Count => this.Dictionary.Count;
+
+        /// <summary>
+        /// Is the dictionary dirty?
+        /// </summary>
+        public bool IsDirty => this._isDirty;
         #endregion
 
         #region Methods & Functions
+        /// <summary>
+        /// Add new value to dictionary.
+        /// </summary>
+        /// <param name="key">Key.</param>
+        /// <param name="value">Value.</param>
+        /// <remarks>This method only can be called from <see cref="OnSerialize"/> event when is called by dictionary itself.</remarks>
+        public void Add(TKey key, TValue value)
+        {
+            if (this._isDirty)
+            {
+                try
+                {
+                    this._dictionary.Add(key, value);
+                }
+                catch (ArgumentException ex)
+                {
+                    throw new ArgumentException($"{this.InstanceClassName}: {ex.Message}");
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException($"{this.InstanceClassName}: This method is only available from {nameof(this.OnSerialize)}() event when the dictionary is dirty.");
+            }
+        }
+
+        /// <summary>
+        /// Add new value to dictionary.
+        /// </summary>
+        /// <param name="value">KeyValue-Pair.</param>
+        /// <remarks>This method only can be called from <see cref="OnSerialize"/> event when is called by dictionary itself.</remarks>
+        public void Add(KeyValuePair<TKey, TValue> value)
+        {
+            this.Add(value.Key, value.Value);
+        }
+
+        /// <summary>
+        /// Mark dictionary as dirty to call <see cref="OnSerialize"/> event in the next access to dictionary.
+        /// </summary>
+        public void SetDirty()
+        {
+            this._isDirty = !Application.isPlaying;
+        }
+
         /// <summary>
         /// Search for a key in dictionary.
         /// </summary>
@@ -142,89 +137,37 @@ namespace Argos.Framework
         /// <returns>Returns true if the key exists in dictionary.</returns>
         public bool ContainsKey(TKey key)
         {
-            if (Application.isPlaying)
-            {
-                return this._internalDictionary.ContainsKey(key); 
-            }
-            else
-            {
-                return this.Keys.Contains(key);
-            }
+            return this.Dictionary.ContainsKey(key);
         }
 
         /// <summary>
-        /// Generate the <see cref="Dictionary{TKey, TValue}"/> representation of this <see cref="SerializableDictionary{TKey, TValue}"/> for works in runtime.
+        /// 
         /// </summary>
-        public void GenerateRuntimeDictionary()
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public bool TryGetValue(TKey key, out TValue value)
         {
-            var dic = new Dictionary<TKey, TValue>();
-
-            foreach (var map in this._elements)
-            {
-                if (this._internalDictionary.ContainsKey(map.key))
-                {
-                    Logger.Log($"{this.InstanceClassName}: The key \"{map.key}\" already exists in the dictionary! Skip to add to dictionary.", LogLevel.Error);
-                }
-                else
-                {
-                    dic.Add(map.key, map.value);
-                }
-            }
-
-            this._internalDictionary = dic;
+            return this.Dictionary.TryGetValue(key, out value);
         }
 
-        IEnumerator<TValue> IEnumerable<TValue>.GetEnumerator()
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator()
         {
-            return _internalDictionary.Values.GetEnumerator();
+            return this.Dictionary.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return _internalDictionary.Values.GetEnumerator();
+            return this.Dictionary.GetEnumerator();
         }
+        #endregion
+
+        #region Event listeners
+        /// <summary>
+        /// Use this event to add serialized data to the internal dictionary.
+        /// </summary>
+        public abstract void OnSerialize();
         #endregion
     }
 
-    [Serializable]
-    public abstract class SerializableDictionary : IReadOnlyDictionary<string, UnityEngine.Object>
-    {
-        [Serializable]
-        public struct SerializableKeyValuePair
-        {
-            public string key;
-            public UnityEngine.Object value;
-        }
-
-        [SerializeField]
-        SerializableKeyValuePair[] _elements;
-
-        public UnityEngine.Object this[string key] => throw new NotImplementedException();
-
-        public IEnumerable<string> Keys => throw new NotImplementedException();
-
-        public IEnumerable<UnityEngine.Object> Values => throw new NotImplementedException();
-
-        public int Count => throw new NotImplementedException();
-
-        public bool ContainsKey(string key)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerator<KeyValuePair<string, UnityEngine.Object>> GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool TryGetValue(string key, out UnityEngine.Object value)
-        {
-            throw new NotImplementedException();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            throw new NotImplementedException();
-        }
-    }
 }

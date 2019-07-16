@@ -12,11 +12,32 @@ namespace Argos.Framework
     /// <remarks>Remember call base.<see cref="Awake"/> and base.<see cref="OnDestroy"/> events, when overload these events, to the right work of the singleton.</remarks>
     public abstract class MonoBehaviourSingleton<T> : MonoBehaviour where T : MonoBehaviour
     {
+        static T _editorInstance;
+
         #region Properties
         /// <summary>
         /// Unique instance of this <see cref="MonoBehaviour"/> derived class.
         /// </summary>
-        public static T Instance { get; private set; } 
+        public static T Instance { get; private set; }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Unique instance of this <see cref="MonoBehaviour"/> derived class on edit mode.
+        /// </summary>
+        /// <remarks>This property is only present in editor.</remarks>
+        public static T EditorInstance
+        {
+            get
+            {
+                if (MonoBehaviourSingleton<T>._editorInstance == null)
+                {
+                    MonoBehaviourSingleton<T>._editorInstance = FindObjectOfType<T>();
+                }
+
+                return MonoBehaviourSingleton<T>._editorInstance;
+            }
+        } 
+#endif
         #endregion
 
         #region Initializers

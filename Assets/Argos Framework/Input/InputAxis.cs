@@ -13,7 +13,7 @@ namespace Argos.Framework.Input
     /// </summary>
     /// <remarks>Simulated an input axis with the capacity of setup input actions for each axis direction, and support predefined axes for mouse input and gamepad axes.</remarks>
     [Serializable]
-    public class InputAxis
+    public sealed class InputAxis
     {
         #region Constants
 		const string MOUSE_X_NAME = "Mouse X";
@@ -54,10 +54,19 @@ namespace Argos.Framework.Input
             GamepadDPad
         }
 
+        /// <summary>
+        /// Mouse input mode.
+        /// </summary>
         public enum MouseInputMode
         {
             None,
+            /// <summary>
+            /// Mouse position behaviour.
+            /// </summary>
             MousePosition,
+            /// <summary>
+            /// Mouse axis behaviour.
+            /// </summary>
             MouseAxis
         }
         #endregion
@@ -110,7 +119,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Left input action (-1 to 0 in X axis).
         /// </summary>
-        [Header("Keys:")]
+        [Header("Action Keys")]
         public InputAction left;
 
         /// <summary>
@@ -127,21 +136,18 @@ namespace Argos.Framework.Input
         /// Down input action (0 to 1 in Y axis).
         /// </summary>
         public InputAction down;
-        
-        [Header("Print debug info:")]
-        public bool debug;
         #endregion
 
         #region Properties
         /// <summary>
         /// Horizontal axis.
         /// </summary>
-        public float X { get { return this._axis.x; } }
+        public float X => this._axis.x;
 
         /// <summary>
         /// Vertical axis.
         /// </summary>
-        public float Y { get { return this._axis.y; } }
+        public float Y => this._axis.y;
 
         /// <summary>
         /// Return the axis where keydown event, from keyboard only, is raised.
@@ -174,8 +180,7 @@ namespace Argos.Framework.Input
         /// <param name="sensitivity">Axis sensitivity (from 0.5 to 30, default is 10).</param>
         /// <param name="invertY">Invert Y axis.</param>
         /// <param name="normalize">Normalize the axis on 360º/free movements.</param>
-        /// <param name="debug"></param>
-        public InputAxis(InputAction leftKey, InputAction rightKey, InputAction downKey, InputAction upKey, InputAxisType axisType = InputAxisType.GamepadLeftStick, MouseInputMode alternativeMouseInput = MouseInputMode.None, bool isUIInput = false, float sensitivity = InputAxis.DEFAULT_SENSITIVITY, bool invertY = false, bool normalize = false, bool debug = false)
+        public InputAxis(InputAction leftKey, InputAction rightKey, InputAction downKey, InputAction upKey, InputAxisType axisType = InputAxisType.GamepadLeftStick, MouseInputMode alternativeMouseInput = MouseInputMode.None, bool isUIInput = false, float sensitivity = InputAxis.DEFAULT_SENSITIVITY, bool invertY = false, bool normalize = false)
         {
             this._axis = this._target = this.AxisKeyDown = Vector2.zero;
 
@@ -189,7 +194,7 @@ namespace Argos.Framework.Input
             this.axisType = axisType;
             this.invertYAxis = invertY;
             this.normalize = normalize;
-            this.debug = debug;
+            //this.debug = debug;
         }
 
         /// <summary>
@@ -197,7 +202,8 @@ namespace Argos.Framework.Input
         /// </summary>
         /// <param name="instance">Previous instance of an InputAxis.</param>
         /// <remarks>Use this to fast clone instance.</remarks>
-        public InputAxis(InputAxis instance) : this(new InputAction(instance.left), new InputAction(instance.right), new InputAction(instance.down), new InputAction(instance.up), instance.axisType, instance.alternativeMouseInput, instance.isUIInput, instance.sensitivity, instance.invertYAxis, instance.normalize, instance.debug)
+        public InputAxis(InputAxis instance) : 
+            this(new InputAction(instance.left), new InputAction(instance.right), new InputAction(instance.down), new InputAction(instance.up), instance.axisType, instance.alternativeMouseInput, instance.isUIInput, instance.sensitivity, instance.invertYAxis, instance.normalize)
         {
         }
         #endregion
@@ -293,11 +299,6 @@ namespace Argos.Framework.Input
                 {
                     this._axis.Normalize();
                 }
-            }
-
-            if (this.debug)
-            {
-                UnityEngine.Debug.Log(this.ToString());
             }
         }
         #endregion

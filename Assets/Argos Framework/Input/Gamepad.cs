@@ -127,7 +127,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Left Stick axes setup.
         /// </summary>
-        [Header("Axes:")]
+        [Header("Axes")]
         public Vector2Int leftStickAxes;
 
         /// <summary>
@@ -163,7 +163,7 @@ namespace Argos.Framework.Input
         /// </summary>
         public bool DPadInvertY;
 
-        [Tooltip("XBox A, PS4 Cross or Nintendo Switch A\n(B on inverted layout) button."), Header("Buttons:")]
+        [Tooltip("XBox A, PS4 Cross or Nintendo Switch A\n(B on inverted layout) button."), Header("Buttons")]
         public UnityJoystickButtons button1;
         [Tooltip("XBox B, PS4 Circle or Nintendo Switch B\n(A on inverted layout) button.")]
         public UnityJoystickButtons button2;
@@ -214,9 +214,7 @@ namespace Argos.Framework.Input
         public const int MIN_AXIS_INDEX = 1;
 
         const float AXIS_DELTA = 0.5f;
-        #endregion
 
-        #region Static members
         static readonly string[] XBOX_CONTROLLER_CHECK_NAMES = new string[] { "xbox", "xinput" };                                                   // Windows and Linux.
         static readonly string[] PS4_CONTROLLER_CHECK_NAMES = new string[] { "wireless controller", "sony" };                                       // Windows and OSX.
         static readonly string[] NINTENDO_SWITCH_CONTROLLER_CHECK_NAMES = new string[] { "pro controller", "wireless gamepad" };                    // Windows (bluetooth only).

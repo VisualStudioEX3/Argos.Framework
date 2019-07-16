@@ -72,13 +72,32 @@ namespace Argos.Framework.Input
 
         void UpdateArrayNames()
         {
-            var map = InputManager.Instance.InputMaps[this._inputMapSelected.stringValue];
-            this._axesNames = map.Axes.Keys.ToArray();
-            this._actionsNames = map.Actions.Keys.ToArray();
+            InputManager.EditorInstance.InputMaps.SetDirty();
+
+            if (InputManager.EditorInstance.InputMaps.Count > 0)
+            {
+                this._inputMapNames = InputManager.EditorInstance.InputMaps.Keys.ToArray();
+
+                if (!string.IsNullOrEmpty(this._inputMapSelected.stringValue))
+                {
+                    var map = InputManager.EditorInstance.InputMaps[this._inputMapSelected.stringValue];
+                    map.SetDirty();
+
+                    this._axesNames = map.Axes.Keys.ToArray();
+                    this._actionsNames = map.Actions.Keys.ToArray();
+                }
+                else
+                {
+                    this._axesNames = new string[0];
+                    this._actionsNames = new string[0];
+                }
+            }
         }
 
         bool DrawFieldPopup(string label, SerializedProperty field, string[] values)
         {
+            GUI.enabled = values.Length > 0;
+
             int index; for (index = 0; index < values.Length; index++)
             {
                 if (values[index] == field.stringValue) break;
@@ -98,6 +117,8 @@ namespace Argos.Framework.Input
                 field.stringValue = values[index];
             }
 
+            GUI.enabled = true;
+
             return previous != field.stringValue;
         }
         #endregion
@@ -114,7 +135,7 @@ namespace Argos.Framework.Input
         {
             this.serializedObject.Update();
             {
-                if (InputManager.Instance)
+                if (InputManager.EditorInstance)
                 {
                     EditorGUILayout.Space();
                     if (this.DrawFieldPopup(string.Empty, this._inputMapSelected, this._inputMapNames))

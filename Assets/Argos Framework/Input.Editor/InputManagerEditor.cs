@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Argos.Framework.IMGUI;
 
 namespace Argos.Framework.Input
 {
@@ -11,7 +10,7 @@ namespace Argos.Framework.Input
     {
         #region Constants
         const string HEADER_NAME = "Input Maps";
-        const string PROPERTY_NAME = "_inputMaps";
+        const string PROPERTY_NAME = "_inputMaps._elements";
         const string PREFIX_NAME = "Input Map";
 
         const string HELPBOX_MESSAGE = "For the right behaviour of the Argos Input Manager, the Unity input settings must be setup first with the Argos input axes predefined values.";
@@ -32,17 +31,7 @@ namespace Argos.Framework.Input
         #region Event listeners
         private void OnEnable()
         {
-            var obj = this.serializedObject.FindProperty(InputManagerEditor.PROPERTY_NAME);
-            var e = obj.FindPropertyRelative("_elements");
-            obj.Next(true);
-            var ite = obj.Copy();
-            //ite.Next(true);
-            while (ite.Next(true))
-            {
-                Debug.Log(ite.propertyPath);
-            }
-
-            this._inputMapList = new InputMapDictionaryControl(obj);
+            this._inputMapList = new InputMapDictionaryControl(this.serializedObject.FindProperty(InputManagerEditor.PROPERTY_NAME));
         }
 
         public override void OnInspectorGUI()

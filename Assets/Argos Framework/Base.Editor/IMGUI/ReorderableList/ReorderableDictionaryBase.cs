@@ -75,7 +75,7 @@ namespace Argos.Framework.IMGUI
             }
             else
             {
-                throw new FieldAccessException("ReorderableDictionaryBase: The property or their first child must be a string type.");
+                throw new FieldAccessException($"{this.GetType().Name}: The property or their first child must be a string type.");
             }
         }
 
@@ -97,6 +97,32 @@ namespace Argos.Framework.IMGUI
         void ShowDuplicatedErrorMessageBox(string duplicatedName, int index)
         {
             EditorUtility.DisplayDialog("Duplicated element", $"An element with name \"{duplicatedName}\" already exists in the list (Element index {index})", "Ok");
+        }
+
+        /// <summary>
+        /// Check if element key value is duplicated.
+        /// </summary>
+        /// <param name="element"><see cref="SerializedProperty"/> element procesed on <see cref="OnElementGUI(Rect, SerializedProperty, int, bool, bool)"/> event.</param>
+        /// <param name="index">Index element procesed on <see cref="OnElementGUI(Rect, SerializedProperty, int, bool, bool)"/> event.</param>
+        /// <remarks>If you implement a custom overload for <see cref="OnElementGUI(Rect, SerializedProperty, int, bool, bool)"/> event you must call this method after render all GUI element for check the Key value changes (to avoid duplicates).</remarks>
+        public void CheckElementKeyValue(SerializedProperty element, int index)
+        {
+            if (this.CheckForChanges())
+            {
+                string newName = this.GetStringProperty(element).stringValue;
+                bool isEmptyName = newName.IsNullOrEmptyOrWhiteSpace();
+                int matchIndex = -1;
+
+                if ((!isEmptyName && this.IsNameExists(newName, out matchIndex, index)) || isEmptyName)
+                {
+                    if (!isEmptyName)
+                    {
+                        this.ShowDuplicatedErrorMessageBox(newName, matchIndex);
+                    }
+
+                    EditorGUIUtility.ExitGUI();
+                }
+            }
         }
         #endregion
 
@@ -132,23 +158,7 @@ namespace Argos.Framework.IMGUI
         public override void OnElementGUI(Rect rect, SerializedProperty element, int index, bool isActive, bool isFocused)
         {
             base.OnElementGUI(rect, element, index, isActive, isFocused);
-
-            if (this.CheckForChanges())
-            {
-                string newName = this.GetStringProperty(element).stringValue;
-                bool isEmptyName = newName.IsNullOrEmptyOrWhiteSpace();
-                int matchIndex = -1;
-
-                if ((!isEmptyName && this.IsNameExists(newName, out matchIndex, index)) || isEmptyName)
-                {
-                    if (!isEmptyName)
-                    {
-                        this.ShowDuplicatedErrorMessageBox(newName, matchIndex);
-                    }
-
-                    EditorGUIUtility.ExitGUI();
-                }
-            }
+            this.CheckElementKeyValue(element, index);
         }
         #endregion
     }

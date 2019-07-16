@@ -12,7 +12,7 @@ namespace Argos.Framework.Input
     /// </summary>
     /// <remarks>Check the state of a key, mouse button or gamepad button, and raise events.</remarks>
     [Serializable]
-    public class InputAction
+    public sealed class InputAction
     {
         #region Enums
         /// <summary>
@@ -112,7 +112,8 @@ namespace Argos.Framework.Input
         /// </summary>
         /// <param name="instance">Previous instance of an InputAction.</param>
         /// <remarks>Use this to fast clone struct.</remarks>
-        public InputAction(InputAction instance) : this(instance.main, instance.alternative, instance.gamepadButton, instance.keyEvent, instance.OnKeyPress, instance.OnKeyDown, instance.OnKeyUp)
+        public InputAction(InputAction instance) : 
+            this(instance.main, instance.alternative, instance.gamepadButton, instance.keyEvent, instance.OnKeyPress, instance.OnKeyDown, instance.OnKeyUp)
         {
         }
         #endregion

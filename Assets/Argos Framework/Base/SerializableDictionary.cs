@@ -51,7 +51,7 @@ namespace Argos.Framework
         #region Inspector fields
 #pragma warning disable 649
         [SerializeField]
-        List<KeyValuePair> _elements;
+        protected List<KeyValuePair> _elements;
 #pragma warning restore
         #endregion
 
@@ -184,5 +184,47 @@ namespace Argos.Framework
             return _internalDictionary.Values.GetEnumerator();
         }
         #endregion
+    }
+
+    [Serializable]
+    public abstract class SerializableDictionary : IReadOnlyDictionary<string, UnityEngine.Object>
+    {
+        [Serializable]
+        public struct SerializableKeyValuePair
+        {
+            public string key;
+            public UnityEngine.Object value;
+        }
+
+        [SerializeField]
+        SerializableKeyValuePair[] _elements;
+
+        public UnityEngine.Object this[string key] => throw new NotImplementedException();
+
+        public IEnumerable<string> Keys => throw new NotImplementedException();
+
+        public IEnumerable<UnityEngine.Object> Values => throw new NotImplementedException();
+
+        public int Count => throw new NotImplementedException();
+
+        public bool ContainsKey(string key)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerator<KeyValuePair<string, UnityEngine.Object>> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool TryGetValue(string key, out UnityEngine.Object value)
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

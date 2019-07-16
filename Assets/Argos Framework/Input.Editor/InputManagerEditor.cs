@@ -32,11 +32,12 @@ namespace Argos.Framework.Input
         #region Event listeners
         private void OnEnable()
         {
-            var obj = this.serializedObject.FindProperty(InputManagerEditor.PROPERTY_NAME);//.FindPropertyRelative("_elements");
-
+            var obj = this.serializedObject.FindProperty(InputManagerEditor.PROPERTY_NAME);
+            var e = obj.FindPropertyRelative("_elements");
+            obj.Next(true);
             var ite = obj.Copy();
             //ite.Next(true);
-            while (ite.NextVisible(true))
+            while (ite.Next(true))
             {
                 Debug.Log(ite.propertyPath);
             }

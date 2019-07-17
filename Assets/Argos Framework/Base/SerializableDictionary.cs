@@ -15,7 +15,6 @@ namespace Argos.Framework
     public abstract class SerializableDictionary<TKey, TValue> : IReadOnlyDictionary<TKey, TValue>
     {
         #region Internal vars
-        bool _isDirty = true;
         Dictionary<TKey, TValue> _dictionary = new Dictionary<TKey, TValue>();
         #endregion
 
@@ -26,15 +25,11 @@ namespace Argos.Framework
         {
             get
             {
-                if (this._isDirty)
+                if (this.IsDirty)
                 {
                     this._dictionary.Clear();
                     this.OnSerialize();
-                    this._isDirty = false;
-
-#if UNITY_EDITOR
-                    Application.quitting += () => { this._isDirty = true; };
-#endif
+                    this.IsDirty = false;
                 }
 
                 return this._dictionary;
@@ -50,18 +45,12 @@ namespace Argos.Framework
         {
             get
             {
-                try
+                TValue value;
+                if (this.TryGetValue(key, out value))
                 {
-                    return this.Dictionary[key];
+                    return value;
                 }
-                catch (ArgumentNullException ex)
-                {
-                    throw new ArgumentNullException($"{this.InstanceClassName}: {ex.Message}");
-                }
-                catch (KeyNotFoundException ex)
-                {
-                    throw new KeyNotFoundException($"{this.InstanceClassName}: {ex.Message}");
-                }
+                throw new KeyNotFoundException($"{this.InstanceClassName}: Key not present in dictionary. ({key})");
             }
         }
 
@@ -81,9 +70,27 @@ namespace Argos.Framework
         public int Count => this.Dictionary.Count;
 
         /// <summary>
-        /// Is the dictionary dirty?
+        /// Is the dictionary dirty? If is true, the next access to internal dictionary raise <see cref="OnSerialize"/> event to refresh any changes from serialized data to dictionary.
         /// </summary>
-        public bool IsDirty => this._isDirty;
+        public bool IsDirty { get; private set; }
+        #endregion
+
+        #region Constructors
+        public SerializableDictionary()
+        {
+            this.IsDirty = true;
+
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.playModeStateChanged += (UnityEditor.PlayModeStateChange state) =>
+            {
+                if (state == UnityEditor.PlayModeStateChange.EnteredPlayMode ||
+                    state == UnityEditor.PlayModeStateChange.EnteredEditMode)
+                {
+                    this.IsDirty = true;
+                }
+            };
+#endif
+        } 
         #endregion
 
         #region Methods & Functions
@@ -95,7 +102,7 @@ namespace Argos.Framework
         /// <remarks>This method only can be called from <see cref="OnSerialize"/> event when is called by dictionary itself.</remarks>
         public void Add(TKey key, TValue value)
         {
-            if (this._isDirty)
+            if (this.IsDirty)
             {
                 try
                 {
@@ -123,11 +130,11 @@ namespace Argos.Framework
         }
 
         /// <summary>
-        /// Mark dictionary as dirty to call <see cref="OnSerialize"/> event in the next access to dictionary.
+        /// Mark dictionary as dirty to call <see cref="OnSerialize"/> event in the next access to dictionary, only in Edit mode.
         /// </summary>
         public void SetDirty()
         {
-            this._isDirty = !Application.isPlaying;
+            this.IsDirty = !Application.isPlaying;
         }
 
         /// <summary>

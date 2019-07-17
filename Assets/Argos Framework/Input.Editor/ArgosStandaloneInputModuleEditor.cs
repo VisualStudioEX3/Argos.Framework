@@ -26,11 +26,11 @@ namespace Argos.Framework.Input
 
         const string HELPBOX_MESSAGE = "Argos Input Manager not found on scene.";
 
-        const string NAVIGATION_AXIS_LABEL = "Navigation axis";
-        const string SUBMIT_ACTION_LABEL = "Submit action";
-        const string CANCEL_ACTION_LABEL = "Cancel action";
-        const string DELETE_ACTION_LABEL = "Delete action";
-        const string SET_TO_DEFAULT_ACTION_LABEL = "Set to default action";
+        const string NAVIGATION_AXIS_LABEL = "Navigation Axis";
+        const string SUBMIT_ACTION_LABEL = "Submit Action";
+        const string CANCEL_ACTION_LABEL = "Cancel Action";
+        const string DELETE_ACTION_LABEL = "Delete Action";
+        const string SET_TO_DEFAULT_ACTION_LABEL = "Set To Default Action";
         #endregion
 
         #region Internal vars
@@ -143,15 +143,14 @@ namespace Argos.Framework.Input
                         this.UpdateArrayNames();
                     }
 
-                    EditorGUI.indentLevel++;
-                    {
-                        this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.NAVIGATION_AXIS_LABEL, this._navigation, this._axesNames);
-                        this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.SUBMIT_ACTION_LABEL, this._submit, this._actionsNames);
-                        this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.CANCEL_ACTION_LABEL, this._cancel, this._actionsNames);
-                        this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.DELETE_ACTION_LABEL, this._delete, this._actionsNames);
-                        this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.SET_TO_DEFAULT_ACTION_LABEL, this._setToDefault, this._actionsNames);
-                    }
-                    EditorGUI.indentLevel--;
+                    EditorGUILayout.Space();
+                    this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.NAVIGATION_AXIS_LABEL, this._navigation, this._axesNames);
+
+                    EditorGUILayout.Space();
+                    this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.SUBMIT_ACTION_LABEL, this._submit, this._actionsNames);
+                    this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.CANCEL_ACTION_LABEL, this._cancel, this._actionsNames);
+                    this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.DELETE_ACTION_LABEL, this._delete, this._actionsNames);
+                    this.DrawFieldPopup(ArgosStandaloneInputModuleEditor.SET_TO_DEFAULT_ACTION_LABEL, this._setToDefault, this._actionsNames);
 
                     EditorGUILayout.Space();
                     EditorGUILayout.PropertyField(this._onSubmit);

@@ -13,7 +13,7 @@ namespace Argos.Framework.Input
         SerializedProperty _axes;
         SerializedProperty _actions;
 
-        ReorderableDictionary _axisList;
+        InputAxisDictionaryControl _axisList;
         ReorderableDictionary _actionList;
         #endregion
 
@@ -23,7 +23,7 @@ namespace Argos.Framework.Input
             this._axes = this.serializedObject.FindProperty("_axes._elements");
             this._actions = this.serializedObject.FindProperty("_actions._elements");
 
-            this._axisList = new ReorderableDictionary(this._axes, "Axes");
+            this._axisList = new InputAxisDictionaryControl(this._axes);
             this._actionList = new ReorderableDictionary(this._actions, "Actions");
 
             this.HeaderTitle = "Input Map";

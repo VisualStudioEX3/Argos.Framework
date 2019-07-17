@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
-using Argos.Framework;
 using Argos.Framework.IMGUI;
 
 namespace Argos.Framework.Input
@@ -10,7 +9,6 @@ namespace Argos.Framework.Input
     public sealed class InputMapDictionaryControl : ReorderableDictionaryBase
     {
         #region Constants
-        const float FIELD_WIDTH_MULTIPLIER = 0.4975f;
         const string NEW_ITEM_LABEL = "New Input Map name";
         const string PROPERTY_ITEM_KEY = "key";
         const string PROPERTY_ITEM_VALUE = "value";
@@ -32,12 +30,13 @@ namespace Argos.Framework.Input
         public override void OnElementGUI(Rect rect, SerializedProperty element, int index, bool isActive, bool isFocused)
         {
             Rect nameFieldRect = rect;
-            nameFieldRect.width *= InputMapDictionaryControl.FIELD_WIDTH_MULTIPLIER;
+            nameFieldRect.width = EditorGUIUtility.labelWidth - 20f;
             nameFieldRect.height = EditorGUIUtility.singleLineHeight;
             EditorGUI.DelayedTextField(nameFieldRect, element.FindPropertyRelative(InputMapDictionaryControl.PROPERTY_ITEM_KEY), GUIContent.none);
 
             Rect inputMapRect = nameFieldRect;
-            inputMapRect.x = rect.xMax - nameFieldRect.width;
+            inputMapRect.x = nameFieldRect.xMax + 2f;
+            inputMapRect.xMax = rect.xMax;
             EditorGUI.ObjectField(inputMapRect, element.FindPropertyRelative(InputMapDictionaryControl.PROPERTY_ITEM_VALUE), GUIContent.none);
 
             this.CheckElementKeyValue(element, index);

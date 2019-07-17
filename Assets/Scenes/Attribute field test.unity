@@ -965,11 +965,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inputMap: UI
-  _navigation: Aim
+  _navigation: Movement
   _submit: Jump
-  _cancel: Shoot
-  _default: Shoot
-  _delete: Pause
+  _cancel: Pause
+  _default: Jump
+  _delete: Shoot
   _onSubmit:
     m_PersistentCalls:
       m_Calls: []

@@ -13,12 +13,31 @@ namespace Argos.Framework.Input
         SerializedProperty _map;
         #endregion
 
+        #region Methods & Functions
+        void CheckAxisRanges()
+        {
+            this._target.map.leftStickAxes = new Vector2Int(Mathf.Clamp(this._target.map.leftStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
+                                                            Mathf.Clamp(this._target.map.leftStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+
+            this._target.map.rightStickAxes = new Vector2Int(Mathf.Clamp(this._target.map.rightStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
+                                                             Mathf.Clamp(this._target.map.rightStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+
+            this._target.map.DPadAxes = new Vector2Int(Mathf.Clamp(this._target.map.DPadAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
+                                                       Mathf.Clamp(this._target.map.DPadAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+        }
+        #endregion
+
         #region Event listeners
         private void OnEnable()
         {
             this._target = (GenericGamepadInputLayoutAsset)this.target;
-            this._map = this.serializedObject.FindProperty("Map");
+            this._map = this.serializedObject.FindProperty("map");
             this.HeaderTitle = "Generic Gamepad Layout";
+        }
+
+        void OnDisable()
+        {
+            AssetDatabase.ForceReserializeAssets(new string[] { AssetDatabase.GetAssetOrScenePath(this.target) }, ForceReserializeAssetsOptions.ReserializeAssetsAndMetadata);
         }
 
         public override void OnInspectorGUI()
@@ -34,20 +53,6 @@ namespace Argos.Framework.Input
                 this.CheckAxisRanges();
             }
             this.serializedObject.ApplyModifiedProperties();
-        }
-        #endregion
-
-        #region Methods & Functions
-        void CheckAxisRanges()
-        {
-            this._target.map.leftStickAxes = new Vector2Int(Mathf.Clamp(this._target.map.leftStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
-                                                            Mathf.Clamp(this._target.map.leftStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
-
-            this._target.map.rightStickAxes = new Vector2Int(Mathf.Clamp(this._target.map.rightStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
-                                                             Mathf.Clamp(this._target.map.rightStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
-
-            this._target.map.DPadAxes = new Vector2Int(Mathf.Clamp(this._target.map.DPadAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
-                                                       Mathf.Clamp(this._target.map.DPadAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
         }
         #endregion
     } 

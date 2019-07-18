@@ -9,13 +9,5 @@ namespace Argos.Framework
     /// </summary>
     public class TagAttribute : ArgosPropertyAttributeBase
     {
-        #region Constructors
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public TagAttribute()
-        {
-        } 
-        #endregion
     }
 }

@@ -409,7 +409,7 @@ MonoBehaviour:
     customData:
       message: 
       value: 0
-  - name: Element 2
+  - name: Element
     age: 15
     key: 38
     customData:
@@ -965,11 +965,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _inputMap: UI
-  _navigation: Movement
-  _submit: Jump
-  _cancel: Pause
-  _default: Jump
-  _delete: Shoot
+  _navigation: Navigation
+  _submit: Submit
+  _cancel: Cancel
+  _default: Defaults
+  _delete: Delete
   _onSubmit:
     m_PersistentCalls:
       m_Calls: []
@@ -1013,7 +1013,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 913346790}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.042076588, y: 0.99136686, z: -0.64714146}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -1708,6 +1708,52 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1944880897
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1944880899}
+  - component: {fileID: 1944880898}
+  m_Layer: 0
+  m_Name: RotateSkybox
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1944880898
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944880897}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9bb57d3c10d1ed4e819e16fc49b34db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _testAngle: 0
+  speed: 0.5
+  initialAngle: 0
+--- !u!4 &1944880899
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1944880897}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.042076588, y: 0.99136686, z: -0.64714146}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 16
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &2124301763
 GameObject:

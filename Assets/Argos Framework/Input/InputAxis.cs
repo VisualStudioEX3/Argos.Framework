@@ -3,8 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEngine;
-using Argos.Framework;
-using Argos.Framework.Utils;
+using Argos.Framework.Input.Attributes;
 
 namespace Argos.Framework.Input
 {
@@ -76,11 +75,19 @@ namespace Argos.Framework.Input
         Vector2 _target;
         #endregion
 
+        #region Inspector fields
+#pragma warning disable 649
+        [SerializeField, InputElementNameField]
+        string _name;
+#pragma warning restore
+        #endregion
+
         #region Public vars
         /// <summary>
         /// Axis type.
         /// </summary>
         /// <remarks>Uses built-in axis setup as alternate input (read after the custom input setup).</remarks>
+        [Header("Settings")]
         public InputAxisType axisType;
 
         /// <summary>
@@ -139,6 +146,8 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Properties
+        public string Name => this._name;
+
         /// <summary>
         /// Horizontal axis.
         /// </summary>

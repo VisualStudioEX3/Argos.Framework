@@ -6,13 +6,5 @@ namespace Argos.Framework
 {
     public sealed class FlagEnumAttribute : ArgosPropertyAttributeBase
     {
-        #region Constructors
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public FlagEnumAttribute()
-        {
-        } 
-        #endregion
     }
 }

@@ -10,13 +10,5 @@ namespace Argos.Framework
     /// <remarks>Whe the variable is an intenger type, this store the layer id, when the variable is a string type, store the layer name.</remarks>
     public class SortingLayerAttribute : ArgosPropertyAttributeBase
     {
-        #region Constructors
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public SortingLayerAttribute()
-        {
-        }
-        #endregion
     }
 }

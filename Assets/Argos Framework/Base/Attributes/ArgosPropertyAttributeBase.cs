@@ -6,10 +6,5 @@ namespace Argos.Framework
 {
     public abstract class ArgosPropertyAttributeBase : PropertyAttribute
     {
-        #region Constructors
-        public ArgosPropertyAttributeBase()
-        {
-        } 
-        #endregion
     } 
 }

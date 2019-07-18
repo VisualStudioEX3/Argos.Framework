@@ -9,13 +9,5 @@ namespace Argos.Framework
     /// </summary>
     public class LayerAttribute : ArgosPropertyAttributeBase
     {
-        #region Constructors
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public LayerAttribute()
-        {
-        } 
-        #endregion
     }
 }

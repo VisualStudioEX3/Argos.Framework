@@ -22,10 +22,10 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Constructors
-        public ReorderableDictionaryBase(SerializedProperty elements, bool isDraggable = true, bool displayHeader = true, bool displayAddButton = true, bool displayRemoveButton = true, string inputPopupWindowLabel = ReorderableDictionaryBase.POPUP_WINDOW_DEFAULT_FIELD_CAPTION_LABEL) :
+        public ReorderableDictionaryBase(SerializedProperty elements, bool isDraggable = true, bool displayHeader = true, bool displayAddButton = true, bool displayRemoveButton = true, string inputPopupWindowLabel = "") :
             base(elements, isDraggable, displayHeader, displayAddButton ? ReorderableListAddButtonType.Dropdown : ReorderableListAddButtonType.None, displayRemoveButton)
         {
-            this._inputPopupWindow = new InputPopupWindow<string>(inputPopupWindowLabel, this.OnInputPopupAccept);
+            this._inputPopupWindow = new InputPopupWindow<string>(string.IsNullOrEmpty(inputPopupWindowLabel) ? ReorderableDictionaryBase.POPUP_WINDOW_DEFAULT_FIELD_CAPTION_LABEL : inputPopupWindowLabel, this.OnInputPopupAccept);
         }
         #endregion
 

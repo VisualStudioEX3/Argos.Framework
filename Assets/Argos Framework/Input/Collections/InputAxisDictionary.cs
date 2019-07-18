@@ -8,27 +8,11 @@ namespace Argos.Framework.Input
     [Serializable]
     public sealed class InputAxisDictionary : SerializableDictionary<string, InputAxis>
     {
-        #region Structs
-        [Serializable]
-        public struct CustomKeyValuePair
-        {
-            #region Public vars
-            public string key;
-            public InputAxis value;
-            #endregion
-
-            #region Operators
-            public static implicit operator KeyValuePair<string, InputAxis>(CustomKeyValuePair data)
-            {
-                return new KeyValuePair<string, InputAxis>(data.key, data.value);
-            }
-            #endregion
-        }
-        #endregion
-
         #region Inspector fields
+#pragma warning disable 649
         [SerializeField]
-        CustomKeyValuePair[] _elements;
+        InputAxis[] _elements;
+#pragma warning restore
         #endregion
 
         #region Methods & Functions
@@ -49,7 +33,7 @@ namespace Argos.Framework.Input
         {
             foreach (var item in this._elements)
             {
-                this.Add(item);
+                this.Add(item.Name, item);
             }
         }
         #endregion

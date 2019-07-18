@@ -9,13 +9,5 @@ namespace Argos.Framework
     /// </summary>
     public class PasswordAttribute : ArgosPropertyAttributeBase
     {
-        #region Constructors
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public PasswordAttribute()
-        {
-        }
-        #endregion
     }
 }

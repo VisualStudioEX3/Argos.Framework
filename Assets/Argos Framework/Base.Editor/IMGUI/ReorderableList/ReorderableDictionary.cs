@@ -27,8 +27,8 @@ namespace Argos.Framework.IMGUI
         /// <param name="isDraggable">Allow to reorder the elements by mouse dragging?</param>
         /// <param name="displayAddButton">Show the add element button?</param>
         /// <param name="displayRemoveButton">Show the remove element button?</param>
-        public ReorderableDictionary(SerializedProperty elements, string headerCaption = "", bool boldHeaderCaption = false, bool isDraggable = true, bool displayAddButton = true, bool displayRemoveButton = true) :
-            base(elements, isDraggable, !string.IsNullOrEmpty(headerCaption), displayAddButton, displayRemoveButton)
+        public ReorderableDictionary(SerializedProperty elements, string headerCaption = "", bool boldHeaderCaption = false, bool isDraggable = true, bool displayAddButton = true, bool displayRemoveButton = true, string inputPopupLabel = "") :
+            base(elements, isDraggable, !string.IsNullOrEmpty(headerCaption), displayAddButton, displayRemoveButton, inputPopupLabel)
         {
             this._headerCaption = headerCaption;
             this._boldHeaderCaption = boldHeaderCaption;

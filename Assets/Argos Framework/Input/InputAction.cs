@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Runtime.CompilerServices;
-using Argos.Framework;
+using Argos.Framework.Input.Attributes;
 
 namespace Argos.Framework.Input
 {
@@ -24,6 +24,13 @@ namespace Argos.Framework.Input
             Down,
             Up
         }
+        #endregion
+
+        #region Inspector fields
+#pragma warning disable 649
+        [SerializeField, InputElementNameField]
+        string _name;
+#pragma warning restore
         #endregion
 
         #region Public vars
@@ -65,6 +72,8 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Properties
+        public string Name => this._name;
+
         /// <summary>
         /// Get the input state.
         /// </summary>

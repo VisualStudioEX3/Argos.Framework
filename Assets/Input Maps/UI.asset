@@ -14,79 +14,56 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _axes:
     _elements:
-    - key: Aim
-      value:
-        axisType: 0
-        invertYAxis: 0
-        sensitivity: 0
-        alternativeMouseInput: 0
-        isUIInput: 0
-        normalize: 0
-        left:
-          keyEvent: 0
-          main: 0
-          alternative: 0
-          gamepadButton: 0
-        right:
-          keyEvent: 0
-          main: 0
-          alternative: 0
-          gamepadButton: 0
-        up:
-          keyEvent: 0
-          main: 0
-          alternative: 0
-          gamepadButton: 0
-        down:
-          keyEvent: 0
-          main: 0
-          alternative: 0
-          gamepadButton: 0
-    - key: Movement
-      value:
-        axisType: 0
-        invertYAxis: 0
-        sensitivity: 0
-        alternativeMouseInput: 0
-        isUIInput: 0
-        normalize: 0
-        left:
-          keyEvent: 0
-          main: 0
-          alternative: 0
-          gamepadButton: 0
-        right:
-          keyEvent: 0
-          main: 0
-          alternative: 0
-          gamepadButton: 0
-        up:
-          keyEvent: 0
-          main: 0
-          alternative: 0
-          gamepadButton: 0
-        down:
-          keyEvent: 0
-          main: 0
-          alternative: 0
-          gamepadButton: 0
+    - _name: Navigation
+      axisType: 0
+      invertYAxis: 0
+      sensitivity: 0
+      alternativeMouseInput: 0
+      isUIInput: 1
+      normalize: 0
+      left:
+        _name: 
+        keyEvent: 0
+        main: 0
+        alternative: 0
+        gamepadButton: 0
+      right:
+        _name: 
+        keyEvent: 0
+        main: 0
+        alternative: 0
+        gamepadButton: 0
+      up:
+        _name: 
+        keyEvent: 0
+        main: 0
+        alternative: 0
+        gamepadButton: 0
+      down:
+        _name: 
+        keyEvent: 0
+        main: 0
+        alternative: 0
+        gamepadButton: 0
   _actions:
     _elements:
-    - key: Jump
-      value:
-        keyEvent: 0
-        main: 0
-        alternative: 0
-        gamepadButton: 0
-    - key: Shoot
-      value:
-        keyEvent: 0
-        main: 0
-        alternative: 0
-        gamepadButton: 0
-    - key: Pause
-      value:
-        keyEvent: 0
-        main: 0
-        alternative: 0
-        gamepadButton: 0
+    - _name: Submit
+      keyEvent: 0
+      main: 0
+      alternative: 0
+      gamepadButton: 0
+    - _name: Cancel
+      keyEvent: 0
+      main: 0
+      alternative: 0
+      gamepadButton: 0
+    - _name: Delete
+      keyEvent: 0
+      main: 0
+      alternative: 0
+      gamepadButton: 0
+    - _name: Defaults
+      keyEvent: 0
+      main: 0
+      alternative: 0
+      gamepadButton: 0

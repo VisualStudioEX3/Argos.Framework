@@ -27,8 +27,10 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Inspector fields
+#pragma warning disable 649
         [SerializeField]
-        CustomKeyValuePair[] _elements; 
+        CustomKeyValuePair[] _elements;
+#pragma warning restore
         #endregion
 
         #region Event listeners

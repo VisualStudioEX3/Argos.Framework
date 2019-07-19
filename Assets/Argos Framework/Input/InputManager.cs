@@ -29,136 +29,13 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Array of not assignable keys during the input assignations.
         /// </summary>
-        /// <remarks>Used onlty for keyboard and mouse assignations.</remarks>
-        static readonly KeyCode[] NOT_ASSIGNABLE_KEYS = { KeyCode.Escape,
-                                                          KeyCode.CapsLock,
-                                                          KeyCode.Numlock,
-                                                          KeyCode.Break,
-                                                          KeyCode.Pause,
-                                                          KeyCode.ScrollLock,
-                                                          KeyCode.Print,
-                                                          KeyCode.SysReq,
-                                                          KeyCode.LeftWindows,
-                                                          KeyCode.RightWindows,
-                                                          KeyCode.Menu,
-                                                          KeyCode.LeftApple,
-                                                          KeyCode.RightApple,
-                                                          KeyCode.LeftCommand,
-                                                          KeyCode.RightCommand,
-                                                          KeyCode.Help,
-                                                          /* Gamepad inputs */
-                                                          KeyCode.JoystickButton1,
-                                                          KeyCode.JoystickButton2,
-                                                          KeyCode.JoystickButton3,
-                                                          KeyCode.JoystickButton4,
-                                                          KeyCode.JoystickButton5,
-                                                          KeyCode.JoystickButton6,
-                                                          KeyCode.JoystickButton7,
-                                                          KeyCode.JoystickButton8,
-                                                          KeyCode.JoystickButton9,
-                                                          KeyCode.JoystickButton10,
-                                                          KeyCode.JoystickButton11,
-                                                          KeyCode.JoystickButton12,
-                                                          KeyCode.JoystickButton13,
-                                                          KeyCode.JoystickButton14,
-                                                          KeyCode.JoystickButton15,
-                                                          KeyCode.JoystickButton16,
-                                                          KeyCode.JoystickButton17,
-                                                          KeyCode.JoystickButton19,
-                                                          KeyCode.Joystick1Button1,
-                                                          KeyCode.Joystick1Button2,
-                                                          KeyCode.Joystick1Button3,
-                                                          KeyCode.Joystick1Button4,
-                                                          KeyCode.Joystick1Button5,
-                                                          KeyCode.Joystick1Button6,
-                                                          KeyCode.Joystick1Button7,
-                                                          KeyCode.Joystick1Button8,
-                                                          KeyCode.Joystick1Button9,
-                                                          KeyCode.Joystick1Button10,
-                                                          KeyCode.Joystick1Button11,
-                                                          KeyCode.Joystick1Button12,
-                                                          KeyCode.Joystick1Button13,
-                                                          KeyCode.Joystick1Button14,
-                                                          KeyCode.Joystick1Button15,
-                                                          KeyCode.Joystick1Button16,
-                                                          KeyCode.Joystick1Button17,
-                                                          KeyCode.Joystick1Button19,
-                                                          KeyCode.Joystick2Button1,
-                                                          KeyCode.Joystick2Button2,
-                                                          KeyCode.Joystick2Button3,
-                                                          KeyCode.Joystick2Button4,
-                                                          KeyCode.Joystick2Button5,
-                                                          KeyCode.Joystick2Button6,
-                                                          KeyCode.Joystick2Button7,
-                                                          KeyCode.Joystick2Button8,
-                                                          KeyCode.Joystick2Button9,
-                                                          KeyCode.Joystick2Button10,
-                                                          KeyCode.Joystick2Button11,
-                                                          KeyCode.Joystick2Button12,
-                                                          KeyCode.Joystick2Button13,
-                                                          KeyCode.Joystick2Button14,
-                                                          KeyCode.Joystick2Button15,
-                                                          KeyCode.Joystick2Button16,
-                                                          KeyCode.Joystick2Button17,
-                                                          KeyCode.Joystick2Button19,
-                                                          KeyCode.Joystick3Button1,
-                                                          KeyCode.Joystick3Button2,
-                                                          KeyCode.Joystick3Button3,
-                                                          KeyCode.Joystick3Button4,
-                                                          KeyCode.Joystick3Button5,
-                                                          KeyCode.Joystick3Button6,
-                                                          KeyCode.Joystick3Button7,
-                                                          KeyCode.Joystick3Button8,
-                                                          KeyCode.Joystick3Button9,
-                                                          KeyCode.Joystick3Button10,
-                                                          KeyCode.Joystick3Button11,
-                                                          KeyCode.Joystick3Button12,
-                                                          KeyCode.Joystick3Button13,
-                                                          KeyCode.Joystick3Button14,
-                                                          KeyCode.Joystick3Button15,
-                                                          KeyCode.Joystick3Button16,
-                                                          KeyCode.Joystick3Button17,
-                                                          KeyCode.Joystick3Button19,
-                                                          KeyCode.Joystick4Button1,
-                                                          KeyCode.Joystick4Button2,
-                                                          KeyCode.Joystick4Button3,
-                                                          KeyCode.Joystick4Button4,
-                                                          KeyCode.Joystick4Button5,
-                                                          KeyCode.Joystick4Button6,
-                                                          KeyCode.Joystick4Button7,
-                                                          KeyCode.Joystick4Button8,
-                                                          KeyCode.Joystick4Button9,
-                                                          KeyCode.Joystick4Button10,
-                                                          KeyCode.Joystick4Button11,
-                                                          KeyCode.Joystick4Button12,
-                                                          KeyCode.Joystick4Button13,
-                                                          KeyCode.Joystick4Button14,
-                                                          KeyCode.Joystick4Button15,
-                                                          KeyCode.Joystick4Button16,
-                                                          KeyCode.Joystick4Button17,
-                                                          KeyCode.Joystick4Button19 };
+        /// <remarks>Used only for keyboard and mouse assignations.</remarks>
+        static readonly KeyCode[] NOT_ASSIGNABLE_KEYS;
 
         /// <summary>
         /// Assignable buttons for any gamepad.
         /// </summary>
-        static readonly KeyCode[] ASSIGNABLE_GENERIC_GAMEPAD_BUTTONS = { KeyCode.JoystickButton1,
-                                                                         KeyCode.JoystickButton2,
-                                                                         KeyCode.JoystickButton3,
-                                                                         KeyCode.JoystickButton4,
-                                                                         KeyCode.JoystickButton5,
-                                                                         KeyCode.JoystickButton6,
-                                                                         KeyCode.JoystickButton7,
-                                                                         KeyCode.JoystickButton8,
-                                                                         KeyCode.JoystickButton9,
-                                                                         KeyCode.JoystickButton10,
-                                                                         KeyCode.JoystickButton11,
-                                                                         KeyCode.JoystickButton12,
-                                                                         KeyCode.JoystickButton13,
-                                                                         KeyCode.JoystickButton14,
-                                                                         KeyCode.JoystickButton15,
-                                                                         KeyCode.JoystickButton16,
-                                                                         KeyCode.JoystickButton17,
-                                                                         KeyCode.JoystickButton19 };
+        static readonly KeyCode[] ASSIGNABLE_GENERIC_GAMEPAD_BUTTONS;
 
         /// <summary>
         /// Assignable buttons for XBox Controllers.
@@ -266,6 +143,49 @@ namespace Argos.Framework.Input
         #endregion
 
         #region Initializers
+        static InputManager()
+        {
+            // Initialize KeyCode array constants:
+            var list = new List<KeyCode>();
+            var keyCodes = Enum.GetValues(typeof(KeyCode));
+            {
+                list.Add(KeyCode.Escape);
+                list.Add(KeyCode.CapsLock);
+                list.Add(KeyCode.Numlock);
+                list.Add(KeyCode.Break);
+                list.Add(KeyCode.Pause);
+                list.Add(KeyCode.ScrollLock);
+                list.Add(KeyCode.Print);
+                list.Add(KeyCode.SysReq);
+                list.Add(KeyCode.LeftWindows);
+                list.Add(KeyCode.RightWindows);
+                list.Add(KeyCode.Menu);
+                list.Add(KeyCode.LeftApple);
+                list.Add(KeyCode.RightApple);
+                list.Add(KeyCode.LeftCommand);
+                list.Add(KeyCode.RightCommand);
+                list.Add(KeyCode.Help);
+
+                for (int i = (int)KeyCode.JoystickButton0; i < keyCodes.Length; i++)
+                {
+                    list.Add((KeyCode)i);
+                }
+
+                InputManager.NOT_ASSIGNABLE_KEYS = list.ToArray();
+            }
+            list.Clear();
+            {
+                for (int i = (int)KeyCode.JoystickButton0; i < keyCodes.Length; i++)
+                {
+                    list.Add((KeyCode)i);
+                    if ((KeyCode)i == KeyCode.JoystickButton19) break;
+                }
+
+                InputManager.ASSIGNABLE_GENERIC_GAMEPAD_BUTTONS = list.ToArray();
+            }
+            list.Clear();
+        }
+
         public override void Awake()
         {
             if (Application.isPlaying)
@@ -301,14 +221,8 @@ namespace Argos.Framework.Input
 
             this.IsAnyKeyDown = UnityEngine.Input.anyKeyDown;
 
-            // Process the Gamepad states:
             Gamepad.Instance.Update();
-
-            // Update the input maps:
-            foreach (var map in this._inputMaps)
-            {
-                //map.Update();
-            }
+            this._inputMaps.Update();
         }
         #endregion
 
@@ -326,14 +240,10 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public InputMapAsset GetInputMap(string name)
         {
-            if (this._inputMaps.ContainsKey(name))
-            {
-                return this._inputMaps[name];
-            }
-            else
-            {
-                throw new KeyNotFoundException($"{this.GetClassName()}: The input map '{name}' not exists.");
-            }
+            InputMapAsset map;
+            if (this._inputMaps.TryGetValue(name, out map)) return map;
+
+            throw new KeyNotFoundException($"[{this.GetClassName()}]: The input map '{name}' not exists.");
         }
 
         /// <summary>
@@ -509,6 +419,7 @@ namespace Argos.Framework.Input
         }
         #endregion
 
+        #region Event listeners
         private void OnEnable()
         {
             if (this._inputMaps == null)
@@ -520,6 +431,7 @@ namespace Argos.Framework.Input
         private void Reset()
         {
             this._inputMaps = new InputMapDictionary();
-        }
+        } 
+        #endregion
     }
 }

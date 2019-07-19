@@ -60,7 +60,9 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public InputAxis GetAxis(string name)
         {
-            return this._axes[name];
+            InputAxis axis;
+            if (this._axes.TryGetValue(name, out axis)) return axis;
+            throw new KeyNotFoundException($"[{this.GetClassName()}]: The \"{name}\" axis not exists on \"{this.name}\" input map.");
         }
 
         /// <summary>
@@ -71,7 +73,9 @@ namespace Argos.Framework.Input
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public InputAction GetAction(string name)
         {
-            return this._actions[name];
+            InputAction action;
+            if (this._actions.TryGetValue(name, out action)) return action;
+            throw new KeyNotFoundException($"[{this.GetClassName()}]: The \"{name}\" action not exists on \"{this.name}\" input map.");
         }
         #endregion
     }

@@ -33,6 +33,19 @@ namespace Argos.Framework.Input
 #pragma warning restore
         #endregion
 
+        #region Methods & Functions
+        /// <summary>
+        /// Update logic of the all maps.
+        /// </summary>
+        public void Update()
+        {
+            foreach (var item in this.Values)
+            {
+                item.Update();
+            }
+        }
+        #endregion
+
         #region Event listeners
         public override void OnSerialize()
         {

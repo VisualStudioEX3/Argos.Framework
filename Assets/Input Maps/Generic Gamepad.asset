@@ -18,8 +18,8 @@ MonoBehaviour:
     rightStickAxes: {x: 3, y: 4}
     rightStickInvertY: 1
     triggersAxes: {x: 7, y: 8}
-    DPadAxes: {x: 5, y: 6}
-    DPadInvertY: 0
+    dPadAxes: {x: 5, y: 6}
+    dPadInvertY: 0
     button1: 330
     button2: 331
     button3: 332

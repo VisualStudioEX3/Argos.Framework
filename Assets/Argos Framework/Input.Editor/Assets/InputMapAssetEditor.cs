@@ -23,10 +23,16 @@ namespace Argos.Framework.Input
             this._axes = this.serializedObject.FindProperty("_axes._elements");
             this._actions = this.serializedObject.FindProperty("_actions._elements");
 
-            this._axisList = new ReorderableDictionary(this._axes, "Axes", false, true, true, true, "New Input Axis name");
-            this._actionList = new ReorderableDictionary(this._actions, "Actions", false, true, true, true, "New Input Action name");
+            this._axisList = new ReorderableDictionary(this._axes, "Axes", false, true, true, true, "New axis name");
+            this._actionList = new ReorderableDictionary(this._actions, "Actions", false, true, true, true, "New action name");
 
             this.HeaderTitle = "Input Map";
+        }
+
+        private void OnDisable()
+        {
+            this._axisList?.Dispose();
+            this._actionList?.Dispose();
         }
 
         public override void OnInspectorGUI()

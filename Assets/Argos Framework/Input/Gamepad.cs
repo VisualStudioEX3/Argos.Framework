@@ -156,12 +156,12 @@ namespace Argos.Framework.Input
         /// Some gamepads and joysticks defined the DPad as separated axes.
         /// </summary>
         [HelpBox("Some gamepads defined the DPad as separated axes:"), Space]
-        public Vector2Int DPadAxes;
+        public Vector2Int dPadAxes;
 
         /// <summary>
         /// Invert Y axis on DPad.
         /// </summary>
-        public bool DPadInvertY;
+        public bool dPadInvertY;
 
         [Tooltip("XBox A, PS4 Cross or Nintendo Switch A\n(B on inverted layout) button."), Header("Buttons")]
         public UnityJoystickButtons button1;
@@ -635,9 +635,9 @@ namespace Argos.Framework.Input
                 default:
 
                     // Check first the axes:
-                    xAxis = this.GetAxisName(this.GenericGamepadSetup.DPadAxes.x);
-                    yAxis = this.GetAxisName(this.GenericGamepadSetup.DPadAxes.y);
-                    invertY = this.GenericGamepadSetup.DPadInvertY ? -1f : 1f;
+                    xAxis = this.GetAxisName(this.GenericGamepadSetup.dPadAxes.x);
+                    yAxis = this.GetAxisName(this.GenericGamepadSetup.dPadAxes.y);
+                    invertY = this.GenericGamepadSetup.dPadInvertY ? -1f : 1f;
 
                     this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
                                             UnityEngine.Input.GetAxis(yAxis) * invertY);

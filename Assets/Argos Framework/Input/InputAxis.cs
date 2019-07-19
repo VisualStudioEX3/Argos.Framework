@@ -18,10 +18,10 @@ namespace Argos.Framework.Input
 		const string MOUSE_X_NAME = "Mouse X";
 		const string MOUSE_Y_NAME = "Mouse Y";
 
-        const float MIN_SENSITIVITY = 0.5f;
-        const float MAX_SENSITIVITY = 30f;
+        const float MIN_SENSITIVITY = 0.05f;
+        const float MAX_SENSITIVITY = 3f;
 
-        const float DEFAULT_SENSITIVITY = 10f;
+        const float DEFAULT_SENSITIVITY = 1f;
         #endregion
 
         #region Enums
@@ -77,7 +77,7 @@ namespace Argos.Framework.Input
 
         #region Inspector fields
 #pragma warning disable 649
-        [SerializeField, InputElementNameField]
+        [SerializeField, Delayed]
         string _name;
 #pragma warning restore
         #endregion
@@ -87,7 +87,7 @@ namespace Argos.Framework.Input
         /// Axis type.
         /// </summary>
         /// <remarks>Uses built-in axis setup as alternate input (read after the custom input setup).</remarks>
-        [Header("Settings")]
+        [Space]
         public InputAxisType axisType;
 
         /// <summary>
@@ -126,7 +126,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// Left input action (-1 to 0 in X axis).
         /// </summary>
-        [Header("Action Keys")]
+        [HelpBox("Action inputs for mapping keyboard and gamepad buttons:"), Space]
         public InputAction left;
 
         /// <summary>
@@ -203,7 +203,6 @@ namespace Argos.Framework.Input
             this.axisType = axisType;
             this.invertYAxis = invertY;
             this.normalize = normalize;
-            //this.debug = debug;
         }
 
         /// <summary>
@@ -283,7 +282,7 @@ namespace Argos.Framework.Input
 
             if (!this.isUIInput)
             {
-                float time = Time.unscaledDeltaTime * this.sensitivity;
+                float time = Time.unscaledDeltaTime * (this.sensitivity * 10f);
                 this._axis.x = Mathf.Lerp(this._axis.x, this._target.x, time);
                 this._axis.y = Mathf.Lerp(this._axis.y, this._target.y, time);
 
@@ -321,7 +320,7 @@ namespace Argos.Framework.Input
 
         public override string ToString()
         {
-            return $"{this._axis.ToString()} (Axis KeyDown: {this.AxisKeyDown.ToString()}) - Type: {this.axisType} Left key: {this.left.main}/{this.left.alternative}/{this.left.gamepadButton}, Right key: {this.right.main}/{this.right.alternative}/{this.right.gamepadButton}, Up key: {this.up.main}/{this.up.alternative}/{this.up.gamepadButton}, Down key: {this.down.main}/{this.down.alternative}/{this.down.gamepadButton}, Is UI Input: {this.isUIInput}, Sensitivity: {this.sensitivity}, Invert Y: {this.invertYAxis}, Normalize: {this.normalize}";
+            return $"{this._axis.ToString()}: (Axis KeyDown: {this.AxisKeyDown.ToString()}) - Type: {this.axisType} Left key: {this.left.main}/{this.left.alternative}/{this.left.gamepadButton}, Right key: {this.right.main}/{this.right.alternative}/{this.right.gamepadButton}, Up key: {this.up.main}/{this.up.alternative}/{this.up.gamepadButton}, Down key: {this.down.main}/{this.down.alternative}/{this.down.gamepadButton}, Is UI Input: {this.isUIInput}, Sensitivity: {this.sensitivity}, Invert Y: {this.invertYAxis}, Normalize: {this.normalize})";
         }
         #endregion
     }

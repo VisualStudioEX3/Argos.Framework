@@ -43,11 +43,11 @@ namespace Argos.Framework.Input
 
             this.map.leftStickAxes = new Vector2Int(1, 2);
             this.map.rightStickAxes = new Vector2Int(3, 4);
-            this.map.DPadAxes = new Vector2Int(5, 6);
+            this.map.dPadAxes = new Vector2Int(5, 6);
             this.map.triggersAxes = new Vector2Int(7, 8);
 
             this.map.leftStickInvertY = this.map.rightStickInvertY = true;
-            this.map.DPadInvertY = false;
+            this.map.dPadInvertY = false;
         } 
         #endregion
     }

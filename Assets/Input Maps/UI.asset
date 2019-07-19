@@ -15,55 +15,55 @@ MonoBehaviour:
   _axes:
     _elements:
     - _name: Navigation
-      axisType: 0
+      axisType: 2
       invertYAxis: 0
-      sensitivity: 0
-      alternativeMouseInput: 0
+      sensitivity: 1
+      alternativeMouseInput: 1
       isUIInput: 1
       normalize: 0
       left:
         _name: 
         keyEvent: 0
-        main: 0
-        alternative: 0
-        gamepadButton: 0
+        main: 276
+        alternative: 97
+        gamepadButton: 12
       right:
         _name: 
         keyEvent: 0
-        main: 0
-        alternative: 0
-        gamepadButton: 0
+        main: 275
+        alternative: 100
+        gamepadButton: 13
       up:
         _name: 
         keyEvent: 0
-        main: 0
-        alternative: 0
-        gamepadButton: 0
+        main: 273
+        alternative: 119
+        gamepadButton: 14
       down:
         _name: 
         keyEvent: 0
-        main: 0
-        alternative: 0
-        gamepadButton: 0
+        main: 274
+        alternative: 115
+        gamepadButton: 15
   _actions:
     _elements:
     - _name: Submit
       keyEvent: 0
-      main: 0
-      alternative: 0
+      main: 13
+      alternative: 271
       gamepadButton: 0
     - _name: Cancel
       keyEvent: 0
-      main: 0
+      main: 27
       alternative: 0
-      gamepadButton: 0
+      gamepadButton: 1
     - _name: Delete
       keyEvent: 0
-      main: 0
+      main: 127
       alternative: 0
-      gamepadButton: 0
+      gamepadButton: 2
     - _name: Defaults
       keyEvent: 0
-      main: 0
+      main: 9
       alternative: 0
-      gamepadButton: 0
+      gamepadButton: 3

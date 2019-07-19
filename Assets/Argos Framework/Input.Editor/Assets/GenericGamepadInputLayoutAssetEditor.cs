@@ -2,12 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Argos.Framework.Utils;
 
 namespace Argos.Framework.Input
 {
     [CustomEditor(typeof(GenericGamepadInputLayoutAsset))]
     public class GenericGamepadInputLayoutAssetEditor : ArgosCustomEditorBase
     {
+        #region Constants
+        readonly static Vector2Int MIN_AXIS_INDEX = Vector2Int.one * Gamepad.MIN_AXIS_INDEX;
+        readonly static Vector2Int MAX_AXIS_INDEX = Vector2Int.one * Gamepad.MAX_AXIS_INDEX; 
+        #endregion
+
         #region Internal vars
         GenericGamepadInputLayoutAsset _target;
         SerializedProperty _map;
@@ -16,14 +22,14 @@ namespace Argos.Framework.Input
         #region Methods & Functions
         void CheckAxisRanges()
         {
-            this._target.map.leftStickAxes = new Vector2Int(Mathf.Clamp(this._target.map.leftStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
-                                                            Mathf.Clamp(this._target.map.leftStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+            this.ClampAxis(ref this._target.map.leftStickAxes);
+            this.ClampAxis(ref this._target.map.rightStickAxes);
+            this.ClampAxis(ref this._target.map.dPadAxes);
+        }
 
-            this._target.map.rightStickAxes = new Vector2Int(Mathf.Clamp(this._target.map.rightStickAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
-                                                             Mathf.Clamp(this._target.map.rightStickAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
-
-            this._target.map.DPadAxes = new Vector2Int(Mathf.Clamp(this._target.map.DPadAxes.x, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX),
-                                                       Mathf.Clamp(this._target.map.DPadAxes.y, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX));
+        void ClampAxis(ref Vector2Int axis)
+        {
+            axis = VectorsUtility.Clamp(axis, GenericGamepadInputLayoutAssetEditor.MIN_AXIS_INDEX, GenericGamepadInputLayoutAssetEditor.MAX_AXIS_INDEX);
         }
         #endregion
 
@@ -33,11 +39,6 @@ namespace Argos.Framework.Input
             this._target = (GenericGamepadInputLayoutAsset)this.target;
             this._map = this.serializedObject.FindProperty("map");
             this.HeaderTitle = "Generic Gamepad Layout";
-        }
-
-        void OnDisable()
-        {
-            AssetDatabase.ForceReserializeAssets(new string[] { AssetDatabase.GetAssetOrScenePath(this.target) }, ForceReserializeAssetsOptions.ReserializeAssetsAndMetadata);
         }
 
         public override void OnInspectorGUI()

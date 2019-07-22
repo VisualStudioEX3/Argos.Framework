@@ -147,12 +147,6 @@ namespace Argos.Framework.Input
         public bool rightStickInvertY;
 
         /// <summary>
-        /// Some gamepads and joysticks defined the triggers as separated axes.
-        /// </summary>
-        [HelpBox("Some gamepads defined the triggers as separated axes:"), Space, CustomVector("L", "R")]
-        public Vector2Int triggersAxes;
-
-        /// <summary>
         /// Some gamepads and joysticks defined the DPad as separated axes.
         /// </summary>
         [HelpBox("Some gamepads defined the DPad as separated axes:"), Space]
@@ -162,6 +156,12 @@ namespace Argos.Framework.Input
         /// Invert Y axis on DPad.
         /// </summary>
         public bool dPadInvertY;
+
+        /// <summary>
+        /// Some gamepads and joysticks defined the triggers as separated axes.
+        /// </summary>
+        [HelpBox("Some gamepads defined the triggers as separated axes:"), Space, CustomVector("L", "R")]
+        public Vector2Int triggersAxes;
 
         [Tooltip("XBox A, PS4 Cross or Nintendo Switch A\n(B on inverted layout) button."), Header("Buttons")]
         public UnityJoystickButtons button1;

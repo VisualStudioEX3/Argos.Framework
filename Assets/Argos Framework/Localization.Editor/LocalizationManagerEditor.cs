@@ -126,12 +126,12 @@ namespace Argos.Framework.Localization
 
             var data = args.item as LocalizationItem;
 
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < args.GetNumVisibleColumns(); i++)
             {
                 this.columnIndexForTreeFoldouts = i;
                 Rect cellRect = this.GetCellRectForTreeFoldouts(rect);
-                cellRect.xMin += 1.5f;
-                cellRect.xMax -= 1.5f;
+                cellRect.xMin += 0.5f;
+                cellRect.xMax -= 0.5f;
 
                 switch (i)
                 {
@@ -162,7 +162,7 @@ namespace Argos.Framework.Localization
         public new string id;
         public string text;
 
-        public LocalizationItem(string id, string text) : base(++LocalizationItem._index, 0, "")
+        public LocalizationItem(string id, string text) : base(++LocalizationItem._index, 0, id)
         {
             this.id = id;
             this.text = text;

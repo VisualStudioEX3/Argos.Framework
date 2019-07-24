@@ -191,6 +191,18 @@ namespace Argos.Framework.Utils
         {
             return ForceOddValue((int)value);
         }
+
+        /// <summary>
+        /// Convert a normalized value to decibels.
+        /// </summary>
+        /// <param name="value">A value between 0 and 1.</param>
+        /// <returns>Returns the decibels value.</returns>
+        /// <remarks>Use this function when need to manage a audio volume easily.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float ToDecibels(float value)
+        {
+            return Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20f;
+        }
         #endregion
     }
 }

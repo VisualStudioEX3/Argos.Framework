@@ -195,13 +195,29 @@ namespace Argos.Framework.Utils
         /// <summary>
         /// Convert a normalized value to decibels.
         /// </summary>
-        /// <param name="value">A value between 0 and 1.</param>
+        /// <param name="value">A value between 0 and 1. If the value is out of range, it will clamp between 0 and 1.</param>
         /// <returns>Returns the decibels value.</returns>
-        /// <remarks>Use this function when need to manage a audio volume easily.</remarks>
+        /// <remarks>Use this function when need to manage a audio volume easily.
+        /// Source: https://johnleonardfrench.com/articles/the-right-way-to-make-a-volume-slider-in-unity-using-logarithmic-conversion/ </remarks>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static float ToDecibels(float value)
         {
             return Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20f;
+        }
+
+        /// <summary>
+        /// Remap value from original range to new range.
+        /// </summary>
+        /// <param name="value"><see cref="float"/> value.</param>
+        /// <param name="from1">Original min range value.</param>
+        /// <param name="to1">Original max range value.</param>
+        /// <param name="from2">New min range value.</param>
+        /// <param name="to2">New max range value.</param>
+        /// <returns>Returns the value in the new range.</returns>
+        /// <remarks>Source: https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/ </remarks>
+        public static float Remap(float value, float from1, float to1, float from2, float to2)
+        {
+            return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
         }
         #endregion
     }

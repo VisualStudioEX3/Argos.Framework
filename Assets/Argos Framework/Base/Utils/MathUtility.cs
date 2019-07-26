@@ -167,7 +167,7 @@ namespace Argos.Framework.Utils
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static float ForceEvenValue(float value)
         {
-            return ForceEvenValue((int)value);
+            return MathUtility.ForceEvenValue((int)value);
         }
 
         /// <summary>
@@ -189,7 +189,7 @@ namespace Argos.Framework.Utils
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
         public static float ForceOddValue(float value)
         {
-            return ForceOddValue((int)value);
+            return MathUtility.ForceOddValue((int)value);
         }
 
         /// <summary>
@@ -209,15 +209,57 @@ namespace Argos.Framework.Utils
         /// Remap value from original range to new range.
         /// </summary>
         /// <param name="value"><see cref="float"/> value.</param>
-        /// <param name="from1">Original min range value.</param>
-        /// <param name="to1">Original max range value.</param>
-        /// <param name="from2">New min range value.</param>
-        /// <param name="to2">New max range value.</param>
+        /// <param name="oldMin">Original min range value.</param>
+        /// <param name="oldMax">Original max range value.</param>
+        /// <param name="newMin">New min range value.</param>
+        /// <param name="newMax">New max range value.</param>
         /// <returns>Returns the value in the new range.</returns>
         /// <remarks>Source: https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/ </remarks>
-        public static float Remap(float value, float from1, float to1, float from2, float to2)
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float Remap(float value, float oldMin, float oldMax, float newMin, float newMax)
         {
-            return (value - from1) / (to1 - from1) * (to2 - from2) + from2;
+            return (value - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
+        }
+
+        /// <summary>
+        /// Remap value from original range to new range.
+        /// </summary>
+        /// <param name="value"><see cref="int"/> value.</param>
+        /// <param name="oldMin">Original min range value.</param>
+        /// <param name="oldMax">Original max range value.</param>
+        /// <param name="newMin">New min range value.</param>
+        /// <param name="newMax">New max range value.</param>
+        /// <returns>Returns the value in the new range.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static int Remap(int value, int oldMin, int oldMax, int newMin, int newMax)
+        {
+            return (int)MathUtility.Remap((float)value, (float)oldMin, (float)oldMax, (float)newMin, (float)newMax);
+        }
+
+        /// <summary>
+        /// Remap value from original range to new range.
+        /// </summary>
+        /// <param name="value"><see cref="float"/> value.</param>
+        /// <param name="oldRange">Original range defined by a <see cref="Vector2"/>.</param>
+        /// <param name="newRange">New range defined by a <see cref="Vector2"/>.</param>
+        /// <returns>Returns the value in the new range.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float Remap(float value, Vector2 oldRange, Vector2 newRange)
+        {
+            return MathUtility.Remap(value, oldRange.x, oldRange.y, newRange.x, newRange.y);
+        }
+
+        /// <summary>
+        /// Remap value from original range to new range.
+        /// </summary>
+        /// <param name="value"><see cref="float"/> value.</param>
+        /// <param name="oldRange">Original range defined by a <see cref="Vector2Int"/>.</param>
+        /// <param name="newRange">New range defined by a <see cref="Vector2Int"/>.</param>
+        /// <returns>Returns the value in the new range.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static int Remap(float value, Vector2Int oldRange, Vector2Int newRange)
+        {
+            return (int)MathUtility.Remap((float)value, (Vector2)oldRange, (Vector2)newRange);
         }
         #endregion
     }

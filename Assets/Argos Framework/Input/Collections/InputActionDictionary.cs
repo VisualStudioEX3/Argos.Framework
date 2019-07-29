@@ -31,9 +31,12 @@ namespace Argos.Framework.Input
         #region Event listeners
         public override void OnSerialize()
         {
-            foreach (var item in this._elements)
+            if (this._elements != null)
             {
-                this.Add(item.Name, item);
+                foreach (var item in this._elements)
+                {
+                    this.Add(item.Name, item);
+                } 
             }
         }
         #endregion

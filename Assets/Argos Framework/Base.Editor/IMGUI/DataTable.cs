@@ -26,6 +26,11 @@ namespace Argos.Framework.IMGUI
             {
                 this._data = data;
             }
+
+            ~DataTableItem()
+            {
+                --DataTableItem<T>._index;
+            }
             #endregion
         }
 

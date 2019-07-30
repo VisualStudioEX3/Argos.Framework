@@ -32,7 +32,7 @@ namespace Argos.Framework.Localization
             this._tableHeaderColumns[0].maxWidth = 40f;
             this._tableHeaderColumns[0].minWidth = 40f;
             this._tableHeaderColumns[0].sortingArrowAlignment = TextAlignment.Right;
-            this._tableHeaderColumns[0].sortedAscending = false;
+            this._tableHeaderColumns[0].sortedAscending = true;
             this._tableHeaderColumns[0].width = 40f;
 
             this._tableHeaderColumns[1] = new MultiColumnHeaderState.Column();
@@ -58,7 +58,12 @@ namespace Argos.Framework.Localization
             this._tableHeaderColumns[2].width = 250f;
 
             this._tableHeaderState = new MultiColumnHeaderState(this._tableHeaderColumns);
+
             this._tableHeader = new MultiColumnHeader(this._tableHeaderState);
+            this._tableHeader.SetSortingColumns(new int[] { 0, 1, 2 }, new bool[] { true, true, true });
+            //this._tableHeader.sortingChanged
+            this._tableHeader.
+
             this._table = new TableTest(this._tableState, this._tableHeader);
         }
 
@@ -113,6 +118,8 @@ namespace Argos.Framework.Localization
         {
             return base.BuildRows(root);
         }
+
+        
 
         public override void OnGUI(Rect rect)
         {

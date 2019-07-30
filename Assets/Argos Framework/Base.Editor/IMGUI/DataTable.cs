@@ -172,6 +172,12 @@ namespace Argos.Framework.IMGUI
             }
         }
 
+        ~DataTable()
+        {
+            this._table.OnDeserialize -= this.OnDeserialize;
+            this._table.OnCellGUI -= this.OnCellGUI;
+        }
+
         #region Methods & Functions
         public void Do(Rect layout)
         {

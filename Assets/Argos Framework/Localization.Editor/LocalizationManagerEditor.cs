@@ -62,7 +62,7 @@ namespace Argos.Framework.Localization
             this._tableHeader = new MultiColumnHeader(this._tableHeaderState);
             this._tableHeader.SetSortingColumns(new int[] { 0, 1, 2 }, new bool[] { true, true, true });
             //this._tableHeader.sortingChanged
-            this._tableHeader.
+            this._tableHeader.height = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing * 3;
 
             this._table = new TableTest(this._tableState, this._tableHeader);
         }

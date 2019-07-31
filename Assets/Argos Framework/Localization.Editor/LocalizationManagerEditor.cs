@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
-using System;
 
 namespace Argos.Framework.Localization
 {
@@ -119,7 +120,77 @@ namespace Argos.Framework.Localization
             return base.BuildRows(root);
         }
 
-        
+        protected override bool CanStartDrag(CanStartDragArgs args)
+        {
+            return true;
+        }
+
+        const string k_GenericDragID = "GenericDragColumnDragging";
+
+        protected override DragAndDropVisualMode HandleDragAndDrop(DragAndDropArgs args)
+        {
+            // Check if we can handle the current drag data (could be dragged in from other areas/windows in the editor)
+            var draggedRows = DragAndDrop.GetGenericData(k_GenericDragID) as List<TreeViewItem>;
+            if (draggedRows == null)
+                return DragAndDropVisualMode.None;
+
+            // Parent item is null when dragging outside any tree view items.
+            switch (args.dragAndDropPosition)
+            {
+                case DragAndDropPosition.UponItem:
+                case DragAndDropPosition.BetweenItems:
+                    {
+                        bool validDrag = ValidDrag(args.parentItem, draggedRows);
+                        if (args.performDrop && validDrag)
+                        {
+                            //T parentData = ((TreeViewItem<T>)args.parentItem).data;
+                            //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
+
+                            // TODO: Revise this code to finish the drag & drop behaviour:
+                            //LocalizationItem parentData = ((LocalizationItem)args.parentItem).data;
+                            //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
+                        }
+                        return validDrag ? DragAndDropVisualMode.Move : DragAndDropVisualMode.None;
+                    }
+
+                case DragAndDropPosition.OutsideItems:
+                    {
+                        //if (args.performDrop)
+                        //    OnDropDraggedElementsAtIndex(draggedRows, m_TreeModel.root, m_TreeModel.root.children.Count);
+
+                        return DragAndDropVisualMode.Move;
+                    }
+                default:
+                    Debug.LogError("Unhandled enum " + args.dragAndDropPosition);
+                    return DragAndDropVisualMode.None;
+            }
+        }
+
+        protected override void SetupDragAndDrop(SetupDragAndDropArgs args)
+        {
+            if (this.hasSearch) return;
+
+            DragAndDrop.PrepareStartDrag();
+
+            IList<TreeViewItem> draggedRows = GetRows().Where(e => args.draggedItemIDs.Contains(e.id)).ToList();
+            DragAndDrop.SetGenericData(k_GenericDragID, draggedRows);
+            DragAndDrop.objectReferences = new UnityEngine.Object[] { };
+
+            string title = draggedRows.Count == 1 ? draggedRows[0].displayName : "< Multiple >";
+            DragAndDrop.StartDrag(title);
+        }
+
+        bool ValidDrag(TreeViewItem parent, List<TreeViewItem> draggedItems)
+        {
+            TreeViewItem currentParent = parent;
+            while (currentParent != null)
+            {
+                if (draggedItems.Contains(currentParent))
+                    return false;
+                currentParent = currentParent.parent;
+            }
+            return true;
+        }
 
         public override void OnGUI(Rect rect)
         {

@@ -10,11 +10,10 @@ namespace Argos.Framework.IMGUI
     public abstract class DataTable<T> where T : DataTable<T>.DataTableItem<T>
     {
         #region Classes
-        [Serializable]
-        public class DataTableItem<T> : TreeViewItem
+        public abstract class DataTableItem<TItem> : TreeViewItem
         {
-            #region Internal vars
-            T _data;
+            #region Public vars
+            public TItem data;
             #endregion
 
             #region Static members
@@ -22,14 +21,18 @@ namespace Argos.Framework.IMGUI
             #endregion
 
             #region Constructors
-            public DataTableItem(T data) : base(++DataTableItem<T>._index, 0, string.Empty)
+            public DataTableItem() : this(default)
             {
-                this._data = data;
+            }
+
+            public DataTableItem(TItem data) : base(++DataTableItem<TItem>._index, 0, string.Empty)
+            {
+                this.data = data;
             }
 
             ~DataTableItem()
             {
-                --DataTableItem<T>._index;
+                --DataTableItem<TItem>._index;
             }
             #endregion
         }

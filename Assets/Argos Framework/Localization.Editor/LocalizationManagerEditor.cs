@@ -70,11 +70,32 @@ namespace Argos.Framework.Localization
 
         public override void OnInspectorGUI()
         {
+            SerializedProperty prop = this.serializedObject.FindProperty("_test");
+
+            this.serializedObject.Update();
+
+            if (prop.isArray)
+            {
+                for (int i = 0; i < prop.arraySize; i++)
+                {
+                    //LocalizationManager.TestData test = (prop.GetArrayElementAtIndex(i).objectReferenceValue as object) as LocalizationManager.TestData;
+                    SerializedProperty test = prop.GetArrayElementAtIndex(i);
+                    Debug.Log($"{i}: {test.displayName} - {test.hasChildren} {test.type}");
+                    // TODO: See this for try to resolve get origin of the property: https://github.com/lordofduct/spacepuppy-unity-framework/blob/master/SpacepuppyBaseEditor/EditorHelper.cs
+                    LocalizationManager.TestData obj = (LocalizationManager.TestData)(test.serializedObject.targetObject as object);
+                }
+            }
+
+            EditorGUILayout.PropertyField(prop, true);
+            EditorGUILayout.Space();
+
             Rect searchFieldRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
             Rect fieldRect = EditorGUI.PrefixLabel(searchFieldRect, new GUIContent("Label"));
 
             this._table.searchString = this._searchField.OnGUI(fieldRect, this._table.searchString);
             this._table.OnGUI(EditorGUILayout.GetControlRect(false, (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 10f));
+
+            this.serializedObject.ApplyModifiedProperties();
         }
     }
 
@@ -87,6 +108,8 @@ namespace Argos.Framework.Localization
 
         protected override TreeViewItem BuildRoot()
         {
+            Debug.Log("BuildRoot!");
+
             this.rowHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             this.showAlternatingRowBackgrounds = true;
             this.showBorder = true;
@@ -96,6 +119,12 @@ namespace Argos.Framework.Localization
             // a data model should be passed into the TreeView and the items created from the model.
 
             var root = new TreeViewItem { id = 0, depth = -1, displayName = "Root" };
+
+            //SerializedProperty prop = null;
+            //for (int i = 0; i < prop.arraySize; i++)
+            //{
+
+            //}
 
             var allItems = new List<LocalizationItem>
             {
@@ -127,40 +156,71 @@ namespace Argos.Framework.Localization
 
         const string k_GenericDragID = "GenericDragColumnDragging";
 
+        int GetItemIndex(TreeViewItem item)
+        {
+            IList<TreeViewItem> rows = this.GetRows();
+            for (int i = 0; i < rows.Count; i++)
+            {
+                if (rows[i].id == item.id)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
         protected override DragAndDropVisualMode HandleDragAndDrop(DragAndDropArgs args)
         {
             // Check if we can handle the current drag data (could be dragged in from other areas/windows in the editor)
             var draggedRows = DragAndDrop.GetGenericData(k_GenericDragID) as List<TreeViewItem>;
+
             if (draggedRows == null)
+            {
                 return DragAndDropVisualMode.None;
+            }
 
             // Parent item is null when dragging outside any tree view items.
             switch (args.dragAndDropPosition)
             {
                 case DragAndDropPosition.UponItem:
                 case DragAndDropPosition.BetweenItems:
-                    {
-                        bool validDrag = ValidDrag(args.parentItem, draggedRows);
-                        if (args.performDrop && validDrag)
-                        {
-                            //T parentData = ((TreeViewItem<T>)args.parentItem).data;
-                            //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
 
-                            // TODO: Revise this code to finish the drag & drop behaviour:
-                            //LocalizationItem parentData = ((LocalizationItem)args.parentItem).data;
-                            //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
-                        }
-                        return validDrag ? DragAndDropVisualMode.Move : DragAndDropVisualMode.None;
+                    int index = args.insertAtIndex < 0 ? this.GetItemIndex(args.parentItem) : args.insertAtIndex;
+
+                    Debug.Log($"Drag & Drop: Move to target item/s index {index}");
+
+                    bool validDrag = ValidDrag(args.parentItem, draggedRows);
+                    if (args.performDrop && validDrag)
+                    {
+                        Debug.Log($"Drag & Drop: Drop to target item/s index {index}");
+
+                        //T parentData = ((TreeViewItem<T>)args.parentItem).data;
+                        //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
+
+                        // TODO: Revise this code to finish the drag & drop behaviour:
+                        ////LocalizationItem parentData = (LocalizationItem)args.parentItem;
+                        //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
                     }
+                    return validDrag ? DragAndDropVisualMode.Move : DragAndDropVisualMode.None;
+
 
                 case DragAndDropPosition.OutsideItems:
-                    {
-                        //if (args.performDrop)
-                        //    OnDropDraggedElementsAtIndex(draggedRows, m_TreeModel.root, m_TreeModel.root.children.Count);
 
-                        return DragAndDropVisualMode.Move;
+                    if (args.performDrop)
+                    {
+                        Debug.LogError("Drag & Drop: Drop outside of table.");
+                        //OnDropDraggedElementsAtIndex(draggedRows, this.root, m_TreeModel.root.children.Count);
                     }
+                    else
+                    {
+                        Debug.LogError("Drag & Drop: Move outside of table.");
+                    }
+
+                    return DragAndDropVisualMode.Move;
+
                 default:
+
                     Debug.LogError("Unhandled enum " + args.dragAndDropPosition);
                     return DragAndDropVisualMode.None;
             }
@@ -172,12 +232,20 @@ namespace Argos.Framework.Localization
 
             DragAndDrop.PrepareStartDrag();
 
-            IList<TreeViewItem> draggedRows = GetRows().Where(e => args.draggedItemIDs.Contains(e.id)).ToList();
+            IList<TreeViewItem> draggedRows = this.GetRows().Where(e => args.draggedItemIDs.Contains(e.id)).ToList();
             DragAndDrop.SetGenericData(k_GenericDragID, draggedRows);
             DragAndDrop.objectReferences = new UnityEngine.Object[] { };
 
             string title = draggedRows.Count == 1 ? draggedRows[0].displayName : "< Multiple >";
             DragAndDrop.StartDrag(title);
+
+            string indexes = string.Empty;
+            foreach (var item in args.draggedItemIDs)
+            {
+                indexes += $"{item}, ";
+            }
+
+            Debug.Log($"Drag & Drop: Item index/es to move {indexes.Remove(indexes.Length - 2)}");
         }
 
         bool ValidDrag(TreeViewItem parent, List<TreeViewItem> draggedItems)
@@ -186,10 +254,28 @@ namespace Argos.Framework.Localization
             while (currentParent != null)
             {
                 if (draggedItems.Contains(currentParent))
+                {
                     return false;
+                }
                 currentParent = currentParent.parent;
             }
             return true;
+        }
+
+        //public event Action<IList<TreeViewItem>> beforeDroppingDraggedItems;
+
+        public virtual void OnDropDraggedElementsAtIndex(List<TreeViewItem> draggedRows, LocalizationItem parent, int insertIndex)
+        {
+            //if (beforeDroppingDraggedItems != null)
+            //    beforeDroppingDraggedItems(draggedRows);
+
+            //var draggedElements = new List<LocalizationItem>();
+            //foreach (var x in draggedRows)
+            //    draggedElements.Add((LocalizationItem)x);
+
+            //var selectedIDs = draggedElements.Select(x => x.id).ToArray();
+            //this.MoveElements(parent, insertIndex, draggedElements);
+            //this.SetSelection(selectedIDs, TreeViewSelectionOptions.RevealAndFrame);
         }
 
         public override void OnGUI(Rect rect)
@@ -202,7 +288,7 @@ namespace Argos.Framework.Localization
             Rect rect = args.rowRect;
             this.CenterRectUsingSingleLineHeight(ref rect);
 
-            var data = args.item as LocalizationItem;
+            var item = args.item as LocalizationItem;
 
             for (int i = 0; i < args.GetNumVisibleColumns(); i++)
             {
@@ -220,30 +306,48 @@ namespace Argos.Framework.Localization
 
                     case 1:
 
-                        data.id = EditorGUI.DelayedTextField(cellRect, data.id);
+                        item.data.id = EditorGUI.DelayedTextField(cellRect, item.data.id);
                         break;
 
                     case 2:
 
-                        data.text = EditorGUI.DelayedTextField(cellRect, data.text);
+                        item.data.text = EditorGUI.DelayedTextField(cellRect, item.data.text);
                         break;
                 }
             }
         }
     }
 
-    [Serializable]
-    internal class LocalizationItem : TreeViewItem
+    public abstract class TestTableItem<T> : TreeViewItem
     {
         static int _index = 0;
 
-        public new string id;
-        public string text;
+        public T data;
 
-        public LocalizationItem(string id, string text) : base(++LocalizationItem._index, 0, id)
+        public TestTableItem() : base(++TestTableItem<T>._index, 0, string.Empty)
         {
-            this.id = id;
-            this.text = text;
+        }
+
+        public TestTableItem(T data) : base(++TestTableItem<T>._index, 0, string.Empty)
+        {
+            this.data = data;
+        }
+    }
+
+    [Serializable]
+    public struct TableData
+    {
+        public string id;
+        public string text;
+    }
+
+    [Serializable]
+    public class LocalizationItem : TestTableItem<TableData>
+    {
+        public LocalizationItem(string id, string text)
+        {
+            this.data.id = id;
+            this.data.text = text;
         }
     }
 }

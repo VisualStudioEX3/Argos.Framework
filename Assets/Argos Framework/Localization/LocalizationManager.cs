@@ -14,6 +14,14 @@ namespace Argos.Framework.Localization
     [AddComponentMenu("Argos.Framework/Localization/Localization Manager")]
     public sealed class LocalizationManager : MonoBehaviour
     {
-        
+        [Serializable]
+        public struct TestData
+        {
+            public string key;
+            public string text;
+        }
+
+        [SerializeField]
+        TestData[] _test;
     }
 }

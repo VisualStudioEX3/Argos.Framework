@@ -588,12 +588,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _test:
-  - key: id1
-    text: ASdfasdfa
-  - key: id2
-    text: asdfasdfasdf
-  - key: id3
-    text: kkkadsfkasdfsakdsaf
+  - key: ui_submit
+    text: Submit
+  - key: ui_cancel
+    text: Cancel
+  - key: ui_delete
+    text: Delete
+  - key: ui_defaults
+    text: Set Defaults
+  - key: ui_ok
+    text: Ok
+  - key: ui_navigation
+    text: Navigation
 --- !u!4 &367070342
 Transform:
   m_ObjectHideFlags: 0

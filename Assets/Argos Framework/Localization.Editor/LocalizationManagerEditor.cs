@@ -80,9 +80,13 @@ namespace Argos.Framework.Localization
                 {
                     //LocalizationManager.TestData test = (prop.GetArrayElementAtIndex(i).objectReferenceValue as object) as LocalizationManager.TestData;
                     SerializedProperty test = prop.GetArrayElementAtIndex(i);
-                    Debug.Log($"{i}: {test.displayName} - {test.hasChildren} {test.type}");
-                    // TODO: See this for try to resolve get origin of the property: https://github.com/lordofduct/spacepuppy-unity-framework/blob/master/SpacepuppyBaseEditor/EditorHelper.cs
-                    LocalizationManager.TestData obj = (LocalizationManager.TestData)(test.serializedObject.targetObject as object);
+
+                    while (test.NextVisible(true))
+                    {
+                        Debug.Log($"[{test.name}]: Path: {test.propertyPath}, Type: {test.propertyType}, Value: {this.GetValue(test)}");
+                    }
+
+                    //Debug.Log($"{i}: {test.displayName} - {test.hasChildren} {test.type}");
                 }
             }
 
@@ -96,6 +100,63 @@ namespace Argos.Framework.Localization
             this._table.OnGUI(EditorGUILayout.GetControlRect(false, (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 10f));
 
             this.serializedObject.ApplyModifiedProperties();
+        }
+
+        string GetValue(SerializedProperty property)
+        {
+            switch (property.propertyType)
+            {
+                case SerializedPropertyType.LayerMask:
+                case SerializedPropertyType.Integer: return property.intValue.ToString();
+
+                case SerializedPropertyType.Boolean: return property.boolValue.ToString();
+
+                case SerializedPropertyType.Float: return property.boolValue.ToString();
+
+                case SerializedPropertyType.String: return property.stringValue;
+
+                case SerializedPropertyType.Gradient:
+                case SerializedPropertyType.Color: return property.colorValue.ToString();
+
+                case SerializedPropertyType.ObjectReference: return $"Object Reference: {property.objectReferenceValue}";
+
+                case SerializedPropertyType.ExposedReference: return $"Exposed reference value: {property.exposedReferenceValue}";
+
+                case SerializedPropertyType.Enum: return property.enumDisplayNames[property.enumValueIndex];
+
+                case SerializedPropertyType.Vector2: return property.vector2Value.ToString();
+
+                case SerializedPropertyType.Vector3: return property.vector3Value.ToString();
+
+                case SerializedPropertyType.Vector4: return property.vector4Value.ToString();
+
+                case SerializedPropertyType.Rect: return property.rectValue.ToString();
+
+                case SerializedPropertyType.ArraySize: return $"Array size: {property.arraySize}";
+
+                case SerializedPropertyType.Character: return property.stringValue;
+
+                case SerializedPropertyType.AnimationCurve: return property.animationCurveValue.ToString();
+
+                case SerializedPropertyType.Bounds: return property.boundsValue.ToString();
+
+                case SerializedPropertyType.Quaternion: return property.quaternionValue.ToString();
+
+                case SerializedPropertyType.FixedBufferSize: return $"Fixed buffer size: {property.fixedBufferSize}";
+
+                case SerializedPropertyType.Vector2Int: return property.vector2IntValue.ToString();
+
+                case SerializedPropertyType.Vector3Int: return property.vector3IntValue.ToString();
+
+                case SerializedPropertyType.RectInt: return property.rectIntValue.ToString();
+
+                case SerializedPropertyType.BoundsInt: return property.boundsIntValue.ToString();
+
+                case SerializedPropertyType.Generic:
+                default:
+
+                    return string.Empty;
+            }
         }
     }
 

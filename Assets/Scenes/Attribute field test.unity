@@ -396,7 +396,7 @@ MonoBehaviour:
     customData:
       message: 
       value: 0
-  - name: Element
+  - name: Element 2
     age: 15
     key: 38
     customData:

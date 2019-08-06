@@ -74,30 +74,33 @@ namespace Argos.Framework.Localization
 
             this.serializedObject.Update();
 
-            if (prop.isArray)
-            {
-                for (int i = 0; i < prop.arraySize; i++)
-                {
-                    //LocalizationManager.TestData test = (prop.GetArrayElementAtIndex(i).objectReferenceValue as object) as LocalizationManager.TestData;
-                    SerializedProperty test = prop.GetArrayElementAtIndex(i);
+            //if (prop.isArray)
+            //{
+            //    for (int i = 0; i < prop.arraySize; i++)
+            //    {
+            //        //LocalizationManager.TestData test = (prop.GetArrayElementAtIndex(i).objectReferenceValue as object) as LocalizationManager.TestData;
+            //        SerializedProperty test = prop.GetArrayElementAtIndex(i);
 
-                    while (test.NextVisible(true))
-                    {
-                        Debug.Log($"[{test.name}]: Path: {test.propertyPath}, Type: {test.propertyType}, Value: {this.GetValue(test)}");
-                    }
+            //        do
+            //        {
+            //            Debug.Log($"[{test.name}]: Path: {test.propertyPath}, Type: {test.propertyType}, Has Childrens: {test.hasChildren}, Value: {this.GetValue(test)}");
+            //        }
+            //        while (test.NextVisible(true));
 
-                    //Debug.Log($"{i}: {test.displayName} - {test.hasChildren} {test.type}");
-                }
-            }
+            //        //Debug.Log($"{i}: {test.displayName} - {test.hasChildren} {test.type}");
+            //    }
+            //}
 
             EditorGUILayout.PropertyField(prop, true);
             EditorGUILayout.Space();
 
+            EditorGUILayout.LabelField("Data Table control test", EditorStyles.boldLabel);
+
             Rect searchFieldRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
-            Rect fieldRect = EditorGUI.PrefixLabel(searchFieldRect, new GUIContent("Label"));
+            Rect fieldRect = EditorGUI.PrefixLabel(searchFieldRect, new GUIContent("Search field label"));
 
             this._table.searchString = this._searchField.OnGUI(fieldRect, this._table.searchString);
-            this._table.OnGUI(EditorGUILayout.GetControlRect(false, (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 10f));
+            this._table.OnGUI(EditorGUILayout.GetControlRect(false, (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 11f));
 
             this.serializedObject.ApplyModifiedProperties();
         }
@@ -169,7 +172,7 @@ namespace Argos.Framework.Localization
 
         protected override TreeViewItem BuildRoot()
         {
-            Debug.Log("BuildRoot!");
+            //Debug.Log("BuildRoot!");
 
             this.rowHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
             this.showAlternatingRowBackgrounds = true;
@@ -205,10 +208,10 @@ namespace Argos.Framework.Localization
             return root;
         }
 
-        protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
-        {
-            return base.BuildRows(root);
-        }
+        //protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
+        //{
+        //    return base.BuildRows(root);
+        //}
 
         protected override bool CanStartDrag(CanStartDragArgs args)
         {
@@ -219,10 +222,15 @@ namespace Argos.Framework.Localization
 
         int GetItemIndex(TreeViewItem item)
         {
+            return this.GetItemIndex(item.id);
+        }
+
+        int GetItemIndex(int id)
+        {
             IList<TreeViewItem> rows = this.GetRows();
             for (int i = 0; i < rows.Count; i++)
             {
-                if (rows[i].id == item.id)
+                if (rows[i].id == id)
                 {
                     return i;
                 }
@@ -249,12 +257,12 @@ namespace Argos.Framework.Localization
 
                     int index = args.insertAtIndex < 0 ? this.GetItemIndex(args.parentItem) : args.insertAtIndex;
 
-                    Debug.Log($"Drag & Drop: Move to target item/s index {index}");
+                    //Debug.Log($"Drag & Drop: Move to target item/s index {index}");
 
                     bool validDrag = ValidDrag(args.parentItem, draggedRows);
                     if (args.performDrop && validDrag)
                     {
-                        Debug.Log($"Drag & Drop: Drop to target item/s index {index}");
+                        //Debug.Log($"Drag & Drop: Drop to target item/s index {index}");
 
                         //T parentData = ((TreeViewItem<T>)args.parentItem).data;
                         //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
@@ -268,21 +276,21 @@ namespace Argos.Framework.Localization
 
                 case DragAndDropPosition.OutsideItems:
 
-                    if (args.performDrop)
-                    {
-                        Debug.LogError("Drag & Drop: Drop outside of table.");
-                        //OnDropDraggedElementsAtIndex(draggedRows, this.root, m_TreeModel.root.children.Count);
-                    }
-                    else
-                    {
-                        Debug.LogError("Drag & Drop: Move outside of table.");
-                    }
+                    //if (args.performDrop)
+                    //{
+                    //    Debug.LogError("Drag & Drop: Drop outside of table.");
+                    //    //OnDropDraggedElementsAtIndex(draggedRows, this.root, m_TreeModel.root.children.Count);
+                    //}
+                    //else
+                    //{
+                    //    Debug.LogError("Drag & Drop: Move outside of table.");
+                    //}
 
                     return DragAndDropVisualMode.Move;
 
                 default:
 
-                    Debug.LogError("Unhandled enum " + args.dragAndDropPosition);
+                    Debug.LogError($"Unhandled enum: {args.dragAndDropPosition}");
                     return DragAndDropVisualMode.None;
             }
         }
@@ -301,9 +309,10 @@ namespace Argos.Framework.Localization
             DragAndDrop.StartDrag(title);
 
             string indexes = string.Empty;
+            
             foreach (var item in args.draggedItemIDs)
             {
-                indexes += $"{item}, ";
+                indexes += $"{this.GetItemIndex(item)}, ";
             }
 
             Debug.Log($"Drag & Drop: Item index/es to move {indexes.Remove(indexes.Length - 2)}");
@@ -367,7 +376,7 @@ namespace Argos.Framework.Localization
 
                     case 1:
 
-                        item.data.id = EditorGUI.DelayedTextField(cellRect, item.data.id);
+                        item.data.key = EditorGUI.DelayedTextField(cellRect, item.data.key);
                         break;
 
                     case 2:
@@ -381,10 +390,15 @@ namespace Argos.Framework.Localization
 
     public abstract class TestTableItem<T> : TreeViewItem
     {
+        #region Public vars
+        public T data; 
+        #endregion
+
+        #region Static members
         static int _index = 0;
+        #endregion
 
-        public T data;
-
+        #region Constructors
         public TestTableItem() : base(++TestTableItem<T>._index, 0, string.Empty)
         {
         }
@@ -392,23 +406,33 @@ namespace Argos.Framework.Localization
         public TestTableItem(T data) : base(++TestTableItem<T>._index, 0, string.Empty)
         {
             this.data = data;
+        } 
+
+        ~TestTableItem()
+        {
+            TestTableItem<T>._index--;
         }
+        #endregion
     }
 
     [Serializable]
     public struct TableData
     {
-        public string id;
+        #region Public vars
+        public string key;
         public string text;
+        #endregion
     }
 
     [Serializable]
     public class LocalizationItem : TestTableItem<TableData>
     {
-        public LocalizationItem(string id, string text)
+        #region Constructors
+        public LocalizationItem(string key, string text)
         {
-            this.data.id = id;
+            this.data.key = key;
             this.data.text = text;
-        }
+        } 
+        #endregion
     }
 }

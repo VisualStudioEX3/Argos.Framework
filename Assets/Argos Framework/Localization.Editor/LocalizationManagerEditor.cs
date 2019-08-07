@@ -167,16 +167,18 @@ namespace Argos.Framework.Localization
     {
         public TableTest(TreeViewState state, MultiColumnHeader multiColumnHeader) : base(state, multiColumnHeader)
         {
+            this.rowHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+            this.showAlternatingRowBackgrounds = true;
+            this.showBorder = true;
+
+            multiColumnHeader.sortingChanged += this.OnSortingChanged;
+
             this.Reload();
         }
 
         protected override TreeViewItem BuildRoot()
         {
-            //Debug.Log("BuildRoot!");
-
-            this.rowHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
-            this.showAlternatingRowBackgrounds = true;
-            this.showBorder = true;
+            Debug.Log("BuildRoot!");
 
             // BuildRoot is called every time Reload is called to ensure that TreeViewItems 
             // are created from data. Here we create a fixed set of items. In a real world example,
@@ -208,14 +210,34 @@ namespace Argos.Framework.Localization
             return root;
         }
 
-        //protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
-        //{
-        //    return base.BuildRows(root);
-        //}
+        protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
+        {
+            var rows = base.BuildRows(root);
+            //SortIfNeeded(root, rows); // Sorting here?
+            return rows;
+        }
 
         protected override bool CanStartDrag(CanStartDragArgs args)
         {
             return true;
+        }
+
+        protected override bool CanMultiSelect(TreeViewItem item)
+        {
+            return true;
+        }
+
+        void OnSortingChanged(MultiColumnHeader multiColumnHeader)
+        {
+            if (multiColumnHeader.sortedColumnIndex == -1)// || rows.Count <= 1)
+            {
+                return; // No column to sort for (just use the order the data are in)
+            }
+
+            //SortIfNeeded(rootItem, GetRows());
+            Debug.LogWarning($"Sorting column index: {multiColumnHeader.sortedColumnIndex}, sorting order is ascending: {multiColumnHeader.IsSortedAscending(multiColumnHeader.sortedColumnIndex)}");
+
+            this.Repaint();
         }
 
         const string k_GenericDragID = "GenericDragColumnDragging";
@@ -434,5 +456,59 @@ namespace Argos.Framework.Localization
             this.data.text = text;
         } 
         #endregion
+    }
+
+    // TODO: This implementation works with SerializedProperties, allowing save changes from TreeView.
+    // TOOD: Found a way to sorting using standard types from SerializedProperty. The sorting behaviour is external to Unity Treeview, then we can implement own sorting code based on any data of this class.
+    // TOOD: Maybe only store the parent SerializedProperty (the element retrieved by GetArrayElementAtIndex function) and store the SerializedProperties on constructor (using a unique property name list from the DataTable instance, maybe associated with the column header definition).
+    // TODO: The SerializedProperty enable the possibility to draw custom drawer easily in each Treeview cell using EditorGUI.PropertyField.
+    public class DataTableItem : TreeViewItem
+    {
+        #region Properties
+        public SerializedProperty[] Fields { get; private set; }
+        #endregion
+
+        #region Static members
+        static int _index = 0;
+        #endregion
+
+        #region Constructors
+        public DataTableItem(params SerializedProperty[] properties) : base(++DataTableItem._index, 0, string.Empty)
+        {
+            this.Fields = properties;
+        }
+
+        ~DataTableItem()
+        {
+            DataTableItem._index--;
+        }
+        #endregion
+    }
+
+    static class IEnumerableExtensionMethods
+    {
+        public static IOrderedEnumerable<T> Order<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector, bool ascending)
+        {
+            if (ascending)
+            {
+                return source.OrderBy(selector);
+            }
+            else
+            {
+                return source.OrderByDescending(selector);
+            }
+        }
+
+        public static IOrderedEnumerable<T> ThenBy<T, TKey>(this IOrderedEnumerable<T> source, Func<T, TKey> selector, bool ascending)
+        {
+            if (ascending)
+            {
+                return source.ThenBy(selector);
+            }
+            else
+            {
+                return source.ThenByDescending(selector);
+            }
+        }
     }
 }

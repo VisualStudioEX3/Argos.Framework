@@ -5,6 +5,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
+using Argos.Framework.IMGUI;
 
 namespace Argos.Framework.Localization
 {
@@ -17,6 +18,9 @@ namespace Argos.Framework.Localization
         MultiColumnHeader _tableHeader;
         MultiColumnHeaderState _tableHeaderState;
         MultiColumnHeaderState.Column[] _tableHeaderColumns;
+
+        SerializedProperty _prop;
+        DataTable _dataTable;
 
         private void OnEnable()
         {
@@ -66,41 +70,63 @@ namespace Argos.Framework.Localization
             this._tableHeader.height = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing * 3;
 
             this._table = new TableTest(this._tableState, this._tableHeader);
+            
+
+
+
+            this._prop = this.serializedObject.FindProperty("_test");
+            var columns = new DataTable.DataTableColumn[2];
+            {
+                columns[0].autoResize = true;
+                columns[0].canSort = true;
+                columns[0].headerTitle = "Key";
+                columns[0].headerTextAlignment = TextAlignment.Left;
+                columns[0].maxWidth = 200f;
+                columns[0].minWidth = 100f;
+                columns[0].sortingArrowAlignment = TextAlignment.Center;
+                columns[0].sortedAscending = false;
+                columns[0].width = 100f;
+                columns[0].propertyName = "key";
+
+                columns[1].autoResize = true;
+                columns[1].canSort = true;
+                columns[1].headerTitle = "Text";
+                columns[1].headerTextAlignment = TextAlignment.Left;
+                columns[1].maxWidth = 500f;
+                columns[1].minWidth = 100f;
+                columns[1].sortingArrowAlignment = TextAlignment.Center;
+                columns[1].sortedAscending = false;
+                columns[1].width = 250f;
+                columns[1].propertyName = "text";
+            }
+
+            this._dataTable = new DataTable(this._prop, columns);
+            this._dataTable.ShowSearchField = true;
         }
 
         public override void OnInspectorGUI()
         {
-            SerializedProperty prop = this.serializedObject.FindProperty("_test");
-
             this.serializedObject.Update();
 
-            //if (prop.isArray)
-            //{
-            //    for (int i = 0; i < prop.arraySize; i++)
-            //    {
-            //        //LocalizationManager.TestData test = (prop.GetArrayElementAtIndex(i).objectReferenceValue as object) as LocalizationManager.TestData;
-            //        SerializedProperty test = prop.GetArrayElementAtIndex(i);
-
-            //        do
-            //        {
-            //            Debug.Log($"[{test.name}]: Path: {test.propertyPath}, Type: {test.propertyType}, Has Childrens: {test.hasChildren}, Value: {this.GetValue(test)}");
-            //        }
-            //        while (test.NextVisible(true));
-
-            //        //Debug.Log($"{i}: {test.displayName} - {test.hasChildren} {test.type}");
-            //    }
-            //}
-
-            EditorGUILayout.PropertyField(prop, true);
+            EditorGUILayout.PropertyField(_prop, true);
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Data Table control test", EditorStyles.boldLabel);
+            EditorGUILayout.LabelField("Unity Multicolumn table test", EditorStyles.boldLabel);
 
             Rect searchFieldRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
             Rect fieldRect = EditorGUI.PrefixLabel(searchFieldRect, new GUIContent("Search field label"));
 
             this._table.searchString = this._searchField.OnGUI(fieldRect, this._table.searchString);
             this._table.OnGUI(EditorGUILayout.GetControlRect(false, (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 11f));
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Argos.Framework DataTable control test", EditorStyles.boldLabel);
+            this._dataTable.DoLayout((EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 11f);
+
+            this._dataTable.ShowRowIndexColumn = EditorGUILayout.Toggle("Show row index", this._dataTable.ShowRowIndexColumn);
+            this._dataTable.ShowSearchField = EditorGUILayout.Toggle("Search", this._dataTable.ShowSearchField);
+            this._dataTable.CanDrag = EditorGUILayout.Toggle("Drag & Drop", this._dataTable.CanDrag);
+            this._dataTable.CanMultiselect = EditorGUILayout.Toggle("Multiselection", this._dataTable.CanMultiselect);
 
             this.serializedObject.ApplyModifiedProperties();
         }
@@ -454,6 +480,8 @@ namespace Argos.Framework.Localization
         {
             this.data.key = key;
             this.data.text = text;
+
+            this.displayName = key;
         } 
         #endregion
     }

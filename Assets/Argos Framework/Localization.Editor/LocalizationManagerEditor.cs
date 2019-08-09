@@ -108,20 +108,21 @@ namespace Argos.Framework.Localization
         {
             this.serializedObject.Update();
 
-            EditorGUILayout.PropertyField(_prop, true);
+            //EditorGUILayout.PropertyField(_prop, true);
+            this.DrawDefaultInspector();
             EditorGUILayout.Space();
 
-            EditorGUILayout.LabelField("Unity Multicolumn table test", EditorStyles.boldLabel);
+            //EditorGUILayout.LabelField("Unity Multicolumn table test", EditorStyles.boldLabel);
 
-            Rect searchFieldRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
-            Rect fieldRect = EditorGUI.PrefixLabel(searchFieldRect, new GUIContent("Search field label"));
+            //Rect searchFieldRect = EditorGUILayout.GetControlRect(true, EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
+            //Rect fieldRect = EditorGUI.PrefixLabel(searchFieldRect, new GUIContent("Search field label"));
 
-            this._table.searchString = this._searchField.OnGUI(fieldRect, this._table.searchString);
-            this._table.OnGUI(EditorGUILayout.GetControlRect(false, (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 11f));
+            //this._table.searchString = this._searchField.OnGUI(fieldRect, this._table.searchString);
+            //this._table.OnGUI(EditorGUILayout.GetControlRect(false, (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 11f));
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Argos.Framework DataTable control test", EditorStyles.boldLabel);
-            this._dataTable.DoLayout((EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing) * 11f);
+            this._dataTable.DoLayout();
 
             this._dataTable.ShowRowIndexColumn = EditorGUILayout.Toggle("Show row index", this._dataTable.ShowRowIndexColumn);
             this._dataTable.ShowSearchField = EditorGUILayout.Toggle("Search", this._dataTable.ShowSearchField);
@@ -129,6 +130,18 @@ namespace Argos.Framework.Localization
             this._dataTable.CanMultiselect = EditorGUILayout.Toggle("Multiselection", this._dataTable.CanMultiselect);
 
             this.serializedObject.ApplyModifiedProperties();
+
+            GUIStyle styleTest = EditorStyles.foldoutHeaderIcon;
+            
+            //(this.target as LocalizationManager).lightSkin = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Inspector);
+            //(this.target as LocalizationManager).darkSkin = EditorGUIUtility.GetBuiltinSkin(EditorSkin.Scene);
+
+            //(this.target as LocalizationManager).icon = (this.target as LocalizationManager).darkSkin.customStyles.Where(e => e.name == "ToolbarSeachTextFieldPopup").FirstOrDefault().normal.background as Texture2D;
+
+            //GUILayout.Button("", (this.target as LocalizationManager).darkSkin.customStyles.Where(e => e.name == "ToolbarSeachTextFieldPopup").FirstOrDefault());
+            
+            //Editor.CreateEditor((this.target as LocalizationManager).lightSkin).OnInspectorGUI();
+            //Editor.CreateEditor((this.target as LocalizationManager).darkSkin).OnInspectorGUI();
         }
 
         string GetValue(SerializedProperty property)

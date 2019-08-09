@@ -142,17 +142,21 @@ namespace Argos.Framework.IMGUI
             public bool canMultiselect;
             #endregion
 
+            #region Properties
+            public float RowHeight => this.rowHeight; 
+            #endregion
+
             #region Events
             public event Action<InternalTreeView, int> OnSearchColumnIndexChange;
             #endregion
 
             #region Constructors
-            public InternalTreeView(MultiColumnHeaderState.Column[] columStates, SerializedProperty property, string[] propertyNames) : base(new TreeViewState(), null)
+            public InternalTreeView(MultiColumnHeaderState.Column[] columStates, SerializedProperty property, string[] propertyNames, float rowHeight = -1f) : base(new TreeViewState(), null)
             {
                 this.multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(columStates));
                 this.multiColumnHeader.sortingChanged += this.OnSortingChanged;
 
-                this.rowHeight = EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing;
+                this.rowHeight = rowHeight < 0f ? EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing : rowHeight;
                 this.showAlternatingRowBackgrounds = this.showBorder = true;
 
                 this.property = property;
@@ -363,7 +367,7 @@ namespace Argos.Framework.IMGUI
 
                     if (i == 0 && this.showRowIndex)
                     {
-                        EditorGUI.LabelField(cellRect, args.row.ToString());
+                        EditorGUI.LabelField(cellRect, (args.row + 1).ToString());
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.propertyNames[i - 1]))
                     {
@@ -397,7 +401,7 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Constructor & Destructor
-        public DataTable(SerializedProperty property, DataTableColumn[] columns)
+        public DataTable(SerializedProperty property, DataTableColumn[] columns, float rowHeight = -1f)
         {
             if (property == null)
             {
@@ -420,15 +424,10 @@ namespace Argos.Framework.IMGUI
 
             this._rowColumnWidth = Mathf.Clamp(DataTable.ROW_COLUMN_CHAR_WIDTH * property.arraySize.ToString().Length, DataTable.ROW_COLUMN_MIN_WIDTH, DataTable.ROW_COLUMN_MAX_WIDTH);
 
-            this._treeView = new InternalTreeView(columnStates, property, columns.Select(e => e.propertyName).ToArray());
+            this._treeView = new InternalTreeView(columnStates, property, columns.Select(e => e.propertyName).ToArray(), rowHeight);
             this._searchField = new SearchField();
 
             this.SetSearchColumn(0);
-        }
-
-        ~DataTable()
-        {
-
         }
         #endregion
 
@@ -460,35 +459,66 @@ namespace Argos.Framework.IMGUI
             this._treeView.OnGUI(layout);
         }
 
-        public void DoLayout(float height)
+        public void DoLayout(int rows = 10)
         {
+            float height = this._treeView.multiColumnHeader.height + (this._treeView.RowHeight * rows) + 3f;
             this.Do(EditorGUILayout.GetControlRect(false, height));
         }
+
+        static GUIStyle toolbarSearchPopupStyle;
 
         Rect DrawSearchToolbar(Rect layout)
         {
             Rect toolBarRect = layout;
-            toolBarRect.height = EditorGUIUtility.singleLineHeight + 2f;
+            {
+                toolBarRect.height = EditorGUIUtility.singleLineHeight + 4f;
+            }
+            //EditorGUI.DrawRect(toolBarRect, EditorStyles.toolbarDropDown.onNormal.textColor.linear);
 
-            EditorGUI.LabelField(toolBarRect, GUIContent.none, GUIContent.none, EditorStyles.toolbar);
+            Rect toolBarBackgroundRect = toolBarRect;
+            {
+                toolBarRect.x++;
+                toolBarRect.width -= 2f;
+                toolBarRect.height -= 2f;
+            }
+            //EditorGUI.LabelField(toolBarRect, GUIContent.none, GUIContent.none, EditorStyles.toolbar);
 
-            Rect searchField = EditorGUI.PrefixLabel(toolBarRect, new GUIContent(" "), EditorStyles.miniLabel);
-            searchField.x -= 4f;
-            searchField.y += 2f;
-            searchField.height = EditorGUIUtility.singleLineHeight;
+            // TODO: Maybe remove the toolbar background.
 
-            Rect popupField = toolBarRect;
-            popupField.x = toolBarRect.x + 6f;
-            popupField.xMax = searchField.x - 6f;
+            Rect searchFieldRect = toolBarRect;
+            {
+                searchFieldRect.x += EditorGUIUtility.labelWidth + 4f;
+                searchFieldRect.y += 2f;
+                searchFieldRect.xMax = toolBarRect.xMax - 4f;
+                searchFieldRect.height = EditorGUIUtility.singleLineHeight;
+            }
+            this._treeView.searchString = this._searchField.OnToolbarGUI(searchFieldRect, this._treeView.searchString);
 
-            // TODO: Replace by dropdown button with the label value "Search by column"
-            EditorGUI.Popup(popupField, 0, new string[] { "Search by column...", "Key", "Text" }, EditorStyles.toolbarDropDown);
+            if (DataTable.toolbarSearchPopupStyle == null)
+            {
+                DataTable.toolbarSearchPopupStyle = new GUIStyle(EditorGUIUtility.GetBuiltinSkin(Application.HasProLicense() ? EditorSkin.Scene : EditorSkin.Inspector).customStyles.Where(e => e.name == "ToolbarSeachTextFieldPopup").FirstOrDefault());
+                //DataTable.toolbarSearchPopupStyle.no // TODO: Get color for dropdown text.
+            }
 
-            this._treeView.searchString = this._searchField.OnToolbarGUI(searchField, this._treeView.searchString);
+            Rect popupFieldRect = toolBarRect;
+            {
+                popupFieldRect.x = toolBarRect.x + 6f;
+                popupFieldRect.xMax = searchFieldRect.x - 6f;
+            }
+
+            popupFieldRect = searchFieldRect;
+            popupFieldRect.width = string.IsNullOrEmpty(this._treeView.searchString) ? popupFieldRect.width - 16f : 16f;
+
+            // TODO: Replace by dropdown button over the searchfield not works. Implement code to detect mouse click on concrete area to invoke a popup with the column titles.
+            EditorGUI.Popup(popupFieldRect, 0, new string[] { "Key", "Text" }, DataTable.toolbarSearchPopupStyle);
+
+            // TODO: Create custom implementation of the SearchField to reutilize this code on other tools and for ease implement the Unity "built-in" dropdown.
 
             Rect dataTableRect = layout;
-            dataTableRect.y += toolBarRect.height - 1f;
-            dataTableRect.height -= toolBarRect.height;
+            {
+                dataTableRect.y += toolBarRect.height - 1f;
+                dataTableRect.height -= toolBarRect.height;
+            }
 
             return dataTableRect;
         }

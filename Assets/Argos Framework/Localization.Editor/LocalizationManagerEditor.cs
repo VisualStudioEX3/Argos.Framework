@@ -12,7 +12,7 @@ namespace Argos.Framework.Localization
     [CustomEditor(typeof(LocalizationManager))]
     public class LocalizationManagerEditor : Editor
     {
-        SearchField _searchField;
+        UnityEditor.IMGUI.Controls.SearchField _searchField;
         TreeView _table;
         TreeViewState _tableState;
         MultiColumnHeader _tableHeader;
@@ -24,7 +24,7 @@ namespace Argos.Framework.Localization
 
         private void OnEnable()
         {
-            this._searchField = new SearchField();
+            this._searchField = new UnityEditor.IMGUI.Controls.SearchField();
 
             this._tableState = new TreeViewState();
             this._tableHeaderColumns = new MultiColumnHeaderState.Column[3];

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
+using UnityEngine;
 
 namespace Argos.Framework.IMGUI
 {
@@ -450,7 +449,15 @@ namespace Argos.Framework.IMGUI
         {
             if (this.ShowSearchField)
             {
-                layout = this.DrawSearchToolbar(layout);
+                Rect searchFieldRect = layout;
+                {
+                    searchFieldRect.x += EditorGUIUtility.labelWidth;
+                    searchFieldRect.xMax = layout.xMax;
+                }
+                this._treeView.searchString = this._searchField.Do(searchFieldRect, this._treeView.searchString);
+;
+                layout.y += SearchField.Height;
+                layout.height -= SearchField.Height;
             }
 
             this._treeView.multiColumnHeader.state.columns[0].width = this.ShowRowIndexColumn ? this._rowColumnWidth : 0f;
@@ -463,64 +470,6 @@ namespace Argos.Framework.IMGUI
         {
             float height = this._treeView.multiColumnHeader.height + (this._treeView.RowHeight * rows) + 3f;
             this.Do(EditorGUILayout.GetControlRect(false, height));
-        }
-
-        static GUIStyle toolbarSearchPopupStyle;
-
-        Rect DrawSearchToolbar(Rect layout)
-        {
-            Rect toolBarRect = layout;
-            {
-                toolBarRect.height = EditorGUIUtility.singleLineHeight + 4f;
-            }
-            //EditorGUI.DrawRect(toolBarRect, EditorStyles.toolbarDropDown.onNormal.textColor.linear);
-
-            Rect toolBarBackgroundRect = toolBarRect;
-            {
-                toolBarRect.x++;
-                toolBarRect.width -= 2f;
-                toolBarRect.height -= 2f;
-            }
-            //EditorGUI.LabelField(toolBarRect, GUIContent.none, GUIContent.none, EditorStyles.toolbar);
-
-            // TODO: Maybe remove the toolbar background.
-
-            Rect searchFieldRect = toolBarRect;
-            {
-                searchFieldRect.x += EditorGUIUtility.labelWidth + 4f;
-                searchFieldRect.y += 2f;
-                searchFieldRect.xMax = toolBarRect.xMax - 4f;
-                searchFieldRect.height = EditorGUIUtility.singleLineHeight;
-            }
-            this._treeView.searchString = this._searchField.OnToolbarGUI(searchFieldRect, this._treeView.searchString);
-
-            if (DataTable.toolbarSearchPopupStyle == null)
-            {
-                DataTable.toolbarSearchPopupStyle = new GUIStyle(EditorGUIUtility.GetBuiltinSkin(Application.HasProLicense() ? EditorSkin.Scene : EditorSkin.Inspector).customStyles.Where(e => e.name == "ToolbarSeachTextFieldPopup").FirstOrDefault());
-                //DataTable.toolbarSearchPopupStyle.no // TODO: Get color for dropdown text.
-            }
-
-            Rect popupFieldRect = toolBarRect;
-            {
-                popupFieldRect.x = toolBarRect.x + 6f;
-                popupFieldRect.xMax = searchFieldRect.x - 6f;
-            }
-
-            popupFieldRect = searchFieldRect;
-            popupFieldRect.width = string.IsNullOrEmpty(this._treeView.searchString) ? popupFieldRect.width - 16f : 16f;
-
-            // TODO: Replace by dropdown button over the searchfield not works. Implement code to detect mouse click on concrete area to invoke a popup with the column titles.
-            EditorGUI.Popup(popupFieldRect, 0, new string[] { "Key", "Text" }, DataTable.toolbarSearchPopupStyle);
-
-            // TODO: Create custom implementation of the SearchField to reutilize this code on other tools and for ease implement the Unity "built-in" dropdown.
-
-            Rect dataTableRect = layout;
-            {
-                dataTableRect.y += toolBarRect.height - 1f;
-                dataTableRect.height -= toolBarRect.height;
-            }
-
-            return dataTableRect;
         }
         #endregion
     }

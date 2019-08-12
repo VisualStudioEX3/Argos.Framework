@@ -1053,7 +1053,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionList: 1
-  splitOptionList: 7
+  splitOptionList: 2
 --- !u!4 &889760508
 Transform:
   m_ObjectHideFlags: 0

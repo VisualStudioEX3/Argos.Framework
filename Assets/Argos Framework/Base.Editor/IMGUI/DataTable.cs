@@ -4,6 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
+using Argos.Framework;
 
 namespace Argos.Framework.IMGUI
 {
@@ -206,6 +207,11 @@ namespace Argos.Framework.IMGUI
 
                 return true;
             }
+
+            IEnumerable<InternalTreeViewItem> SortRows(int columnIndex, bool ascending)
+            {
+                var sortedRows = this.GetRows().Cast<InternalTreeViewItem>().OrderBy(e => e.data[columnIndex], ascending);
+            }
             #endregion
 
             #region Event listeners
@@ -214,20 +220,26 @@ namespace Argos.Framework.IMGUI
             {
                 this.OnSearchColumnIndexChange = null;
 
-                var root = new TreeViewItem { id = 0, depth = -1, displayName = "Root" };
+                return new TreeViewItem { id = 0, depth = -1, displayName = "Root" };
+            }
+
+            protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
+            {
+                //var rows = base.BuildRows(root);
+                var rows = new InternalTreeViewItem[this.property.arraySize];
 
                 for (int i = 0; i < this.property.arraySize; i++)
                 {
                     root.AddChild(new InternalTreeViewItem(this, this.property.GetArrayElementAtIndex(i)));
                 }
 
-                return root;
-            }
-
-            protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
-            {
-                var rows = base.BuildRows(root);
                 //SortIfNeeded(root, rows); // Sorting here?
+
+                foreach (var item in rows)
+                {
+                    root.AddChild(item);
+                }
+                
                 return rows;
             }
 
@@ -243,9 +255,9 @@ namespace Argos.Framework.IMGUI
 
             void OnSortingChanged(MultiColumnHeader multiColumnHeader)
             {
-                if (multiColumnHeader.sortedColumnIndex == -1)// || rows.Count <= 1)
+                if (multiColumnHeader.sortedColumnIndex == -1 && this.property.arraySize <= 2)
                 {
-                    return; // No column to sort for (just use the order the data are in)
+                    return;
                 }
 
                 Debug.LogWarning($"Sorting column index: {multiColumnHeader.sortedColumnIndex}, sorting order is ascending: {multiColumnHeader.IsSortedAscending(multiColumnHeader.sortedColumnIndex)}");
@@ -349,8 +361,7 @@ namespace Argos.Framework.IMGUI
 
             protected override void RowGUI(RowGUIArgs args)
             {
-                Rect rect = args.rowRect;
-                this.CenterRectUsingSingleLineHeight(ref rect);
+                this.CenterRectUsingSingleLineHeight(ref args.rowRect);
 
                 var rowData = (InternalTreeViewItem)args.item;
 
@@ -358,10 +369,10 @@ namespace Argos.Framework.IMGUI
                 {
                     this.columnIndexForTreeFoldouts = i;
 
-                    Rect cellRect = this.GetCellRectForTreeFoldouts(rect);
+                    Rect cellRect = this.GetCellRectForTreeFoldouts(args.rowRect);
                     {
-                        cellRect.xMin += 1.5f;
-                        cellRect.xMax -= 1.5f;
+                        cellRect.xMin++;
+                        cellRect.xMax--;
                     }
 
                     if (i == 0 && this.showRowIndex)
@@ -479,18 +490,5 @@ namespace Argos.Framework.IMGUI
             this.Do(EditorGUILayout.GetControlRect(false, height));
         }
         #endregion
-    }
-}
-
-static class IEnumerableExtensionMethods
-{
-    public static IOrderedEnumerable<T> OrderBy<T, TKey>(this IEnumerable<T> source, Func<T, TKey> selector, bool ascending)
-    {
-        return ascending ? source.OrderBy(selector) : source.OrderByDescending(selector);
-    }
-
-    public static IOrderedEnumerable<T> ThenBy<T, TKey>(this IOrderedEnumerable<T> source, Func<T, TKey> selector, bool ascending)
-    {
-        return ascending ? source.ThenBy(selector) : source.ThenByDescending(selector);
     }
 }

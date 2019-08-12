@@ -14,6 +14,18 @@ namespace Argos.Framework
         int _splitCount;
         #endregion
 
+        #region Static members
+        static GUIStyle _radioStyle;
+        #endregion
+
+        #region Initializers
+        [InitializeOnLoadMethod]
+        static void Init()
+        {
+            OptionListDrawer._radioStyle = EditorSkinUtility.Skin.FindStyle("Radio");
+        } 
+        #endregion
+
         #region Methods & Functions
         public override bool CheckPropertyType(SerializedProperty property)
         {
@@ -44,7 +56,7 @@ namespace Argos.Framework
 
         void DrawLeftToggleField(Rect position, SerializedProperty property, int index)
         {
-            if (EditorGUI.ToggleLeft(position, property.enumDisplayNames[index], property.enumValueIndex == index))
+            if (EditorGUI.Toggle(position, property.enumDisplayNames[index], property.enumValueIndex == index, EditorSkinUtility.Skin.FindStyle("Radio")))
             {
                 property.enumValueIndex = index;
             }

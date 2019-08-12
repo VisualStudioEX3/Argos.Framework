@@ -425,8 +425,15 @@ namespace Argos.Framework.IMGUI
 
             this._treeView = new InternalTreeView(columnStates, property, columns.Select(e => e.propertyName).ToArray(), rowHeight);
             this._searchField = new SearchField();
+            this._searchField.DropDownItems = columns.Select(e => e.headerTitle).ToArray();
+            this._searchField.OnDropDownSelect += this.SetSearchColumn;
 
             this.SetSearchColumn(0);
+        }
+
+        ~DataTable()
+        {
+            this._searchField.OnDropDownSelect -= this.SetSearchColumn;
         }
         #endregion
 

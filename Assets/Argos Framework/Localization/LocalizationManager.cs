@@ -23,11 +23,5 @@ namespace Argos.Framework.Localization
 
         [SerializeField]
         TestData[] _test;
-
-        [TexturePreview]
-        public Texture2D icon;
-
-        public GUISkin lightSkin;
-        public GUISkin darkSkin;
     }
 }

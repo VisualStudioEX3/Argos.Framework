@@ -14,6 +14,7 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Properties
+        public int DropDownSelection { get; private set; }
         public string[] DropDownItems { get; set; }
         #endregion
 
@@ -24,6 +25,11 @@ namespace Argos.Framework.IMGUI
 
         #region Static members
         static GUIStyle _toolbarSeachTextFieldPopupStyle;
+        static GUIStyle _cancelButtonStyle;
+        static GUIStyle _cancelButtonEmptyStyle;
+        static GUIStyle _invisibleButtonStyle;
+        static GUIStyle _miniLabelDisabled;
+
         public static float Height => EditorGUIUtility.singleLineHeight;
         #endregion
 
@@ -31,7 +37,18 @@ namespace Argos.Framework.IMGUI
         [InitializeOnLoadMethod]
         static void Init()
         {
-            SearchField._toolbarSeachTextFieldPopupStyle = EditorSkinUtility.Skin.FindStyle("ToolbarSeachTextFieldPopup");
+            SearchField._toolbarSeachTextFieldPopupStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("ToolbarSeachTextFieldPopup"));
+            SearchField._cancelButtonStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("ToolbarSeachCancelButton"));
+            SearchField._cancelButtonEmptyStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("ToolbarSeachCancelButtonEmpty"));
+
+            SearchField._invisibleButtonStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("InvisibleButton"));
+
+            SearchField._miniLabelDisabled = new GUIStyle(EditorSkinUtility.Skin.FindStyle("MiniLabel"));
+            {
+                Color color = SearchField._miniLabelDisabled.normal.textColor;
+                color.a = 0.5f;
+                SearchField._miniLabelDisabled.normal.textColor = color;
+            }
         }
         #endregion
 
@@ -47,26 +64,40 @@ namespace Argos.Framework.IMGUI
         public string Do(Rect position, string searchString)
         {
             position.height = SearchField.Height;
-            
-            Rect dropDownRect = position;
+
+            Rect popupButtonRect = position;
             {
-                dropDownRect.width = 30f;
+                popupButtonRect.width = 16f;
             }
 
-            // TODO: Current solution not working. The second plan is recreate by scracth the SearchField control, divided in 3 parts:
-            // The dropdown button (with the left-side SearchField style, the textBox (with the middle part of the SearchField style),
-            // and the cancel button (with the cancel button SearchField style).
+            int lastSelection = this.DropDownSelection;
+            this.DropDownSelection = EditorGUI.Popup(popupButtonRect, this.DropDownSelection, this.DropDownItems, SearchField._invisibleButtonStyle);
 
-            if (Event.current.type == EventType.MouseDown)// && dropDownRect.Contains(Event.current.mousePosition))
+            if (lastSelection != this.DropDownSelection)
             {
-                Debug.LogWarning("SearchField dropdown button clicked!");
-                Event.current.Use();
+                this.OnDropDownSelect?.Invoke(this.DropDownSelection);
+                lastSelection = this.DropDownSelection;
             }
 
-            EditorGUI.Popup(dropDownRect, 0, this.DropDownItems, SearchField._toolbarSeachTextFieldPopupStyle);
-            string searchField = this._searchField.OnToolbarGUI(position, searchString);
+            string searchFieldText = this._searchField.OnGUI(position, searchString, SearchField._toolbarSeachTextFieldPopupStyle, SearchField._cancelButtonStyle, SearchField._cancelButtonEmptyStyle);
 
-            return searchField;
+            if (string.IsNullOrEmpty(searchFieldText) && !this._searchField.HasFocus())
+            {
+                Rect labelRect = position;
+                {
+                    labelRect.xMin += 14f;
+                    labelRect.y--;
+                }
+
+                EditorGUI.LabelField(labelRect, this.DropDownItems[this.DropDownSelection], SearchField._miniLabelDisabled);
+            }
+
+            if (!string.IsNullOrEmpty(searchFieldText) && !string.IsNullOrEmpty(searchString) && !searchFieldText.Equals(searchString))
+            {
+                this.OnSearchTextChange?.Invoke(searchFieldText);
+            }
+
+            return searchFieldText;
         }
 
         public string DoLayout(string searchString, bool fullWidth = false)

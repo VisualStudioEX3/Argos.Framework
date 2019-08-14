@@ -66,6 +66,20 @@ namespace Argos.Framework.Localization
                 {
                     autoResize = true,
                     canSort = true,
+                    headerTitle = "Enable",
+                    headerTextAlignment = TextAlignment.Left,
+                    maxWidth = 150f,
+                    minWidth = 100f,
+                    sortingArrowAlignment = TextAlignment.Center,
+                    sortedAscending = false,
+                    width = 125f,
+                    propertyName = "enable",
+                });
+
+                columns.Add(new DataTable.DataTableColumn()
+                {
+                    autoResize = true,
+                    canSort = true,
                     headerTitle = "Value",
                     headerTextAlignment = TextAlignment.Left,
                     maxWidth = 500f,

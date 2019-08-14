@@ -15,6 +15,7 @@ namespace Argos.Framework.IMGUI
     {
         #region Constants
         const float HEADER_NONE_HEIGHT = 3f;
+        static readonly float HEADER_DEFAULT_HEIGHT = (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing + 2f);
         #endregion
 
         #region Enums
@@ -250,7 +251,7 @@ namespace Argos.Framework.IMGUI
         /// <returns>Return the height of header layout. By default return the single line + standard vertical space.</returns>
         public virtual float OnHeaderHeight()
         {
-            return this.DisplayHeader ? EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing : ReorderableListBase.HEADER_NONE_HEIGHT;
+            return this.DisplayHeader ? ReorderableListBase.HEADER_DEFAULT_HEIGHT : ReorderableListBase.HEADER_NONE_HEIGHT;
         }
 
         /// <summary>

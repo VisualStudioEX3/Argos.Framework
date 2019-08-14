@@ -5,10 +5,11 @@ using UnityEditor;
 using UnityEditor.IMGUI.Controls;
 using UnityEngine;
 using Argos.Framework;
+using Argos.Framework.Utils;
 
 namespace Argos.Framework.IMGUI
 {
-    public sealed class DataTable
+    public class DataTable
     {
         #region Constants
         const float ROW_COLUMN_CHAR_WIDTH = 10f;
@@ -17,24 +18,66 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Structs
+        /// <summary>
+        /// Setup a column for a <see cref="DataTable"/> control.
+        /// </summary>
         public struct DataTableColumn
         {
             #region Public vars
+            /// <summary>
+            /// The column auto resize his width size.
+            /// </summary>
             public bool autoResize;
+
+            /// <summary>
+            /// Enable sorting for this column.
+            /// </summary>
             public bool canSort;
 
+            /// <summary>
+            /// Header title caption for this column.
+            /// </summary>
             public string headerTitle;
+
+            /// <summary>
+            /// Header title caption alignment.
+            /// </summary>
             public TextAlignment headerTextAlignment;
 
+            /// <summary>
+            /// Sorting arrow alignment on header column.
+            /// </summary>
             public TextAlignment sortingArrowAlignment;
+
+            /// <summary>
+            /// Is sorting asceding?
+            /// </summary>
             public bool sortedAscending;
 
+            /// <summary>
+            /// Column width.
+            /// </summary>
             public float width;
+
+            /// <summary>
+            /// Column minimal width.
+            /// </summary>
             public float minWidth;
+
+            /// <summary>
+            /// Column maximum width.
+            /// </summary>
             public float maxWidth;
 
+            /// <summary>
+            /// Name of the <see cref="SerializedProperty"/> that contains the value of this column cells.
+            /// </summary>
+            /// <remarks>If this value is null or empty, or the name is wrong, the <see cref="DataTable"/> shows an error warning when trying to draw the cell.</remarks>
             public string propertyName;
 
+            /// <summary>
+            /// Enable <see cref="DataTable.OnCustomCellGUI"/> event for this column.
+            /// </summary>
             public bool useCustomGUI;
             #endregion
 
@@ -59,7 +102,6 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Classes
-        // TODO: The SerializedProperty enable the possibility to draw custom drawer easily in each Treeview cell using EditorGUI.PropertyField.
         class InternalTreeViewItem : TreeViewItem
         {
             #region Public vars
@@ -99,6 +141,10 @@ namespace Argos.Framework.IMGUI
             {
                 switch (this.data[columnIndex].propertyType)
                 {
+                    case SerializedPropertyType.Boolean:
+
+                        return this.data[columnIndex].boolValue.CompareTo(other.data[columnIndex].boolValue);
+
                     case SerializedPropertyType.Integer:
 
                         return this.data[columnIndex].intValue.CompareTo(other.data[columnIndex].intValue);
@@ -159,7 +205,7 @@ namespace Argos.Framework.IMGUI
         class InternalTreeView : TreeView
         {
             #region Constants
-            const string GENERIC_DRAG_ID = "GenericDragColumnDragging";
+            const string GENERIC_DRAG_ID = "GenericDragColumnDragging";            
             #endregion
 
             #region Internal vars
@@ -189,6 +235,26 @@ namespace Argos.Framework.IMGUI
             #region Events
             public event Action<InternalTreeView, int> OnSearchColumnIndexChange;
             public event Action<Rect, SerializedProperty> OnCustomCellGUI;
+            #endregion
+
+            #region Static members
+            static GUIContent _errorGUIContent;
+            static GUIStyle _errorGUIStyle;
+            #endregion
+
+            #region Initializers
+            [InitializeOnLoadMethod]
+            static void Init()
+            {
+                InternalTreeView._errorGUIContent = new GUIContent(EditorGUIUtility.IconContent("console.erroricon.sml").image);
+                {
+                    InternalTreeView._errorGUIContent.text = "Null!";
+                }
+                InternalTreeView._errorGUIStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("miniBoldLabel"));
+                {
+                    InternalTreeView._errorGUIStyle.normal.textColor = Color.red;
+                }
+            } 
             #endregion
 
             #region Constructors
@@ -424,13 +490,29 @@ namespace Argos.Framework.IMGUI
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.propertyNames[columnIndex]))
                     {
-                        if (this.useCustomColumnGUI[columnIndex])
+                        if (rowData.data[columnIndex] != null)
                         {
-                            this.OnCustomCellGUI?.Invoke(cellRect, rowData.data[columnIndex]);
+                            if (this.useCustomColumnGUI[columnIndex])
+                            {
+                                this.OnCustomCellGUI?.Invoke(cellRect, rowData.data[columnIndex]);
+                            }
+                            else
+                            {
+                                if (rowData.data[columnIndex].propertyType == SerializedPropertyType.Boolean)
+                                {
+                                    cellRect.x += (cellRect.width * 0.5f) - 8f;
+                                    cellRect.width = 16f;
+                                }
+
+                                EditorGUI.PropertyField(cellRect, rowData.data[columnIndex], GUIContent.none, false);
+                            } 
                         }
                         else
                         {
-                            EditorGUI.PropertyField(cellRect, rowData.data[columnIndex], GUIContent.none, false); 
+                            cellRect.y -= 4f;
+                            cellRect.height += 4f;
+
+                            EditorGUI.LabelField(cellRect, InternalTreeView._errorGUIContent, InternalTreeView._errorGUIStyle);
                         }
                     }
                 }
@@ -446,27 +528,70 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Properties
+        /// <summary>
+        /// Source data of this <see cref="DataTable"/> control. Must be an array.
+        /// </summary>
         public SerializedProperty SerializedProperty => this._treeView.property;
+
+        /// <summary>
+        /// Names of the each <see cref="SerializedProperty"/> for each column.
+        /// </summary>
         public string[] PropertyNames => this._treeView.propertyNames;
 
+        /// <summary>
+        /// Shows a column in the left with the index of each row.
+        /// </summary>
         public bool ShowRowIndexColumn { get { return this._treeView.showRowIndex; } set { this._treeView.showRowIndex = value; } }
-        public bool ShowSearchField { get; set; }
-        public string SearchFieldLabel { get; set; }
 
-        public int RowCount { get; private set; }
+        /// <summary>
+        /// Enables the search field that allow filter results for column values.
+        /// </summary>
+        public bool ShowSearchField { get; set; }
+
+        /// <summary>
+        /// Row count.
+        /// </summary>
+        public int RowCount { get { return (this.SerializedProperty != null && this.SerializedProperty.isArray) ? this.SerializedProperty.arraySize : 0; } }
+
+        /// <summary>
+        /// The index of the column used by search field to filter data.
+        /// </summary>
+        /// <remarks>The row sorting feature only works with basic types: <see cref="bool"/>, <see cref="int"/>, <see cref="float"/>, <see cref="string"/> and <see cref="Enum"/> values, treated as <see cref="string"/> values. Other types sets the original row order. 
+        /// The <see cref="string"/> and <see cref="Enum"/> values are sorting using <see cref="EditorUtility.NaturalCompare(string, string)"/> function.</remarks>
         public int CurrentSearchColumnIndex { get; set; }
 
+        /// <summary>
+        /// Enable this to automatic resize all columns to fit in the control width size.
+        /// </summary>
         public bool ResizeToFitColumns { get; set; }
 
+        /// <summary>
+        /// User can drag and drop rows?
+        /// </summary>
         public bool CanDrag { get { return this._treeView.canDrag; } set { this._treeView.canDrag = value; } }
+
+        /// <summary>
+        /// User can select multiple rows at once?
+        /// </summary>
         public bool CanMultiselect { get { return this._treeView.canMultiselect; } set { this._treeView.canMultiselect = value; } }
         #endregion
 
         #region Events
-        public event Action<Rect, SerializedProperty> OnCustomCellGUI; 
+        /// <summary>
+        /// Event used to customized data representation of a column cell.
+        /// </summary>
+        /// <see cref="DataTableColumn.useCustomGUI"/>
+        public event Action<Rect, SerializedProperty> OnCustomCellGUI;
         #endregion
 
         #region Constructor & Destructor
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="property"><see cref="SerializedProperty"/> soruce data. Must be an array.</param>
+        /// <param name="columns">Definition of each column.</param>
+        /// <param name="rowHeight">Row height. By default is the default height of a normal control.</param>
+        /// <param name="resizeToFitColumns">Enable this to automatic resize all columns to fit in the control width size. By default is true. This value can be changed via <see cref="ResizeToFitColumns"/>.</param>
         public DataTable(SerializedProperty property, DataTableColumn[] columns, float rowHeight = -1f, bool resizeToFitColumns = true)
         {
             if (property == null)
@@ -512,6 +637,12 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Methods & Functions
+        /// <summary>
+        /// Sets the column used by search field to filter data.
+        /// </summary>
+        /// <param name="columnIndex">Index of column. (0 is the first user defined column. Row index column not count).</param>
+        /// <remarks>The row sorting feature only works with basic types: <see cref="bool"/>, <see cref="int"/>, <see cref="float"/>, <see cref="string"/> and <see cref="Enum"/> values, treated as <see cref="string"/> values. Other types sets the original row order. 
+        /// The <see cref="string"/> and <see cref="Enum"/> values are sorting using <see cref="EditorUtility.NaturalCompare(string, string)"/> function.</remarks>
         public void SetSearchColumn(int columnIndex)
         {
             if (this.PropertyNames.Length > 0)
@@ -521,11 +652,18 @@ namespace Argos.Framework.IMGUI
             }
         }
 
+        /// <summary>
+        /// Reload all data from data source.
+        /// </summary>
         public void Reload()
         {
             this._treeView.Reload();
         }
 
+        /// <summary>
+        /// Draws the <see cref="DataTable"/>.
+        /// </summary>
+        /// <param name="layout">Rect that positioned the control.</param>
         public void Do(Rect layout)
         {
             if (this.ShowSearchField)
@@ -551,6 +689,10 @@ namespace Argos.Framework.IMGUI
             this._treeView.OnGUI(layout);
         }
 
+        /// <summary>
+        /// Draws the <see cref="DataTable"/> using layout.
+        /// </summary>
+        /// <param name="rows">Number of visible rows. If search field is enable, the control will occupy the first row.</param>
         public void DoLayout(int rows = 10)
         {
             float height = this._treeView.multiColumnHeader.height + (this._treeView.RowHeight * rows) + 3f;

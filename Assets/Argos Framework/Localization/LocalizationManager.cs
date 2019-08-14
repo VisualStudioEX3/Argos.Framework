@@ -20,6 +20,7 @@ namespace Argos.Framework.Localization
             public string key;
             public string text;
             public KeyCode keyCode;
+            public bool enable;
             [Range(0, 10)]
             public int value;
             public Color color;

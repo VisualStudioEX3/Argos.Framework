@@ -13,10 +13,12 @@ namespace Argos.Framework
         public const float BUTTON_WIDTH = 22f;
         #endregion
 
+        #region Methods & Functions
         public override bool CheckPropertyType(SerializedProperty property)
         {
             return property.propertyType == SerializedPropertyType.String;
-        }
+        } 
+        #endregion
 
         #region Event listeners
         public sealed override void OnCustomGUI(Rect position, SerializedProperty property, GUIContent label)

@@ -593,6 +593,7 @@ MonoBehaviour:
   - key: ui_submit
     text: Submit
     keyCode: 13
+    enable: 1
     value: 3
     color: {r: 1, g: 0, b: 0, a: 0}
     curve:
@@ -623,6 +624,7 @@ MonoBehaviour:
   - key: ui_cancel
     text: Cancel
     keyCode: 27
+    enable: 1
     value: 4
     color: {r: 0, g: 0.692, b: 0, a: 0}
     curve:
@@ -653,6 +655,7 @@ MonoBehaviour:
   - key: ui_delete
     text: Delete
     keyCode: 127
+    enable: 0
     value: 1
     color: {r: 0, g: 1, b: 0.95873094, a: 0}
     curve:
@@ -683,6 +686,7 @@ MonoBehaviour:
   - key: ui_defaults
     text: Set Defaults
     keyCode: 9
+    enable: 0
     value: 10
     color: {r: 0.6037736, g: 0.33744213, b: 0, a: 0}
     curve:
@@ -713,6 +717,7 @@ MonoBehaviour:
   - key: ui_ok
     text: Ok
     keyCode: 32
+    enable: 0
     value: 3
     color: {r: 1, g: 1, b: 1, a: 0}
     curve:
@@ -743,6 +748,7 @@ MonoBehaviour:
   - key: ui_navigation
     text: Navigation
     keyCode: 8
+    enable: 1
     value: 5
     color: {r: 0, g: 0, b: 0, a: 0}
     curve:

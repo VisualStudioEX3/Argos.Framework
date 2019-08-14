@@ -492,12 +492,15 @@ namespace Argos.Framework.IMGUI
             this._rowColumnWidth = Mathf.Clamp(DataTable.ROW_COLUMN_CHAR_WIDTH * property.arraySize.ToString().Length, DataTable.ROW_COLUMN_MIN_WIDTH, DataTable.ROW_COLUMN_MAX_WIDTH);
             this._treeView = new InternalTreeView(columnStates, property, columns.Select(e => e.propertyName).ToArray(), columns.Select(e => e.useCustomGUI).ToArray(), rowHeight);
             {
+                this._treeView.searchString = string.Empty;
                 this._treeView.OnCustomCellGUI += this.OnCustomCellGUI;
             }
 
             this._searchField = new SearchField();
-            this._searchField.DropDownItems = columns.Select(e => e.headerTitle).ToArray();
-            this._searchField.OnDropDownSelect += this.SetSearchColumn;
+            {
+                this._searchField.DropDownItems = columns.Select(e => e.headerTitle).ToArray();
+                this._searchField.OnDropDownSelect += this.SetSearchColumn;
+            }
 
             this.ResizeToFitColumns = resizeToFitColumns;
         }

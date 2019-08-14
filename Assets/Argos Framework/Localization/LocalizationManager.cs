@@ -22,6 +22,8 @@ namespace Argos.Framework.Localization
             public KeyCode keyCode;
             [Range(0, 10)]
             public int value;
+            public Color color;
+            public AnimationCurve curve;
             public float threshold;
         }
 

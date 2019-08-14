@@ -56,7 +56,20 @@ namespace Argos.Framework
 
         void DrawLeftToggleField(Rect position, SerializedProperty property, int index)
         {
-            if (EditorGUI.Toggle(position, property.enumDisplayNames[index], property.enumValueIndex == index, EditorSkinUtility.Skin.FindStyle("Radio")))
+            Rect toggleRect = position;
+            {
+                toggleRect.y--;
+            }
+
+            Rect labelRect = position;
+            {
+                labelRect.x += 16f;
+                labelRect.xMax = position.xMax;
+            }
+
+            EditorGUI.PrefixLabel(labelRect, new GUIContent(property.enumDisplayNames[index]));
+
+            if (EditorGUI.Toggle(toggleRect, string.Empty, property.enumValueIndex == index, OptionListDrawer._radioStyle))
             {
                 property.enumValueIndex = index;
             }

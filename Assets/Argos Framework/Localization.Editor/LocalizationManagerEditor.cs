@@ -18,7 +18,7 @@ namespace Argos.Framework.Localization
         private void OnEnable()
         {
             this._prop = this.serializedObject.FindProperty("_test");
-            var columns = new DataTable.DataTableColumn[2];
+            var columns = new DataTable.DataTableColumn[5];
             {
                 columns[0].autoResize = true;
                 columns[0].canSort = true;
@@ -35,12 +35,45 @@ namespace Argos.Framework.Localization
                 columns[1].canSort = true;
                 columns[1].headerTitle = "Text";
                 columns[1].headerTextAlignment = TextAlignment.Left;
-                columns[1].maxWidth = 500f;
+                columns[1].maxWidth = 150f;
                 columns[1].minWidth = 100f;
                 columns[1].sortingArrowAlignment = TextAlignment.Center;
                 columns[1].sortedAscending = false;
-                columns[1].width = 250f;
+                columns[1].width = 125f;
                 columns[1].propertyName = "text";
+
+                columns[2].autoResize = true;
+                columns[2].canSort = true;
+                columns[2].headerTitle = "Key Code";
+                columns[2].headerTextAlignment = TextAlignment.Left;
+                columns[2].maxWidth = 150f;
+                columns[2].minWidth = 100f;
+                columns[2].sortingArrowAlignment = TextAlignment.Center;
+                columns[2].sortedAscending = false;
+                columns[2].width = 125f;
+                columns[2].propertyName = "keyCode";
+
+                columns[3].autoResize = true;
+                columns[3].canSort = true;
+                columns[3].headerTitle = "Value";
+                columns[3].headerTextAlignment = TextAlignment.Left;
+                columns[3].maxWidth = 500f;
+                columns[3].minWidth = 100f;
+                columns[3].sortingArrowAlignment = TextAlignment.Center;
+                columns[3].sortedAscending = false;
+                columns[3].width = 250f;
+                columns[3].propertyName = "value";
+
+                columns[4].autoResize = true;
+                columns[4].canSort = true;
+                columns[4].headerTitle = "Threshold";
+                columns[4].headerTextAlignment = TextAlignment.Left;
+                columns[4].maxWidth = 100f;
+                columns[4].minWidth = 60f;
+                columns[4].sortingArrowAlignment = TextAlignment.Center;
+                columns[4].sortedAscending = false;
+                columns[4].width = 75f;
+                columns[4].propertyName = "threshold";
             }
 
             this._dataTable = new DataTable(this._prop, columns);

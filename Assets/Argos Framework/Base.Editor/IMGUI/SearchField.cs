@@ -42,6 +42,9 @@ namespace Argos.Framework.IMGUI
             SearchField._cancelButtonEmptyStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("ToolbarSeachCancelButtonEmpty"));
 
             SearchField._invisibleButtonStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("InvisibleButton"));
+            {
+                SearchField._invisibleButtonStyle.normal.textColor = Color.clear;
+            }
 
             SearchField._miniLabelDisabled = new GUIStyle(EditorSkinUtility.Skin.FindStyle("MiniLabel"));
             {

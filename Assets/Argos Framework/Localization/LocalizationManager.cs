@@ -19,6 +19,10 @@ namespace Argos.Framework.Localization
         {
             public string key;
             public string text;
+            public KeyCode keyCode;
+            [Range(0, 10)]
+            public int value;
+            public float threshold;
         }
 
         [SerializeField]

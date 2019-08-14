@@ -14,8 +14,8 @@ namespace Argos.Framework
         /// <summary>
         /// Check if the Serialized Property is an array element.
         /// </summary>
-        /// <param name="property">Serialized Property to evaluate.</param>
-        /// <returns>Return true if the Serialized Property is an array element.</returns>
+        /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
+        /// <returns>Return true if the <see cref="SerializedProperty"/> is an array element.</returns>
         public static bool IsArrayElement(this SerializedProperty property)
         {
             return IsArrayElement(property, out int i);
@@ -24,9 +24,9 @@ namespace Argos.Framework
         /// <summary>
         /// Check if the Serialized Property is an array element.
         /// </summary>
-        /// <param name="property">Serialized Property to evaluate.</param>
+        /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
         /// <param name="index">Out parameter that return the array element index.</param>
-        /// <returns>Return true if the Serialized Property is an array element.</returns>
+        /// <returns>Return true if the <see cref="SerializedProperty"/> is an array element.</returns>
         public static bool IsArrayElement(this SerializedProperty property, out int index)
         {
             const string ARRAY_DATA_END_MASK = "Array.data";
@@ -42,6 +42,26 @@ namespace Argos.Framework
 
             index = -1;
             return false;
+        }
+
+        /// <summary>
+        /// Get name of current enumeration value of an enum property.
+        /// </summary>
+        /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
+        /// <returns>Return the current string representation enumeration value.</returns>
+        public static string GetEnumName(this SerializedProperty property)
+        {
+            return property.enumNames[property.enumValueIndex];
+        }
+
+        /// <summary>
+        /// Get display-friendly name of current enumeration value of an enum property.
+        /// </summary>
+        /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
+        /// <returns>Return the current string representation enumeration value like shows in editor controls.</returns>
+        public static string GetDisplayEnumName(this SerializedProperty property)
+        {
+            return property.enumDisplayNames[property.enumValueIndex];
         }
         #endregion
     }

@@ -10,6 +10,7 @@ namespace Argos.Framework
     /// </summary>
     public static class BoolExtensions
     {
+        #region Methods & Functions
         /// <summary>
         /// Convert to int value.
         /// </summary>
@@ -19,5 +20,6 @@ namespace Argos.Framework
         {
             return value ? -1 : 0;
         }
+        #endregion
     } 
 }

@@ -590,16 +590,34 @@ MonoBehaviour:
   _test:
   - key: ui_submit
     text: Submit
+    keyCode: 13
+    value: 7
+    threshold: -15.25
   - key: ui_cancel
     text: Cancel
+    keyCode: 27
+    value: 4
+    threshold: 0.25
   - key: ui_delete
     text: Delete
+    keyCode: 127
+    value: 1
+    threshold: 1.3
   - key: ui_defaults
     text: Set Defaults
+    keyCode: 9
+    value: 10
+    threshold: 100.36
   - key: ui_ok
     text: Ok
+    keyCode: 32
+    value: 3
+    threshold: 1.1
   - key: ui_navigation
     text: Navigation
+    keyCode: 8
+    value: 5
+    threshold: 1.123
 --- !u!4 &367070342
 Transform:
   m_ObjectHideFlags: 0

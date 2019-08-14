@@ -47,9 +47,9 @@ namespace Argos.Framework.IMGUI
                     headerTextAlignment = column.headerTextAlignment,
                     sortingArrowAlignment = column.sortingArrowAlignment,
                     sortedAscending = column.sortedAscending,
-                    width = column.width,
                     minWidth = column.minWidth,
-                    maxWidth = column.maxWidth
+                    maxWidth = column.maxWidth,
+                    width = Mathf.Clamp(column.width, column.minWidth, column.maxWidth)
                 };
             }
             #endregion
@@ -80,6 +80,8 @@ namespace Argos.Framework.IMGUI
                     }
                 }
 
+                this.OnSetSearchColumn(treeView, treeView.searchColumnIndex);
+
                 treeView.OnSearchColumnIndexChange += this.OnSetSearchColumn;
             }
 
@@ -89,29 +91,57 @@ namespace Argos.Framework.IMGUI
             }
             #endregion
 
-            #region Event listeners
-            void OnSetSearchColumn(InternalTreeView treeView, int index)
+            #region Methods & Functions
+            public int CompareTo(InternalTreeViewItem other, int columnIndex)
             {
-                switch (this.data[index].propertyType)
+                switch (this.data[columnIndex].propertyType)
                 {
                     case SerializedPropertyType.Integer:
 
-                        this.displayName = this.data[index].intValue.ToString();
+                        return this.data[columnIndex].intValue.CompareTo(other.data[columnIndex].intValue);
+
+                    case SerializedPropertyType.Float:
+
+                        return this.data[columnIndex].floatValue.CompareTo(other.data[columnIndex].floatValue);
+
+                    case SerializedPropertyType.String:
+
+                        return EditorUtility.NaturalCompare(this.data[columnIndex].stringValue, other.data[columnIndex].stringValue);
+
+                    case SerializedPropertyType.Enum:
+
+                        return EditorUtility.NaturalCompare(this.data[columnIndex].GetDisplayEnumName(), other.data[columnIndex].GetDisplayEnumName());
+
+                    default:
+
+                        return 0;
+                }
+            } 
+            #endregion
+
+            #region Event listeners
+            void OnSetSearchColumn(InternalTreeView treeView, int columnIndex)
+            {
+                switch (this.data[columnIndex].propertyType)
+                {
+                    case SerializedPropertyType.Integer:
+
+                        this.displayName = this.data[columnIndex].intValue.ToString();
                         break;
 
                     case SerializedPropertyType.Float:
 
-                        this.displayName = this.data[index].floatValue.ToString();
+                        this.displayName = this.data[columnIndex].floatValue.ToString();
                         break;
 
                     case SerializedPropertyType.String:
 
-                        this.displayName = this.data[index].stringValue;
+                        this.displayName = this.data[columnIndex].stringValue;
                         break;
 
                     case SerializedPropertyType.Enum:
 
-                        this.displayName = this.data[index].enumDisplayNames[this.data[index].enumValueIndex];
+                        this.displayName = this.data[columnIndex].GetDisplayEnumName();
                         break;
 
                     default:
@@ -129,14 +159,20 @@ namespace Argos.Framework.IMGUI
             const string GENERIC_DRAG_ID = "GenericDragColumnDragging";
             #endregion
 
+            #region Internal vars
+            bool _sortRows;
+            #endregion
+
             #region Public vars
             public SerializedProperty property;
             public string[] propertyNames;
 
             public bool showRowIndex;
 
-            public int searchColumnIndex;
-            public SerializedPropertyType searchColumnType;
+            public int searchColumnIndex = 0;
+
+            public int sortColumnIndex;
+            public bool sortAscending;
 
             public bool canDrag;
             public bool canMultiselect;
@@ -208,39 +244,37 @@ namespace Argos.Framework.IMGUI
                 return true;
             }
 
-            IEnumerable<InternalTreeViewItem> SortRows(int columnIndex, bool ascending)
-            {
-                var sortedRows = this.GetRows().Cast<InternalTreeViewItem>().OrderBy(e => e.data[columnIndex], ascending);
-            }
+            //static int CompareRow(InternalTreeViewItem a, InternalTreeViewItem b)
+            //{
+            //    return (this.sortAscending ? 1 : -1) * a.CompareTo(b);
+            //}
             #endregion
 
             #region Event listeners
-            // BuildRoot is called every time Reload() method is called to ensure that TreeViewItems are created from data.
             protected override TreeViewItem BuildRoot()
             {
                 this.OnSearchColumnIndexChange = null;
 
-                return new TreeViewItem { id = 0, depth = -1, displayName = "Root" };
-            }
-
-            protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
-            {
-                //var rows = base.BuildRows(root);
-                var rows = new InternalTreeViewItem[this.property.arraySize];
+                var root = new TreeViewItem { id = 0, depth = -1, displayName = string.Empty };
+                var rows = new List<TreeViewItem>(this.property.arraySize);
 
                 for (int i = 0; i < this.property.arraySize; i++)
                 {
-                    root.AddChild(new InternalTreeViewItem(this, this.property.GetArrayElementAtIndex(i)));
+                    rows.Add(new InternalTreeViewItem(this, this.property.GetArrayElementAtIndex(i)));
                 }
 
-                //SortIfNeeded(root, rows); // Sorting here?
+                if (this._sortRows)
+                {
+                    rows.Sort((x, y) => (this.sortAscending ? 1 : -1) * (x as InternalTreeViewItem).CompareTo(y as InternalTreeViewItem, this.sortColumnIndex));
+                    this._sortRows = false;
+                }
 
                 foreach (var item in rows)
                 {
                     root.AddChild(item);
                 }
-                
-                return rows;
+
+                return root;
             }
 
             protected override bool CanStartDrag(CanStartDragArgs args)
@@ -255,14 +289,13 @@ namespace Argos.Framework.IMGUI
 
             void OnSortingChanged(MultiColumnHeader multiColumnHeader)
             {
-                if (multiColumnHeader.sortedColumnIndex == -1 && this.property.arraySize <= 2)
-                {
-                    return;
-                }
+                if (multiColumnHeader.sortedColumnIndex == -1 && this.property.arraySize <= 2) return;
 
-                Debug.LogWarning($"Sorting column index: {multiColumnHeader.sortedColumnIndex}, sorting order is ascending: {multiColumnHeader.IsSortedAscending(multiColumnHeader.sortedColumnIndex)}");
+                this.sortColumnIndex = multiColumnHeader.sortedColumnIndex - 1;
+                this.sortAscending = multiColumnHeader.IsSortedAscending(multiColumnHeader.sortedColumnIndex);
+                this._sortRows = true;
 
-                this.Repaint();
+                this.Reload();
             }
 
             protected override DragAndDropVisualMode HandleDragAndDrop(DragAndDropArgs args)
@@ -367,10 +400,12 @@ namespace Argos.Framework.IMGUI
 
                 for (int i = 0; i < this.propertyNames.Length + 1; i++)
                 {
-                    this.columnIndexForTreeFoldouts = i;
-
-                    Rect cellRect = this.GetCellRectForTreeFoldouts(args.rowRect);
+                    if (!this.multiColumnHeader.IsColumnVisible(i)) continue;
+                    
+                    Rect cellRect = this.multiColumnHeader.GetCellRect(i, args.rowRect);
                     {
+                        cellRect.width = this.multiColumnHeader.GetColumn(i).width;
+
                         cellRect.xMin++;
                         cellRect.xMax--;
                     }
@@ -406,12 +441,14 @@ namespace Argos.Framework.IMGUI
         public int RowCount { get; private set; }
         public int CurrentSearchColumnIndex { get; set; }
 
+        public bool ResizeToFitColumns { get; set; }
+
         public bool CanDrag { get { return this._treeView.canDrag; } set { this._treeView.canDrag = value; } }
         public bool CanMultiselect { get { return this._treeView.canMultiselect; } set { this._treeView.canMultiselect = value; } }
         #endregion
 
         #region Constructor & Destructor
-        public DataTable(SerializedProperty property, DataTableColumn[] columns, float rowHeight = -1f)
+        public DataTable(SerializedProperty property, DataTableColumn[] columns, float rowHeight = -1f, bool resizeToFitColumns = true)
         {
             if (property == null)
             {
@@ -439,7 +476,7 @@ namespace Argos.Framework.IMGUI
             this._searchField.DropDownItems = columns.Select(e => e.headerTitle).ToArray();
             this._searchField.OnDropDownSelect += this.SetSearchColumn;
 
-            this.SetSearchColumn(0);
+            this.ResizeToFitColumns = resizeToFitColumns;
         }
 
         ~DataTable()
@@ -479,7 +516,11 @@ namespace Argos.Framework.IMGUI
             }
 
             this._treeView.multiColumnHeader.state.columns[0].width = this.ShowRowIndexColumn ? this._rowColumnWidth : 0f;
-            this._treeView.multiColumnHeader.ResizeToFit();
+
+            if (this.ResizeToFitColumns)
+            {
+                this._treeView.multiColumnHeader.ResizeToFit(); 
+            }
 
             this._treeView.OnGUI(layout);
         }

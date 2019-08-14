@@ -16,7 +16,7 @@ namespace Argos.Framework.IMGUI
         const float ROW_COLUMN_MAX_WIDTH = DataTable.ROW_COLUMN_CHAR_WIDTH * 5;
         #endregion
 
-        #region Classes
+        #region Structs
         public struct DataTableColumn
         {
             #region Public vars
@@ -34,6 +34,8 @@ namespace Argos.Framework.IMGUI
             public float maxWidth;
 
             public string propertyName;
+
+            public bool useCustomGUI;
             #endregion
 
             #region Operators
@@ -54,8 +56,9 @@ namespace Argos.Framework.IMGUI
             }
             #endregion
         }
+        #endregion
 
-        // TOOD: Found a way to sorting using standard types from SerializedProperty. The sorting behaviour is external to Unity Treeview, then we can implement own sorting code based on any data of this class.
+        #region Classes
         // TODO: The SerializedProperty enable the possibility to draw custom drawer easily in each Treeview cell using EditorGUI.PropertyField.
         class InternalTreeViewItem : TreeViewItem
         {
@@ -116,7 +119,7 @@ namespace Argos.Framework.IMGUI
 
                         return 0;
                 }
-            } 
+            }
             #endregion
 
             #region Event listeners
@@ -149,7 +152,7 @@ namespace Argos.Framework.IMGUI
                         this.displayName = string.Empty;
                         break;
                 }
-            } 
+            }
             #endregion
         }
 
@@ -166,6 +169,7 @@ namespace Argos.Framework.IMGUI
             #region Public vars
             public SerializedProperty property;
             public string[] propertyNames;
+            public bool[] useCustomColumnGUI;
 
             public bool showRowIndex;
 
@@ -179,15 +183,16 @@ namespace Argos.Framework.IMGUI
             #endregion
 
             #region Properties
-            public float RowHeight => this.rowHeight; 
+            public float RowHeight => this.rowHeight;
             #endregion
 
             #region Events
             public event Action<InternalTreeView, int> OnSearchColumnIndexChange;
+            public event Action<Rect, SerializedProperty> OnCustomCellGUI;
             #endregion
 
             #region Constructors
-            public InternalTreeView(MultiColumnHeaderState.Column[] columStates, SerializedProperty property, string[] propertyNames, float rowHeight = -1f) : base(new TreeViewState(), null)
+            public InternalTreeView(MultiColumnHeaderState.Column[] columStates, SerializedProperty property, string[] propertyNames, bool[] useCustomColumnGUI, float rowHeight = -1f) : base(new TreeViewState(), null)
             {
                 this.multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(columStates));
                 this.multiColumnHeader.sortingChanged += this.OnSortingChanged;
@@ -197,6 +202,7 @@ namespace Argos.Framework.IMGUI
 
                 this.property = property;
                 this.propertyNames = propertyNames;
+                this.useCustomColumnGUI = useCustomColumnGUI;
 
                 this.Reload();
             }
@@ -401,7 +407,7 @@ namespace Argos.Framework.IMGUI
                 for (int i = 0; i < this.propertyNames.Length + 1; i++)
                 {
                     if (!this.multiColumnHeader.IsColumnVisible(i)) continue;
-                    
+
                     Rect cellRect = this.multiColumnHeader.GetCellRect(i, args.rowRect);
                     {
                         cellRect.width = this.multiColumnHeader.GetColumn(i).width;
@@ -410,13 +416,22 @@ namespace Argos.Framework.IMGUI
                         cellRect.xMax--;
                     }
 
+                    int columnIndex = i - 1;
+
                     if (i == 0 && this.showRowIndex)
                     {
                         EditorGUI.LabelField(cellRect, (args.row + 1).ToString());
                     }
-                    else if (i > 0 && !string.IsNullOrEmpty(this.propertyNames[i - 1]))
+                    else if (i > 0 && !string.IsNullOrEmpty(this.propertyNames[columnIndex]))
                     {
-                        EditorGUI.PropertyField(cellRect, rowData.data[i - 1], GUIContent.none, false);
+                        if (this.useCustomColumnGUI[columnIndex])
+                        {
+                            this.OnCustomCellGUI?.Invoke(cellRect, rowData.data[columnIndex]);
+                        }
+                        else
+                        {
+                            EditorGUI.PropertyField(cellRect, rowData.data[columnIndex], GUIContent.none, false); 
+                        }
                     }
                 }
             }
@@ -447,31 +462,39 @@ namespace Argos.Framework.IMGUI
         public bool CanMultiselect { get { return this._treeView.canMultiselect; } set { this._treeView.canMultiselect = value; } }
         #endregion
 
+        #region Events
+        public event Action<Rect, SerializedProperty> OnCustomCellGUI; 
+        #endregion
+
         #region Constructor & Destructor
         public DataTable(SerializedProperty property, DataTableColumn[] columns, float rowHeight = -1f, bool resizeToFitColumns = true)
         {
             if (property == null)
             {
-                throw new ArgumentNullException("DataTable: The SerializedProperty can't be null!");
+                throw new ArgumentNullException("DataTable.ctor(): The SerializedProperty can't be null!");
             }
 
             if (!property.isArray)
             {
-                throw new ArgumentException("DataTable: The SerializedProperty must be an array!");
+                throw new ArgumentException("DataTable.ctor(): The SerializedProperty must be an array!");
             }
 
             var columnStates = new MultiColumnHeaderState.Column[columns.Length + 1];
-
-            columnStates[0] = new DataTableColumn();
-
-            for (int i = 1; i < columnStates.Length; i++)
             {
-                columnStates[i] = columns[i - 1];
+                columnStates[0] = new DataTableColumn(); // Row index column.
+
+                for (int i = 1; i < columnStates.Length; i++)
+                {
+                    columnStates[i] = columns[i - 1];
+                }
             }
 
             this._rowColumnWidth = Mathf.Clamp(DataTable.ROW_COLUMN_CHAR_WIDTH * property.arraySize.ToString().Length, DataTable.ROW_COLUMN_MIN_WIDTH, DataTable.ROW_COLUMN_MAX_WIDTH);
+            this._treeView = new InternalTreeView(columnStates, property, columns.Select(e => e.propertyName).ToArray(), columns.Select(e => e.useCustomGUI).ToArray(), rowHeight);
+            {
+                this._treeView.OnCustomCellGUI += this.OnCustomCellGUI;
+            }
 
-            this._treeView = new InternalTreeView(columnStates, property, columns.Select(e => e.propertyName).ToArray(), rowHeight);
             this._searchField = new SearchField();
             this._searchField.DropDownItems = columns.Select(e => e.headerTitle).ToArray();
             this._searchField.OnDropDownSelect += this.SetSearchColumn;
@@ -510,7 +533,7 @@ namespace Argos.Framework.IMGUI
                     searchFieldRect.xMax = layout.xMax;
                 }
                 this._treeView.searchString = this._searchField.Do(searchFieldRect, this._treeView.searchString);
-;
+                ;
                 layout.y += SearchField.Height;
                 layout.height -= SearchField.Height;
             }
@@ -519,7 +542,7 @@ namespace Argos.Framework.IMGUI
 
             if (this.ResizeToFitColumns)
             {
-                this._treeView.multiColumnHeader.ResizeToFit(); 
+                this._treeView.multiColumnHeader.ResizeToFit();
             }
 
             this._treeView.OnGUI(layout);

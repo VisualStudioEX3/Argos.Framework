@@ -364,14 +364,10 @@ namespace Argos.Framework.IMGUI
 
                     case SerializedPropertyType.Color:
 
-                        Color currentColor = property.colorValue;
-                        EditorGUI.PropertyField(cellRect, property, GUIContent.none);
-                        property.colorValue = currentColor;
-                        break;
+                        var attribute = property.GetCustomAttribute<ColorUsageAttribute>();
 
-                    case SerializedPropertyType.ObjectReference:
+                        EditorGUI.ColorField(cellRect, GUIContent.none, property.colorValue, false, (attribute != null) ? attribute.showAlpha : true, (attribute != null) ? attribute.hdr : false);
 
-                        EditorGUI.ObjectField(cellRect, GUIContent.none, property.objectReferenceValue, Type.GetType(property.type), true);
                         break;
 
                     case SerializedPropertyType.LayerMask:
@@ -421,17 +417,14 @@ namespace Argos.Framework.IMGUI
                         EditorGUI.BoundsField(cellRect, GUIContent.none, property.boundsValue);
                         break;
 
-                    //case SerializedPropertyType.Gradient:
-                    //    break;
+                    case SerializedPropertyType.Gradient:
+
+                        EditorGUI.GradientField(cellRect, property.GetGradientFieldCopy());
+                        break;
 
                     case SerializedPropertyType.Quaternion:
 
                         EditorGUI.Vector4Field(cellRect, GUIContent.none, new Vector4(property.quaternionValue.x, property.quaternionValue.y, property.quaternionValue.z, property.quaternionValue.w));
-                        break;
-
-                    case SerializedPropertyType.ExposedReference:
-
-                        EditorGUI.ObjectField(cellRect, GUIContent.none, property.exposedReferenceValue, Type.GetType(property.type), true);
                         break;
 
                     case SerializedPropertyType.Vector2Int:
@@ -456,10 +449,9 @@ namespace Argos.Framework.IMGUI
 
                     default:
 
-                        cellRect.y -= 4f;
-                        cellRect.height += 4f;
-
-                        EditorGUI.LabelField(cellRect, InternalTreeView._errorGUIContentNotImplemented, InternalTreeView._errorGUIStyle);
+                        GUI.enabled = false;
+                        EditorGUI.PropertyField(cellRect, property, GUIContent.none, false);
+                        GUI.enabled = true;
                         break;
                 }
             }

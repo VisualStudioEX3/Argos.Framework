@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEditor;
 using Argos.Framework.IMGUI;
@@ -17,6 +18,10 @@ namespace Argos.Framework.Localization
 
         private void OnEnable()
         {
+            SerializedProperty gradient = this.serializedObject.FindProperty("_gradient");
+            SerializedProperty mask = this.serializedObject.FindProperty("_layerMask");
+            SerializedProperty letter = this.serializedObject.FindProperty("_letter");
+
             this._prop = this.serializedObject.FindProperty("_test");
             var columns = new List<DataTable.DataTableColumn>();
             {
@@ -74,6 +79,7 @@ namespace Argos.Framework.Localization
                     sortedAscending = false,
                     width = 125f,
                     propertyName = "enable",
+                    readOnly = true
                 });
 
                 columns.Add(new DataTable.DataTableColumn()
@@ -88,6 +94,7 @@ namespace Argos.Framework.Localization
                     sortedAscending = false,
                     width = 400f,
                     propertyName = "value",
+                    readOnly = true
                 });
 
                 columns.Add(new DataTable.DataTableColumn()
@@ -102,6 +109,7 @@ namespace Argos.Framework.Localization
                     sortedAscending = false,
                     width = 175f,
                     propertyName = "color",
+                    readOnly = true
                 });
 
                 columns.Add(new DataTable.DataTableColumn()
@@ -130,6 +138,7 @@ namespace Argos.Framework.Localization
                     sortedAscending = false,
                     width = 75f,
                     propertyName = "threshold",
+                    readOnly = true
                 });
             }
 
@@ -148,13 +157,15 @@ namespace Argos.Framework.Localization
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Argos.Framework DataTable control test", EditorStyles.boldLabel);
-            this._dataTable.DoLayout();
 
-            this._dataTable.ResizeToFitColumns = EditorGUILayout.Toggle("Resize To Fit Columns", this._dataTable.ResizeToFitColumns);
-            this._dataTable.ShowRowIndexColumn = EditorGUILayout.Toggle("Show row index", this._dataTable.ShowRowIndexColumn);
-            this._dataTable.ShowSearchField = EditorGUILayout.Toggle("Search", this._dataTable.ShowSearchField);
-            this._dataTable.CanDrag = EditorGUILayout.Toggle("Drag & Drop", this._dataTable.CanDrag);
-            this._dataTable.CanMultiselect = EditorGUILayout.Toggle("Multiselection", this._dataTable.CanMultiselect);
+            this._dataTable.DoLayout();
+            {
+                this._dataTable.ResizeToFitColumns = EditorGUILayout.Toggle("Resize To Fit Columns", this._dataTable.ResizeToFitColumns);
+                this._dataTable.ShowRowIndexColumn = EditorGUILayout.Toggle("Show row index", this._dataTable.ShowRowIndexColumn);
+                this._dataTable.ShowSearchField = EditorGUILayout.Toggle("Search", this._dataTable.ShowSearchField);
+                this._dataTable.CanDrag = EditorGUILayout.Toggle("Drag & Drop", this._dataTable.CanDrag);
+                this._dataTable.CanMultiselect = EditorGUILayout.Toggle("Multiselection", this._dataTable.CanMultiselect);
+            }
 
             this.serializedObject.ApplyModifiedProperties();
 

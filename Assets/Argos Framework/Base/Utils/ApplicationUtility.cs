@@ -204,6 +204,17 @@ namespace Argos.Framework.Utils
 
             return hashString.ToString();
         }
+
+        public static string[] GetLayerNames()
+        {
+            var names = new string[32];
+            for (int i = 0; i < 32; i++)
+            {
+                names[i] = LayerMask.LayerToName(i);
+            }
+
+            return names;
+        }
         #endregion
     }
 }

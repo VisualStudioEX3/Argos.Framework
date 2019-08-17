@@ -23,6 +23,7 @@ namespace Argos.Framework.Localization
             public bool enable;
             [Range(0, 10)]
             public int value;
+            [ColorUsage(true, true)]
             public Color color;
             public AnimationCurve curve;
             public float threshold;
@@ -30,5 +31,22 @@ namespace Argos.Framework.Localization
 
         [SerializeField]
         TestData[] _test;
+
+        [SerializeField]
+        Gradient _gradient;
+
+        [SerializeField]
+        LayerMask _layerMask;
+
+        [SerializeField]
+        char _letter = 'a';
+
+        [SerializeField]
+        Bounds _bounds;
+
+        private void Start()
+        {
+            print($"{(char)97}");
+        }
     }
 }

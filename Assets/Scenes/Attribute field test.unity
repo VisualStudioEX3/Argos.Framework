@@ -594,7 +594,7 @@ MonoBehaviour:
     text: Submit
     keyCode: 13
     enable: 1
-    value: 3
+    value: 2
     color: {r: 1, g: 0, b: 0, a: 0}
     curve:
       serializedVersion: 2
@@ -778,7 +778,7 @@ MonoBehaviour:
     threshold: 1.123
   _gradient:
     serializedVersion: 2
-    key0: {r: 1, g: 1, b: 1, a: 1}
+    key0: {r: 0.990566, g: 0, b: 0, a: 1}
     key1: {r: 1, g: 1, b: 1, a: 1}
     key2: {r: 0, g: 0, b: 0, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}

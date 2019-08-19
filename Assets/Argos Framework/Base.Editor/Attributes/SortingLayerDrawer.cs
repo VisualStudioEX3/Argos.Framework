@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using UnityEditor;
+using Argos.Framework.Utils;
 
 namespace Argos.Framework
 {
@@ -23,14 +24,12 @@ namespace Argos.Framework
 
         #region Initializers
         [InitializeOnLoadMethod]
-        static void GetReflectionMethod()
+        static void Init()
         {
-            Assembly unityEditor = AppDomain.CurrentDomain.GetAssemblies().Where(e => e.GetName().Name == "UnityEditor").FirstOrDefault();
-
-            Type tagManagerInspector = unityEditor.GetType("UnityEditor.TagManagerInspector");
+            Type tagManagerInspector = EditorReflectionUtility.GetUnityEditorPrivateType("TagManagerInspector");
             SortingLayerDrawer._methodInfo = tagManagerInspector.GetMethod("ShowWithInitialExpansion", BindingFlags.NonPublic | BindingFlags.Static);
 
-            Type enumType = unityEditor.GetType("UnityEditor.TagManagerInspector+InitialExpansionState");
+            Type enumType = EditorReflectionUtility.GetNestedTypeFromUnityEditorPrivateType(tagManagerInspector, "InitialExpansionState");
             SortingLayerDrawer._args = new object[1] { Enum.Parse(enumType, "SortingLayers") };
         } 
         #endregion

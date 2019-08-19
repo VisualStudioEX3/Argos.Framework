@@ -1,16 +1,32 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using UnityEngine;
 using UnityEditor;
-using System.Reflection;
+using Argos.Framework.Utils;
 
 namespace Argos.Framework
 {
     /// <summary>
-    /// <see cref="SerializedProperty"/> method extension.
+    /// <see cref="SerializedProperty"/> method extensions.
     /// </summary>
     public static class SerializedPropertyExtensions
     {
+        #region Static members
+        static MethodInfo _getFieldInfoFromPropertyPathMethodInfo;
+        #endregion
+
+        #region Initializers
+        [InitializeOnLoadMethod]
+        static void Init()
+        {
+            // UnityEditor.ScriptAttributeUtility.GetFieldInfoFromProperty(SerializedProperty property, out System.Type type)
+            Type tagManagerInspector = EditorReflectionUtility.GetUnityEditorPrivateType("ScriptAttributeUtility");
+            SerializedPropertyExtensions._getFieldInfoFromPropertyPathMethodInfo = tagManagerInspector.GetMethod("GetFieldInfoFromProperty", BindingFlags.NonPublic | BindingFlags.Static);
+        }
+        #endregion
+
         #region Methods & Functions
         /// <summary>
         /// Check if the Serialized Property is an array element.
@@ -33,7 +49,7 @@ namespace Argos.Framework
             const string ARRAY_DATA_END_MASK = "Array.data";
 
             int start = property.propertyPath.LastIndexOf('[') + 1;
-            int end = property.propertyPath.Length - 2;
+            int end = property.propertyPath.LastIndexOf(']') - 1;
 
             if (start > 0)
             {
@@ -60,7 +76,7 @@ namespace Argos.Framework
         /// </summary>
         /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
         /// <returns>Return the current string representation enumeration value like shows in editor controls.</returns>
-        public static string GetDisplayEnumName(this SerializedProperty property)
+        public static string GetEnumDisplayName(this SerializedProperty property)
         {
             return property.enumDisplayNames[property.enumValueIndex];
         }
@@ -72,7 +88,8 @@ namespace Argos.Framework
         /// <returns>Return the <see cref="FieldInfo"/> data from this property.</returns>
         public static FieldInfo GetFieldInfo(this SerializedProperty property)
         {
-            return (property.serializedObject.targetObject.GetType()).GetField(property.name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            // UnityEditor.ScriptAttributeUtility.GetFieldInfoFromProperty(SerializedProperty property, out System.Type type)
+            return SerializedPropertyExtensions._getFieldInfoFromPropertyPathMethodInfo.Invoke(null, new object[] { property, null }) as FieldInfo;
         }
 
         /// <summary>
@@ -81,37 +98,31 @@ namespace Argos.Framework
         /// <typeparam name="T">The type of the custom attribute.</typeparam>
         /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
         /// <returns>Return the custom attribute used by this property.</returns>
-        public static T GetCustomAttribute<T>(this SerializedProperty property) where T : System.Attribute
+        public static T GetCustomAttribute<T>(this SerializedProperty property) where T : Attribute
         {
             return SerializedPropertyExtensions.GetFieldInfo(property).GetCustomAttribute<T>();
         }
 
         /// <summary>
-        /// Get access to <see cref="Gradient"/> field.
-        /// </summary>
-        /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
-        /// <returns>Return the reference to <see cref="Gradient"/> field represented by this property.</returns>
-        /// <remarks>Due <see cref="SerializedProperty"/> not offers access to <see cref="Gradient"/> instance, use this function to get the reference.</remarks>
-        public static Gradient GetGradientFieldReference(this SerializedProperty property)
-        {
-            return SerializedPropertyExtensions.GetFieldInfo(property).GetValue(property.serializedObject.targetObject) as Gradient;
-        }
-
-        /// <summary>
-        /// Create a copy of the <see cref="Gradient"/> field referenced by this property.
+        /// Get the value of a <see cref="Gradient"/> property.
         /// </summary>
         /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
         /// <returns>Return a copy of the <see cref="Gradient"/> field represented by this property.</returns>
-        public static Gradient GetGradientFieldCopy(this SerializedProperty property)
+        public static Gradient GetGradientValue(this SerializedProperty property)
         {
-            Gradient reference = SerializedPropertyExtensions.GetGradientFieldReference(property);
+            PropertyInfo gradientValue = property.GetType().GetProperty("gradientValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty);
+            return gradientValue.GetValue(property) as Gradient;
+        }
 
-            return new Gradient()
-            {
-                alphaKeys = reference.alphaKeys,
-                colorKeys = reference.colorKeys,
-                mode = reference.mode
-            };
+        /// <summary>
+        /// Set the value of a <see cref="Gradient"/> property.
+        /// </summary>
+        /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
+        /// <param name="value"><see cref="Gradient"/> value.</param>
+        public static void SetGradientValue(this SerializedProperty property, Gradient value)
+        {
+            PropertyInfo gradientValue = property.GetType().GetProperty("gradientValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty);
+            gradientValue.SetValue(property, value);
         }
         #endregion
     }

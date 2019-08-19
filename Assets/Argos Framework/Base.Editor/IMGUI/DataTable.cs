@@ -15,6 +15,9 @@ namespace Argos.Framework.IMGUI
         const float ROW_COLUMN_CHAR_WIDTH = 10f;
         const float ROW_COLUMN_MIN_WIDTH = 30f;
         const float ROW_COLUMN_MAX_WIDTH = DataTable.ROW_COLUMN_CHAR_WIDTH * 5;
+
+        const float SLIDER_FIELD_WIDTH = 50f;
+        const float SLIDER_SEPARATOR = 4f;
         #endregion
 
         #region Structs
@@ -164,7 +167,7 @@ namespace Argos.Framework.IMGUI
 
                     case SerializedPropertyType.Enum:
 
-                        return EditorUtility.NaturalCompare(this.data[columnIndex].GetDisplayEnumName(), other.data[columnIndex].GetDisplayEnumName());
+                        return EditorUtility.NaturalCompare(this.data[columnIndex].GetEnumDisplayName(), other.data[columnIndex].GetEnumDisplayName());
 
                     default:
 
@@ -195,7 +198,7 @@ namespace Argos.Framework.IMGUI
 
                     case SerializedPropertyType.Enum:
 
-                        this.displayName = this.data[columnIndex].GetDisplayEnumName();
+                        this.displayName = this.data[columnIndex].GetEnumDisplayName();
                         break;
 
                     default:
@@ -213,8 +216,31 @@ namespace Argos.Framework.IMGUI
             const string GENERIC_DRAG_ID = "GenericDragColumnDragging";
             #endregion
 
+            #region Structs
+            struct InternalDataTableColumnAttribute
+            {
+                #region Public vars
+                public bool firstCheck;
+                public Attribute attribute;
+                #endregion
+
+                #region Methods & Functions
+                public T CheckAttribute<T>(SerializedProperty property) where T : Attribute
+                {
+                    if (!this.firstCheck)
+                    {
+                        this.attribute = property.GetCustomAttribute<T>();
+                        this.firstCheck = true;
+                    }
+
+                    return this.attribute as T;
+                }
+                #endregion
+                #endregion
+            }
             #region Internal vars
             bool _sortRows;
+            InternalDataTableColumnAttribute[] _columnAttributes;
             #endregion
 
             #region Public vars
@@ -265,7 +291,7 @@ namespace Argos.Framework.IMGUI
                 {
                     InternalTreeView._errorGUIStyle.normal.textColor = Color.red;
                 }
-            } 
+            }
             #endregion
 
             #region Constructors
@@ -283,6 +309,8 @@ namespace Argos.Framework.IMGUI
                     }
                 }
 
+                this._columnAttributes = new InternalDataTableColumnAttribute[this.columnsSetup.Length];
+
                 this.multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(columnStates));
                 this.multiColumnHeader.sortingChanged += this.OnSortingChanged;
 
@@ -290,7 +318,7 @@ namespace Argos.Framework.IMGUI
                 this.showAlternatingRowBackgrounds = this.showBorder = true;
 
                 this.property = property;
-                
+
 
                 this.Reload();
             }
@@ -338,23 +366,78 @@ namespace Argos.Framework.IMGUI
                 return true;
             }
 
-            void DrawReadOnlyProperty(Rect cellRect, SerializedProperty property)
+            // Unity built-in slider control has a bug with the slider input rect that overlaps other controls to right when the slider control width is over 180px.
+            // This function implements custom slider control that works and look same as Unity built-in control, and adds the read-only version.
+            void DrawFixedSlider(Rect cellRect, SerializedProperty property, RangeAttribute attribute, bool readOnly)
+            {
+                Rect sliderRect = cellRect;
+                {
+                    sliderRect.width -= DataTable.SLIDER_FIELD_WIDTH + DataTable.SLIDER_SEPARATOR;
+                }
+
+                Rect fieldRect = cellRect;
+                {
+                    fieldRect.xMin = fieldRect.xMax - DataTable.SLIDER_FIELD_WIDTH;
+                }
+
+                if (readOnly)
+                {
+                    var value = (property.propertyType == SerializedPropertyType.Integer ? property.intValue : property.floatValue);
+
+                    GUI.HorizontalSlider(sliderRect, value, attribute.min, attribute.max);
+                    EditorGUI.SelectableLabel(fieldRect, value.ToString(), EditorStyles.textField);
+                }
+                else
+                {
+                    if (property.propertyType == SerializedPropertyType.Integer)
+                    {
+                        this.DrawIntSlider(sliderRect, fieldRect, property, attribute);
+                    }
+                    else
+                    {
+                        this.DrawFloatSlider(sliderRect, fieldRect, property, attribute);
+                    }
+                }
+            }
+
+            void DrawIntSlider(Rect sliderRect, Rect fieldRect, SerializedProperty property, RangeAttribute attribute)
+            {
+                int value = property.intValue;
+                value = (int)GUI.HorizontalSlider(sliderRect, value, attribute.min, attribute.max);
+                value = EditorGUI.IntField(fieldRect, value, EditorStyles.textField);
+                property.intValue = value;
+            }
+
+            void DrawFloatSlider(Rect sliderRect, Rect fieldRect, SerializedProperty property, RangeAttribute attribute)
+            {
+                float value = property.floatValue;
+                value = GUI.HorizontalSlider(sliderRect, value, attribute.min, attribute.max);
+                value = EditorGUI.FloatField(fieldRect, value, EditorStyles.textField);
+                property.floatValue = value;
+            }
+
+            void DrawReadOnlyProperty(Rect cellRect, SerializedProperty property, int columnSetupIndex)
             {
                 switch (property.propertyType)
                 {
                     case SerializedPropertyType.Integer:
+                    case SerializedPropertyType.Float:
 
-                        EditorGUI.SelectableLabel(cellRect, property.intValue.ToString(), EditorStyles.textField);
+                        var rangeAttribute = this._columnAttributes[columnSetupIndex].CheckAttribute<RangeAttribute>(property);
+
+                        if (rangeAttribute != null)
+                        {
+                            this.DrawFixedSlider(cellRect, property, rangeAttribute, true);
+                        }
+                        else
+                        {
+                            EditorGUI.SelectableLabel(cellRect, (property.propertyType == SerializedPropertyType.Integer ? property.intValue : property.floatValue).ToString(), EditorStyles.textField);
+                        }
                         break;
 
                     case SerializedPropertyType.Boolean:
 
                         EditorGUI.Toggle(cellRect, GUIContent.none, property.boolValue);
-                        break;
-
-                    case SerializedPropertyType.Float:
-
-                        EditorGUI.SelectableLabel(cellRect, property.floatValue.ToString(), EditorStyles.textField);
                         break;
 
                     case SerializedPropertyType.String:
@@ -364,10 +447,8 @@ namespace Argos.Framework.IMGUI
 
                     case SerializedPropertyType.Color:
 
-                        var attribute = property.GetCustomAttribute<ColorUsageAttribute>();
-
-                        EditorGUI.ColorField(cellRect, GUIContent.none, property.colorValue, false, (attribute != null) ? attribute.showAlpha : true, (attribute != null) ? attribute.hdr : false);
-
+                        var colorAttribute = this._columnAttributes[columnSetupIndex].CheckAttribute<ColorUsageAttribute>(property);
+                        EditorGUI.ColorField(cellRect, GUIContent.none, property.colorValue, false, (colorAttribute != null) ? colorAttribute.showAlpha : true, (colorAttribute != null) ? colorAttribute.hdr : false);
                         break;
 
                     case SerializedPropertyType.LayerMask:
@@ -419,7 +500,7 @@ namespace Argos.Framework.IMGUI
 
                     case SerializedPropertyType.Gradient:
 
-                        EditorGUI.GradientField(cellRect, property.GetGradientFieldCopy());
+                        EditorGUI.GradientField(cellRect, property.GetGradientValue());
                         break;
 
                     case SerializedPropertyType.Quaternion:
@@ -612,7 +693,6 @@ namespace Argos.Framework.IMGUI
                     Rect cellRect = this.multiColumnHeader.GetCellRect(i, args.rowRect);
                     {
                         cellRect.width = this.multiColumnHeader.GetColumn(i).width;
-
                         cellRect.xMin++;
                         cellRect.xMax--;
                     }
@@ -641,13 +721,24 @@ namespace Argos.Framework.IMGUI
 
                                 if (this.columnsSetup[columnIndex].readOnly)
                                 {
-                                    this.DrawReadOnlyProperty(cellRect, rowData.data[columnIndex]);
+                                    this.DrawReadOnlyProperty(cellRect, rowData.data[columnIndex], columnIndex);
                                 }
                                 else
                                 {
-                                    EditorGUI.PropertyField(cellRect, rowData.data[columnIndex], GUIContent.none, false);
+                                    var rangeAttribute = this._columnAttributes[columnIndex].CheckAttribute<RangeAttribute>(rowData.data[columnIndex]);
+
+                                    if (rangeAttribute != null)
+                                    {
+                                        // Unity built-in slider control has a bug with the slider input rect that overlaps other controls to right when the slider control width is over 180px.
+                                        // This function implements custom slider control that works and look same as Unity built-in control, and adds the read-only version.
+                                        this.DrawFixedSlider(cellRect, rowData.data[columnIndex], rangeAttribute, false);
+                                    }
+                                    else
+                                    {
+                                        EditorGUI.PropertyField(cellRect, rowData.data[columnIndex], GUIContent.none, false);
+                                    }
                                 }
-                            } 
+                            }
                         }
                         else
                         {
@@ -747,6 +838,7 @@ namespace Argos.Framework.IMGUI
             }
 
             this._indexRowColumnWidth = Mathf.Clamp(DataTable.ROW_COLUMN_CHAR_WIDTH * property.arraySize.ToString().Length, DataTable.ROW_COLUMN_MIN_WIDTH, DataTable.ROW_COLUMN_MAX_WIDTH);
+
             this._treeView = new InternalTreeView(property, columns, rowHeight);
             {
                 this._treeView.searchString = string.Empty;
@@ -822,7 +914,7 @@ namespace Argos.Framework.IMGUI
         }
 
         /// <summary>
-        /// Draws the <see cref="DataTable"/> using layout.
+        /// Draws the <see cref="DataTable"/> using the current inspector layout.
         /// </summary>
         /// <param name="rows">Number of visible rows. If search field is enable, the control will occupy the first row.</param>
         public void DoLayout(int rows = 10)

@@ -5,6 +5,9 @@ using UnityEditor;
 
 namespace Argos.Framework.Utils
 {
+    /// <summary>
+    /// Help functions to manage Unity editor skin theme.
+    /// </summary>
     public static class EditorSkinUtility
     {
         #region Properties

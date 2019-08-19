@@ -18,6 +18,11 @@ namespace Argos.Framework.IMGUI
 
         const float SLIDER_FIELD_WIDTH = 50f;
         const float SLIDER_SEPARATOR = 4f;
+
+        const float TOGGLE_WIDTH = 16f;
+        const float TOGGLE_HALF_WIDTH = DataTable.TOGGLE_WIDTH / 2f;
+
+        const float ERROR_CONTENT_CELLRECT_CORRECTION = 4f;
         #endregion
 
         #region Structs
@@ -155,7 +160,14 @@ namespace Argos.Framework.IMGUI
 
                     case SerializedPropertyType.Integer:
 
-                        return this.data[columnIndex].intValue.CompareTo(other.data[columnIndex].intValue);
+                        if (this.data[columnIndex].IsLongValue())
+                        {
+                            return this.data[columnIndex].longValue.CompareTo(other.data[columnIndex].longValue); 
+                        }
+                        else
+                        {
+                            return this.data[columnIndex].intValue.CompareTo(other.data[columnIndex].intValue);
+                        }
 
                     case SerializedPropertyType.Float:
 
@@ -183,7 +195,14 @@ namespace Argos.Framework.IMGUI
                 {
                     case SerializedPropertyType.Integer:
 
-                        this.displayName = this.data[columnIndex].intValue.ToString();
+                        if (this.data[columnIndex].IsLongValue())
+                        {
+                            this.displayName = this.data[columnIndex].longValue.ToString(); 
+                        }
+                        else
+                        {
+                            this.displayName = this.data[columnIndex].intValue.ToString();
+                        }
                         break;
 
                     case SerializedPropertyType.Float:
@@ -220,24 +239,25 @@ namespace Argos.Framework.IMGUI
             struct InternalDataTableColumnAttribute
             {
                 #region Public vars
-                public bool firstCheck;
+                public bool isChecked;
                 public Attribute attribute;
                 #endregion
 
                 #region Methods & Functions
                 public T CheckAttribute<T>(SerializedProperty property) where T : Attribute
                 {
-                    if (!this.firstCheck)
+                    if (!this.isChecked)
                     {
                         this.attribute = property.GetCustomAttribute<T>();
-                        this.firstCheck = true;
+                        this.isChecked = true;
                     }
 
                     return this.attribute as T;
                 }
                 #endregion
-                #endregion
             }
+            #endregion
+
             #region Internal vars
             bool _sortRows;
             InternalDataTableColumnAttribute[] _columnAttributes;
@@ -318,7 +338,6 @@ namespace Argos.Framework.IMGUI
                 this.showAlternatingRowBackgrounds = this.showBorder = true;
 
                 this.property = property;
-
 
                 this.Reload();
             }
@@ -431,7 +450,7 @@ namespace Argos.Framework.IMGUI
                         }
                         else
                         {
-                            EditorGUI.SelectableLabel(cellRect, (property.propertyType == SerializedPropertyType.Integer ? property.intValue : property.floatValue).ToString(), EditorStyles.textField);
+                            EditorGUI.SelectableLabel(cellRect, (property.propertyType == SerializedPropertyType.Integer ? (property.IsLongValue() ? property.longValue : property.intValue) : property.floatValue).ToString(), EditorStyles.textField);
                         }
                         break;
 
@@ -705,45 +724,47 @@ namespace Argos.Framework.IMGUI
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.columnsSetup[columnIndex].propertyName))
                     {
-                        if (rowData.data[columnIndex] != null)
+                        SerializedProperty cellProperty = rowData.data[columnIndex];
+
+                        if (cellProperty != null)
                         {
                             if (this.columnsSetup[columnIndex].useCustomGUI)
                             {
-                                this.OnCustomCellGUI?.Invoke(cellRect, rowData.data[columnIndex]);
+                                this.OnCustomCellGUI?.Invoke(cellRect, cellProperty);
                             }
                             else
                             {
-                                if (rowData.data[columnIndex].propertyType == SerializedPropertyType.Boolean)
+                                if (cellProperty.propertyType == SerializedPropertyType.Boolean)
                                 {
-                                    cellRect.x += (cellRect.width * 0.5f) - 8f;
-                                    cellRect.width = 16f;
+                                    cellRect.x += (cellRect.width * 0.5f) - DataTable.TOGGLE_HALF_WIDTH;
+                                    cellRect.width = DataTable.TOGGLE_WIDTH;
                                 }
 
                                 if (this.columnsSetup[columnIndex].readOnly)
                                 {
-                                    this.DrawReadOnlyProperty(cellRect, rowData.data[columnIndex], columnIndex);
+                                    this.DrawReadOnlyProperty(cellRect, cellProperty, columnIndex);
                                 }
                                 else
                                 {
-                                    var rangeAttribute = this._columnAttributes[columnIndex].CheckAttribute<RangeAttribute>(rowData.data[columnIndex]);
+                                    var rangeAttribute = this._columnAttributes[columnIndex].CheckAttribute<RangeAttribute>(cellProperty);
 
                                     if (rangeAttribute != null)
                                     {
                                         // Unity built-in slider control has a bug with the slider input rect that overlaps other controls to right when the slider control width is over 180px.
                                         // This function implements custom slider control that works and look same as Unity built-in control, and adds the read-only version.
-                                        this.DrawFixedSlider(cellRect, rowData.data[columnIndex], rangeAttribute, false);
+                                        this.DrawFixedSlider(cellRect, cellProperty, rangeAttribute, false);
                                     }
                                     else
                                     {
-                                        EditorGUI.PropertyField(cellRect, rowData.data[columnIndex], GUIContent.none, false);
+                                        EditorGUI.PropertyField(cellRect, cellProperty, GUIContent.none, false);
                                     }
                                 }
                             }
                         }
                         else
                         {
-                            cellRect.y -= 4f;
-                            cellRect.height += 4f;
+                            cellRect.y -= DataTable.ERROR_CONTENT_CELLRECT_CORRECTION;
+                            cellRect.height += DataTable.ERROR_CONTENT_CELLRECT_CORRECTION;
 
                             EditorGUI.LabelField(cellRect, InternalTreeView._errorGUIContentNull, InternalTreeView._errorGUIStyle);
                         }
@@ -787,9 +808,14 @@ namespace Argos.Framework.IMGUI
         public int RowCount { get { return (this.Property != null && this.Property.isArray) ? this.Property.arraySize : 0; } }
 
         /// <summary>
+        /// Row height.
+        /// </summary>
+        public float RowHeight => this._treeView.RowHeight;
+
+        /// <summary>
         /// The index of the column used by search field to filter data.
         /// </summary>
-        /// <remarks>The row sorting feature only works with basic types: <see cref="bool"/>, <see cref="int"/>, <see cref="float"/>, <see cref="string"/> and <see cref="Enum"/> values, treated as <see cref="string"/> values. Other types sets the original row order. 
+        /// <remarks>The row sorting feature only works with basic types: <see cref="bool"/>, <see cref="int"/>, <see cref="long"/>, <see cref="float"/>, <see cref="string"/> and <see cref="Enum"/> values, treated as <see cref="string"/> values. Other types sets the original row order. 
         /// The <see cref="string"/> and <see cref="Enum"/> values are sorting using <see cref="EditorUtility.NaturalCompare(string, string)"/> function.</remarks>
         public int CurrentSearchColumnIndex { get; set; }
 
@@ -865,7 +891,7 @@ namespace Argos.Framework.IMGUI
         /// Sets the column used by search field to filter data.
         /// </summary>
         /// <param name="columnIndex">Index of column. (0 is the first user defined column. Row index column not count).</param>
-        /// <remarks>The row sorting feature only works with basic types: <see cref="bool"/>, <see cref="int"/>, <see cref="float"/>, <see cref="string"/> and <see cref="Enum"/> values, treated as <see cref="string"/> values. Other types sets the original row order. 
+        /// <remarks>The row sorting feature only works with basic types: <see cref="bool"/>, <see cref="int"/>, <see cref="long"/>, <see cref="float"/>, <see cref="string"/> and <see cref="Enum"/> values, treated as <see cref="string"/> values. Other types sets the original row order. 
         /// The <see cref="string"/> and <see cref="Enum"/> values are sorting using <see cref="EditorUtility.NaturalCompare(string, string)"/> function.</remarks>
         public void SetSearchColumn(int columnIndex)
         {
@@ -898,7 +924,7 @@ namespace Argos.Framework.IMGUI
                     searchFieldRect.xMax = layout.xMax;
                 }
                 this._treeView.searchString = this._searchField.Do(searchFieldRect, this._treeView.searchString);
-                ;
+
                 layout.y += SearchField.Height;
                 layout.height -= SearchField.Height;
             }

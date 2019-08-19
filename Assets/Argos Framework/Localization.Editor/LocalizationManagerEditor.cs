@@ -107,7 +107,7 @@ namespace Argos.Framework.Localization
                     sortedAscending = false,
                     width = 175f,
                     propertyName = "color",
-                    //readOnly = true
+                    readOnly = true
                 });
 
                 columns.Add(new DataTable.DataTableColumn()
@@ -184,6 +184,7 @@ namespace Argos.Framework.Localization
 
             SerializedProperty mask = this.serializedObject.FindProperty("_layerMask");
             SerializedProperty letter = this.serializedObject.FindProperty("_letter");
+            SerializedProperty longValue = this.serializedObject.FindProperty("_longValue");
 
             //this.editorSkin.DrawDefaultInspector();
         }

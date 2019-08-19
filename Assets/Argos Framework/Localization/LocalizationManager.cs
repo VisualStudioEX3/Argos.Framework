@@ -44,6 +44,9 @@ namespace Argos.Framework.Localization
         [SerializeField]
         Bounds _bounds;
 
+        [SerializeField]
+        long _longValue;
+
         private void Start()
         {
             print($"{(char)97}");

@@ -13,6 +13,10 @@ namespace Argos.Framework
     /// </summary>
     public static class SerializedPropertyExtensions
     {
+        #region Constants
+        const string INTERNAL_GRADIENTVALUE_PROPERTY_NAME = "gradientValue"; 
+        #endregion
+
         #region Static members
         static MethodInfo _getFieldInfoFromPropertyPathMethodInfo;
         #endregion
@@ -110,7 +114,7 @@ namespace Argos.Framework
         /// <returns>Return a copy of the <see cref="Gradient"/> field represented by this property.</returns>
         public static Gradient GetGradientValue(this SerializedProperty property)
         {
-            PropertyInfo gradientValue = property.GetType().GetProperty("gradientValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty);
+            PropertyInfo gradientValue = property.GetType().GetProperty(SerializedPropertyExtensions.INTERNAL_GRADIENTVALUE_PROPERTY_NAME, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty);
             return gradientValue.GetValue(property) as Gradient;
         }
 
@@ -121,8 +125,38 @@ namespace Argos.Framework
         /// <param name="value"><see cref="Gradient"/> value.</param>
         public static void SetGradientValue(this SerializedProperty property, Gradient value)
         {
-            PropertyInfo gradientValue = property.GetType().GetProperty("gradientValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty);
+            PropertyInfo gradientValue = property.GetType().GetProperty(SerializedPropertyExtensions.INTERNAL_GRADIENTVALUE_PROPERTY_NAME, BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.SetProperty);
             gradientValue.SetValue(property, value);
+        }
+
+        /// <summary>
+        /// This property is a <see cref="long"/> type value?
+        /// </summary>
+        /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
+        /// <returns>Return true if the property is a <see cref="long"/> type value.</returns>
+        public static bool IsLongValue(this SerializedProperty property)
+        {
+            return SerializedPropertyExtensions.IsLongValue(property, out long value);
+        }
+
+        /// <summary>
+        /// This property is a <see cref="long"/> type value?
+        /// </summary>
+        /// <param name="property"><see cref="SerializedProperty"/> instance.</param>
+        /// <param name="value">The <see cref="long"/> value. If this function return false, this value is zero.</param>
+        /// <returns>Return true if the property is a <see cref="long"/> type value.</returns>
+        public static bool IsLongValue(this SerializedProperty property, out long value)
+        {
+            if (property.type.Equals("long"))
+            {
+                value = property.longValue;
+                return true;
+            }
+            else
+            {
+                value = 0;
+                return false;
+            }
         }
         #endregion
     }

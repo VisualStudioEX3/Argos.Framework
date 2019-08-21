@@ -9,23 +9,7 @@ Logs/
 # Own build binaries #
 # ================== #
 Builds/
-Library/cache/
-Library/FacebookSDK/
-Library/metadata/
-Library/PlayerDataCache/
-Library/ScriptAssemblies/
-Library/ShaderCache/
-Library/UnityAssemblies/
-Library/PackageCache/
-Library/StateCache/
-Library/UIElements/
-Library/InspectorExpandedItems.asset
-Library/ScriptMapper
-Library/assetDatabase3
-Library/expandedItems
-Library/*.log
-Library/shadercompiler-UnityShaderCompiler.exe0.log
-
+Library/
 Screen Shoots/
 
 # ============= #
@@ -60,3 +44,6 @@ ExportedObj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+Library/EditorInstance.json
+Library/CurrentMaximizeLayout.dwlt
+Library/CurrentLayout-default.dwlt

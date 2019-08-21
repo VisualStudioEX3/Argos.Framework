@@ -77,9 +77,9 @@ public sealed class GamejoltAPIWebRequest : IDisposable
     #endregion
 
     #region Events
-    public GamejoltAPIRequestOnIsDoneHandler OnRequestIsDone;
-    public GamejoltAPIRequestOnErrorHandler OnRequestError;
-    public Action OnRequestAbort;
+    public event GamejoltAPIRequestOnIsDoneHandler OnRequestIsDone;
+    public event GamejoltAPIRequestOnErrorHandler OnRequestError;
+    public event Action OnRequestAbort;
     #endregion
 
     #region Constructors & Destructors
@@ -106,27 +106,6 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         this.Params = null;
         this._apiURL = this.Response = this.Error = null;
     }
-    #endregion
-
-    #region Events
-    void OnCompleted(AsyncOperation asyncOp)
-    {
-        this.IsDone = this._request.isDone;
-        this.IsNetworkError = this._request.isNetworkError;
-        this.Error = this._request.error;
-        this.IsHTTPError = this._request.isHttpError;
-        this.ResponseCode = (int)this._request.responseCode;
-        this.Response = this._request.downloadHandler.text;
-
-        if (this.IsDone)
-        {
-            this.OnRequestIsDone?.Invoke(this.Response);
-        }
-        else
-        {
-            this.OnRequestError?.Invoke(this.IsNetworkError ? GamejoltAPIRequestErrorTypes.NetworkError : GamejoltAPIRequestErrorTypes.HttpError, this.Error, this.ResponseCode);
-        }
-    } 
     #endregion
 
     #region Methods & Functions
@@ -156,9 +135,10 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         }
 
         UnityWebRequestAsyncOperation asyncOp = this._request.SendWebRequest();
-
-        asyncOp.completed -= this.OnCompleted;
-        asyncOp.completed += this.OnCompleted;
+        {
+            asyncOp.completed -= this.OnCompleted;
+            asyncOp.completed += this.OnCompleted;
+        }
 
         return asyncOp;
     }
@@ -181,7 +161,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         }
 
         string urlPrivateKey = $"{url.ToString()}{GamejoltAPI.PrivateKey}";
-        url.Append($"&signature={Argos.Framework.Utils.ApplicationUtility.CalculateMD5Hash(urlPrivateKey)}");
+        url.Append($"&signature={ApplicationUtility.CalculateMD5Hash(urlPrivateKey)}");
 
         return url.ToString(); ;
     }
@@ -200,9 +180,30 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         paramList.Append(GamejoltAPI.PrivateKey);
 
         string urlPrivateKey = $"{url}{paramList.ToString()}";
-        string signature = $"&signature={Argos.Framework.Utils.ApplicationUtility.CalculateMD5Hash(urlPrivateKey)}";
+        string signature = $"&signature={ApplicationUtility.CalculateMD5Hash(urlPrivateKey)}";
 
         return $"{url}{signature}";
+    }
+    #endregion
+
+    #region Event listeners
+    void OnCompleted(AsyncOperation asyncOp)
+    {
+        this.IsDone = this._request.isDone;
+        this.IsNetworkError = this._request.isNetworkError;
+        this.Error = this._request.error;
+        this.IsHTTPError = this._request.isHttpError;
+        this.ResponseCode = (int)this._request.responseCode;
+        this.Response = this._request.downloadHandler.text;
+
+        if (this.IsDone)
+        {
+            this.OnRequestIsDone?.Invoke(this.Response);
+        }
+        else
+        {
+            this.OnRequestError?.Invoke((this.IsNetworkError ? GamejoltAPIRequestErrorTypes.NetworkError : GamejoltAPIRequestErrorTypes.HttpError), this.Error, this.ResponseCode);
+        }
     }
     #endregion
 }

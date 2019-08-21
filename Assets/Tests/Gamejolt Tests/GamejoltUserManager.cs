@@ -1,23 +1,24 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
 using Argos.Framework;
 
 public class GamejoltUserManager : MonoBehaviour
 {
-    [System.Serializable]
+    [Serializable]
     public class GameJoltUserFetchResponse
     {
         public GamejoltUserFecthResponseData response;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class GamejoltUserFecthResponseData : GamejoltAPI.GamejoltBaseResponseData
     {
         public GamejoltUserData[] users;
     }
 
-    [System.Serializable]
+    [Serializable]
     public class GamejoltUserData
     {
         public int id;                          // The ID of the user.
@@ -34,32 +35,32 @@ public class GamejoltUserManager : MonoBehaviour
         public string developer_description;    // The user's profile markdown description. 
     }
 
+    [SerializeField, Button("Login", GUIButtonSize.Normal, GUIButtonDisableEvents.EditorMode)]
+    string _loginButton = "LoginUser";
+    [SerializeField, Button("Logout", GUIButtonSize.Normal, GUIButtonDisableEvents.EditorMode)]
+    string _logoutButton = "LogoutUser";
+
     public GamejoltAPIWebRequest.GamejoltAPIRequestTypes RequestType;
 
     [Header("Params")]
-    public string GameId;
-    public string UserName;
-    public string UserToken;
-    public string PrivateKey;
-
-    [TexturePreview]
-    public Texture2D UserAvatar;
+    public string gameId;
+    public string userName;
+    public string userToken;
+    public string privateKey;
 
     [Header("Response")]
-    public GamejoltAPI.GamejoltBaseResponse AuthResponse;
-    public GameJoltUserFetchResponse FetchResponse;
-    public GamejoltAPI.GamejoltBaseResponse LoginResponse;
-    public GamejoltAPI.GamejoltBaseResponse LogoutResponse;
+    public GamejoltAPI.GamejoltBaseResponse authResponse;
+    public GameJoltUserFetchResponse fetchResponse;
+    [TexturePreview]
+    public Texture2D userAvatar;
+    public GamejoltAPI.GamejoltBaseResponse loginResponse;
+    [Space]
+    public GamejoltAPI.GamejoltBaseResponse logoutResponse;
 
     void Awake()
     {
-        GamejoltAPI.GameID = this.GameId;
-        GamejoltAPI.PrivateKey = this.PrivateKey;
-    }
-
-    void Start()
-    {
-        this.LoginUser();
+        GamejoltAPI.GameID = this.gameId;
+        GamejoltAPI.PrivateKey = this.privateKey;
     }
 
     void OnApplicationQuit()
@@ -80,10 +81,11 @@ public class GamejoltUserManager : MonoBehaviour
 
     void CleanResponses()
     {
-        this.AuthResponse = new GamejoltAPI.GamejoltBaseResponse();
-        this.FetchResponse = new GameJoltUserFetchResponse();
-        this.LoginResponse = new GamejoltAPI.GamejoltBaseResponse();
-        this.LogoutResponse = new GamejoltAPI.GamejoltBaseResponse();
+        this.authResponse = new GamejoltAPI.GamejoltBaseResponse();
+        this.fetchResponse = new GameJoltUserFetchResponse();
+        this.loginResponse = new GamejoltAPI.GamejoltBaseResponse();
+        this.logoutResponse = new GamejoltAPI.GamejoltBaseResponse();
+        this.userAvatar = null;
     }
 
     #region Coroutines
@@ -93,16 +95,16 @@ public class GamejoltUserManager : MonoBehaviour
 
         yield return this.AuthUserCoroutine();
 
-        if (this.AuthResponse.response.success)
+        if (this.authResponse.response.success)
         {
             yield return this.GetUserDataCoroutine();
 
-            if (this.FetchResponse.response.success)
+            if (this.fetchResponse.response.success)
             {
-                yield return this.GetAvatarTextureCoroutine(this.FetchResponse.response.users[0].avatar_url);
+                yield return this.GetAvatarTextureCoroutine(this.fetchResponse.response.users[0].avatar_url);
                 yield return this.OpenUserSessionCoroutine();
 
-                if (this.LoginResponse.response.success)
+                if (this.loginResponse.response.success)
                 {
                     print("User login!");
                 }
@@ -119,12 +121,15 @@ public class GamejoltUserManager : MonoBehaviour
                 request.AddParam(paramList[i], paramList[i + 1]);
             }
 
-            request.OnRequestIsDone = onSuccess;
-            request.OnRequestError = onError;
+            request.OnRequestIsDone += onSuccess;
+            request.OnRequestError += onError;
 
             UnityWebRequestAsyncOperation asyncOperation = request.Send(this.RequestType);
 
             yield return new WaitUntil(() => asyncOperation.isDone);
+
+            request.OnRequestIsDone -= onSuccess;
+            request.OnRequestError -= onError;
         }
     }
 
@@ -133,14 +138,14 @@ public class GamejoltUserManager : MonoBehaviour
         yield return this.RequestCoroutine($"{GamejoltAPI.GAMEJOLT_USERS_API_URL}auth/",
                                            (string response) =>
                                            {
-                                               this.AuthResponse = JsonUtility.FromJson<GamejoltAPI.GamejoltBaseResponse>(response);
+                                               this.authResponse = JsonUtility.FromJson<GamejoltAPI.GamejoltBaseResponse>(response);
                                            },
                                            (GamejoltAPIWebRequest.GamejoltAPIRequestErrorTypes errorType, string errorMessage, int responseCode) =>
                                            {
                                                Debug.LogError($"AuthUserCoroutine: Request {errorType} (Response code {responseCode}) - {errorMessage}");
                                            },
-                                           "username", this.UserName,
-                                           "user_token", this.UserToken);
+                                           "username", this.userName,
+                                           "user_token", this.userToken);
     }
 
     IEnumerator GetUserDataCoroutine()
@@ -148,18 +153,18 @@ public class GamejoltUserManager : MonoBehaviour
         yield return this.RequestCoroutine($"{GamejoltAPI.GAMEJOLT_USERS_API_URL}",
                                            (string response) =>
                                            {
-                                               this.FetchResponse = JsonUtility.FromJson<GameJoltUserFetchResponse>(response);
+                                               this.fetchResponse = JsonUtility.FromJson<GameJoltUserFetchResponse>(response);
                                            },
                                            (GamejoltAPIWebRequest.GamejoltAPIRequestErrorTypes errorType, string errorMessage, int responseCode) =>
                                            {
                                                Debug.LogError($"GetUserDataCoroutine: Request {errorType} (Response code {responseCode}) - {errorMessage}");
                                            },
-                                           "username", this.UserName);
+                                           "username", this.userName);
     }
 
     IEnumerator GetAvatarTextureCoroutine(string url)
     {
-        using (var request = UnityWebRequestTexture.GetTexture(this.FetchResponse.response.users[0].avatar_url))
+        using (var request = UnityWebRequestTexture.GetTexture(this.fetchResponse.response.users[0].avatar_url))
         {
             var asyncOperation = request.SendWebRequest();
 
@@ -169,16 +174,16 @@ public class GamejoltUserManager : MonoBehaviour
             {
                 yield return new WaitUntil(() => request.downloadHandler.isDone);
 
-                this.UserAvatar = DownloadHandlerTexture.GetContent(request);
+                this.userAvatar = DownloadHandlerTexture.GetContent(request);
             }
             else if (request.isHttpError)
             {
-                this.UserAvatar = Texture2D.blackTexture;
+                this.userAvatar = Texture2D.blackTexture;
                 Debug.LogError($"GetAvatarTextureCoroutine: web request error: HTTP response code = {request.responseCode}");
             }
             else if (request.isNetworkError)
             {
-                this.UserAvatar = Texture2D.blackTexture;
+                this.userAvatar = Texture2D.blackTexture;
                 Debug.LogError($"GetAvatarTextureCoroutine: web request error: {request.error}");
             }
         }
@@ -189,14 +194,14 @@ public class GamejoltUserManager : MonoBehaviour
         yield return this.RequestCoroutine($"{GamejoltAPI.GAMEJOLT_SESSIONS_API_URL}open/",
                                            (string response) =>
                                            {
-                                               this.LoginResponse = JsonUtility.FromJson<GamejoltAPI.GamejoltBaseResponse>(response);
+                                               this.loginResponse = JsonUtility.FromJson<GamejoltAPI.GamejoltBaseResponse>(response);
                                            },
                                            (GamejoltAPIWebRequest.GamejoltAPIRequestErrorTypes errorType, string errorMessage, int responseCode) =>
                                            {
                                                Debug.LogError($"LoginUserCoroutine: Request {errorType} (Response code {responseCode}) - {errorMessage}");
                                            },
-                                           "username", this.UserName,
-                                           "user_token", this.UserToken);
+                                           "username", this.userName,
+                                           "user_token", this.userToken);
     }
 
     IEnumerator CloseUserSessionCoroutine()
@@ -204,15 +209,15 @@ public class GamejoltUserManager : MonoBehaviour
         yield return this.RequestCoroutine($"{GamejoltAPI.GAMEJOLT_SESSIONS_API_URL}close/",
                                            (string response) =>
                                            {
-                                               this.LogoutResponse = JsonUtility.FromJson<GamejoltAPI.GamejoltBaseResponse>(response);
+                                               this.logoutResponse = JsonUtility.FromJson<GamejoltAPI.GamejoltBaseResponse>(response);
                                                print("User logout!");
                                            },
                                            (GamejoltAPIWebRequest.GamejoltAPIRequestErrorTypes errorType, string errorMessage, int responseCode) =>
                                            {
                                                Debug.LogError($"LogoutUserCoroutine: Request {errorType} (Response code {responseCode}) - {errorMessage}");
                                            },
-                                           "username", this.UserName,
-                                           "user_token", this.UserToken);
+                                           "username", this.userName,
+                                           "user_token", this.userToken);
     }
     #endregion
 }

@@ -58,6 +58,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
     #region Internal vars
     string _apiURL;
     UnityWebRequest _request;
+    bool _disposed;
     #endregion
 
     #region Properties
@@ -99,12 +100,28 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         this.Params = new Dictionary<string, string>(paramList);
     }
 
+    ~GamejoltAPIWebRequest()
+    {
+        this.Dispose(false);
+    }
+
     public void Dispose()
     {
-        this._request?.Dispose();
-        this.Params.Clear();
-        this.Params = null;
-        this._apiURL = this.Response = this.Error = null;
+        this.Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    void Dispose(bool disposing)
+    {
+        if (!this._disposed)
+        {
+            this._request?.Dispose();
+            this.Params.Clear();
+            this.Params = null;
+            this._apiURL = this.Response = this.Error = null;
+
+            this._disposed = true;
+        }
     }
     #endregion
 

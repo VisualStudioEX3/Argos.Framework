@@ -162,7 +162,7 @@ namespace Argos.Framework.IMGUI
 
                         if (this.data[columnIndex].IsLongValue())
                         {
-                            return this.data[columnIndex].longValue.CompareTo(other.data[columnIndex].longValue); 
+                            return this.data[columnIndex].longValue.CompareTo(other.data[columnIndex].longValue);
                         }
                         else
                         {
@@ -197,7 +197,7 @@ namespace Argos.Framework.IMGUI
 
                         if (this.data[columnIndex].IsLongValue())
                         {
-                            this.displayName = this.data[columnIndex].longValue.ToString(); 
+                            this.displayName = this.data[columnIndex].longValue.ToString();
                         }
                         else
                         {
@@ -256,11 +256,106 @@ namespace Argos.Framework.IMGUI
                 }
                 #endregion
             }
+
+            public class InternalDataTableState
+            {
+                #region Constants
+                const string BASE_ID = "Argos.Framework.IMGUI.DataTable.State[{0}.{1}]";
+                #endregion
+
+                #region Structs
+                [Serializable]
+                public struct InternalDataTableColumnState
+                {
+                    public bool sortedAscending;
+                    public float currentWidth;
+                }
+                #endregion
+
+                #region Internal vars
+                string _id;
+                #endregion
+
+                #region Public vars
+                public Vector2 scrollPosition;
+                public List<int> selectedIDs;
+                public int lastClickedID;
+                public string searchString;
+                public int searchColumnIndex;
+                public int sortedColumnIndex;
+                public InternalDataTableColumnState[] columnStates;
+                public bool isPreviouslySorted;
+                #endregion
+
+                #region Properties
+                public bool IsLoadedPreviousState { get; private set; }
+                #endregion
+
+                #region Constructors
+                public InternalDataTableState(string controlID)
+                {
+                    if (!controlID.IsNullOrEmptyOrWhiteSpace())
+                    {
+                        this._id = string.Format(InternalDataTableState.BASE_ID, Application.productName, controlID);
+
+                        if (EditorPrefs.HasKey(this._id))
+                        {
+                            EditorJsonUtility.FromJsonOverwrite(EditorPrefs.GetString(this._id), this);
+                            this.IsLoadedPreviousState = true;
+                        } 
+                    }
+                }
+                #endregion
+
+                #region Methods & Functions
+                public void SaveState(InternalTreeView treeView)
+                {
+                    if (string.IsNullOrEmpty(this._id)) return;
+
+                    this.scrollPosition = treeView.state.scrollPos;
+                    this.selectedIDs = treeView.state.selectedIDs;
+                    this.lastClickedID = treeView.state.lastClickedID;
+                    this.searchString = treeView.state.searchString;
+
+                    this.searchColumnIndex = treeView.searchColumnIndex;
+                    this.columnStates = new InternalDataTableColumnState[treeView.multiColumnHeader.state.columns.Length - 1];
+                    for (int i = 1; i < treeView.multiColumnHeader.state.columns.Length; i++)
+                    {
+                        this.columnStates[i - 1].sortedAscending = treeView.multiColumnHeader.state.columns[i].sortedAscending;
+                        this.columnStates[i - 1].currentWidth = treeView.multiColumnHeader.state.columns[i].width;
+                    }
+                    this.sortedColumnIndex = treeView.sortColumnIndex;
+
+                    this.isPreviouslySorted = treeView.isPreviouslySorted;
+
+                    EditorPrefs.SetString(this._id, EditorJsonUtility.ToJson(this, true));
+                }
+
+                public TreeViewState ToTreeViewState()
+                {
+                    return !this.IsLoadedPreviousState ?
+                        new TreeViewState() :
+                        new TreeViewState()
+                        {
+                            scrollPos = this.scrollPosition,
+                            selectedIDs = this.selectedIDs,
+                            lastClickedID = this.lastClickedID,
+                            searchString = this.searchString
+                        };
+                }
+
+                public void SetDirty()
+                {
+                    this.IsLoadedPreviousState = false;
+                }
+                #endregion
+            }
             #endregion
 
             #region Internal vars
             bool _sortRows;
             InternalDataTableColumnAttribute[] _columnAttributes;
+            InternalDataTableState _state;
             #endregion
 
             #region Public vars
@@ -273,6 +368,7 @@ namespace Argos.Framework.IMGUI
 
             public int sortColumnIndex;
             public bool sortAscending;
+            public bool isPreviouslySorted;
 
             public bool canDrag;
             public bool canMultiselect;
@@ -315,9 +411,17 @@ namespace Argos.Framework.IMGUI
             #endregion
 
             #region Constructors
-            public InternalTreeView(SerializedProperty property, DataTableColumn[] columns, float rowHeight = -1f) : base(new TreeViewState(), null)
+            public InternalTreeView(SerializedProperty property, DataTableColumn[] columns, float rowHeight, InternalDataTableState state) : base(state.ToTreeViewState(), null)
             {
+                this._state = state;
+                this.property = property;
+
                 this.columnsSetup = columns;
+                this._columnAttributes = new InternalDataTableColumnAttribute[this.columnsSetup.Length];
+
+                this.searchString = this.searchString ?? string.Empty;
+                this.rowHeight = rowHeight < 0f ? EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing : rowHeight;
+                this.showAlternatingRowBackgrounds = this.showBorder = true;
 
                 var columnStates = new MultiColumnHeaderState.Column[columns.Length + 1];
                 {
@@ -326,28 +430,42 @@ namespace Argos.Framework.IMGUI
                     for (int i = 1; i < columnStates.Length; i++)
                     {
                         columnStates[i] = columns[i - 1];
+                        if (this._state.IsLoadedPreviousState)
+                        {
+                            columnStates[i].sortedAscending = this._state.columnStates[i - 1].sortedAscending;
+                            columnStates[i].width = this._state.columnStates[i - 1].currentWidth;
+                        }
                     }
                 }
-
-                this._columnAttributes = new InternalDataTableColumnAttribute[this.columnsSetup.Length];
 
                 this.multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(columnStates));
                 this.multiColumnHeader.sortingChanged += this.OnSortingChanged;
 
-                this.rowHeight = rowHeight < 0f ? EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing : rowHeight;
-                this.showAlternatingRowBackgrounds = this.showBorder = true;
-
-                this.property = property;
+                if (this._state.IsLoadedPreviousState && this._state.isPreviouslySorted)
+                {
+                    this.multiColumnHeader.sortedColumnIndex = this._state.sortedColumnIndex + 1;
+                    this.OnSortingChanged(this.multiColumnHeader);
+                    return;
+                }
 
                 this.Reload();
             }
             #endregion
 
             #region Methods & Functions
+            public void SaveState()
+            {
+                this._state.SaveState(this);
+            }
+
             public void SetSearchColumnIndex(int index)
             {
-                this.OnSearchColumnIndexChange?.Invoke(this, index);
-                this.Repaint();
+                if (this.searchColumnIndex != index)
+                {
+                    this.searchColumnIndex = index;
+                    this.OnSearchColumnIndexChange?.Invoke(this, index);
+                    this.Repaint(); 
+                }
             }
 
             int GetItemIndex(TreeViewItem item)
@@ -581,6 +699,11 @@ namespace Argos.Framework.IMGUI
                     root.AddChild(item);
                 }
 
+                if (this._state.IsLoadedPreviousState)
+                {
+                    this.SetSearchColumnIndex(this._state.searchColumnIndex);
+                }
+
                 return root;
             }
 
@@ -600,7 +723,7 @@ namespace Argos.Framework.IMGUI
 
                 this.sortColumnIndex = multiColumnHeader.sortedColumnIndex - 1;
                 this.sortAscending = multiColumnHeader.IsSortedAscending(multiColumnHeader.sortedColumnIndex);
-                this._sortRows = true;
+                this._sortRows = this.isPreviouslySorted = true;
 
                 this.Reload();
             }
@@ -628,7 +751,7 @@ namespace Argos.Framework.IMGUI
                         bool validDrag = ValidDrag(args.parentItem, draggedRows);
                         if (args.performDrop && validDrag)
                         {
-                            //Debug.Log($"Drag & Drop: Drop to target item/s index {index}");
+                            Debug.Log($"Drag & Drop: Drop to target item/s index {index}");
 
                             //T parentData = ((TreeViewItem<T>)args.parentItem).data;
                             //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
@@ -644,7 +767,7 @@ namespace Argos.Framework.IMGUI
 
                         //if (args.performDrop)
                         //{
-                        //    Debug.LogError("Drag & Drop: Drop outside of table.");
+                        Debug.LogError("Drag & Drop: Drop outside of table.");
                         //    //OnDropDraggedElementsAtIndex(draggedRows, this.root, m_TreeModel.root.children.Count);
                         //}
                         //else
@@ -817,7 +940,11 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         /// <remarks>The row sorting feature only works with basic types: <see cref="bool"/>, <see cref="int"/>, <see cref="long"/>, <see cref="float"/>, <see cref="string"/> and <see cref="Enum"/> values, treated as <see cref="string"/> values. Other types sets the original row order. 
         /// The <see cref="string"/> and <see cref="Enum"/> values are sorting using <see cref="EditorUtility.NaturalCompare(string, string)"/> function.</remarks>
-        public int CurrentSearchColumnIndex { get; set; }
+        public int CurrentSearchColumnIndex
+        {
+            get { return this._treeView.searchColumnIndex; }
+            set { this._treeView.searchColumnIndex = value; }
+        }
 
         /// <summary>
         /// Enable this to automatic resize all columns to fit in the control width size.
@@ -851,7 +978,8 @@ namespace Argos.Framework.IMGUI
         /// <param name="columns">Definition of each column.</param>
         /// <param name="rowHeight">Row height. By default is the default height of a normal control.</param>
         /// <param name="resizeToFitColumns">Enable this to automatic resize all columns to fit in the control width size. By default is true. This value can be changed via <see cref="ResizeToFitColumns"/>.</param>
-        public DataTable(SerializedProperty property, DataTableColumn[] columns, float rowHeight = -1f, bool resizeToFitColumns = true)
+        /// <param name="controlID">A unique id that identifies this control instance to allow save control state.</param>
+        public DataTable(SerializedProperty property, DataTableColumn[] columns, float rowHeight = -1f, bool resizeToFitColumns = true, string controlID = "")
         {
             if (property == null)
             {
@@ -865,9 +993,9 @@ namespace Argos.Framework.IMGUI
 
             this._indexRowColumnWidth = Mathf.Clamp(DataTable.ROW_COLUMN_CHAR_WIDTH * property.arraySize.ToString().Length, DataTable.ROW_COLUMN_MIN_WIDTH, DataTable.ROW_COLUMN_MAX_WIDTH);
 
-            this._treeView = new InternalTreeView(property, columns, rowHeight);
+            var treeviewState = new InternalTreeView.InternalDataTableState(controlID);
+            this._treeView = new InternalTreeView(property, columns, rowHeight, treeviewState);
             {
-                this._treeView.searchString = string.Empty;
                 this._treeView.OnCustomCellGUI += this.OnCustomCellGUI;
             }
 
@@ -875,6 +1003,12 @@ namespace Argos.Framework.IMGUI
             {
                 this._searchField.DropDownItems = columns.Select(e => e.headerTitle).ToArray();
                 this._searchField.OnDropDownSelect += this.SetSearchColumn;
+
+                if (treeviewState.IsLoadedPreviousState)
+                {
+                    this._searchField.DropDownSelection = treeviewState.searchColumnIndex;
+                    treeviewState.SetDirty();
+                }
             }
 
             this.ResizeToFitColumns = resizeToFitColumns;
@@ -947,6 +1081,14 @@ namespace Argos.Framework.IMGUI
         {
             float height = this._treeView.multiColumnHeader.height + (this._treeView.RowHeight * rows) + 3f;
             this.Do(EditorGUILayout.GetControlRect(false, height));
+        }
+
+        /// <summary>
+        /// Saves the control state. 
+        /// </summary>
+        public void SaveState()
+        {
+            this._treeView.SaveState();
         }
         #endregion
     }

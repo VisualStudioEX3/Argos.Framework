@@ -757,20 +757,20 @@ MonoBehaviour:
       - serializedVersion: 3
         time: 0
         value: 1
-        inSlope: 0
-        outSlope: 0
+        inSlope: -0.052506294
+        outSlope: -0.052506294
         tangentMode: 34
         weightedMode: 0
         inWeight: 0
-        outWeight: 0
+        outWeight: 0.33333334
       - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
+        time: 0.6666565
+        value: 0.96499634
+        inSlope: -0.5460887
+        outSlope: -0.5460887
+        tangentMode: 0
         weightedMode: 0
-        inWeight: 0
+        inWeight: 0.15623713
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
@@ -812,6 +812,7 @@ MonoBehaviour:
   _bounds:
     m_Center: {x: 0, y: 0, z: 0}
     m_Extent: {x: 0, y: 0, z: 0}
+  _longValue: 9223372036854775807
 --- !u!4 &367070342
 Transform:
   m_ObjectHideFlags: 0
@@ -1265,8 +1266,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b98a4b9a0e993e479c3890f344319bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionList: 2
-  splitOptionList: 2
+  optionList: 4
+  splitOptionList: 27
 --- !u!4 &889760508
 Transform:
   m_ObjectHideFlags: 0

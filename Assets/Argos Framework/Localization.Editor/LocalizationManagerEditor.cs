@@ -140,13 +140,18 @@ namespace Argos.Framework.Localization
                 });
             }
 
-            this._dataTable = new DataTable(this._prop, columns.ToArray());
+            this._dataTable = new DataTable(this._prop, columns.ToArray(), -1, true, "Test4");
             {
                 this._dataTable.ShowRowIndexColumn = true;
                 this._dataTable.ShowSearchField = true;
             }
 
             //this.editorSkin = Editor.CreateEditor(Argos.Framework.Utils.EditorSkinUtility.Skin);
+        }
+
+        private void OnDisable()
+        {
+            this._dataTable.SaveState();
         }
 
         public override void OnInspectorGUI()

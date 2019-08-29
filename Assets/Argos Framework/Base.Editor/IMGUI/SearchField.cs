@@ -11,10 +11,22 @@ namespace Argos.Framework.IMGUI
     {
         #region Internal vars
         UnityEditor.IMGUI.Controls.SearchField _searchField;
+        int _dropDownSelection;
         #endregion
 
         #region Properties
-        public int DropDownSelection { get; private set; }
+        /// <summary>
+        /// Current selection index on dropdown filter.
+        /// </summary>
+        public int DropDownSelection
+        {
+            get { return Mathf.Clamp(this._dropDownSelection, 0, this.DropDownItems.Length - 1); }
+            set { this._dropDownSelection = Mathf.Clamp(value, 0, this.DropDownItems.Length - 1); }
+        }
+
+        /// <summary>
+        /// Filter values.
+        /// </summary>
         public string[] DropDownItems { get; set; }
         #endregion
 
@@ -56,6 +68,10 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Constructors
+        /// <summary>
+        /// Constructor.
+        /// </summary>
+        /// <param name="dropDownItems">Filter values.</param>
         public SearchField(params string[] dropDownItems)
         {
             this.DropDownItems = dropDownItems;
@@ -64,6 +80,12 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Methods & Functions
+        /// <summary>
+        /// Draws the control.
+        /// </summary>
+        /// <param name="position">Position to draw the control. The height value is fixed and setup by control.</param>
+        /// <param name="searchString">Current search string value.</param>
+        /// <returns>Returns the search string value with changes (if there where changes).</returns>
         public string Do(Rect position, string searchString)
         {
             position.height = SearchField.Height;
@@ -103,6 +125,12 @@ namespace Argos.Framework.IMGUI
             return searchFieldText;
         }
 
+        /// <summary>
+        /// Draws control using the current inspector layout.
+        /// </summary>
+        /// <param name="searchString">Current search string value.</param>
+        /// <param name="fullWidth">Using full width? If is false, using field width by default.</param>
+        /// <returns>Returns the search string value with changes (if there where changes).</returns>
         public string DoLayout(string searchString, bool fullWidth = false)
         {
             Rect position = EditorGUILayout.GetControlRect(!fullWidth);

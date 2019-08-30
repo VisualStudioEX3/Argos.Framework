@@ -256,7 +256,9 @@ namespace Argos.Framework.IMGUI
                 }
                 #endregion
             }
+            #endregion
 
+            #region Classes
             public class InternalDataTableState
             {
                 #region Constants
@@ -302,7 +304,7 @@ namespace Argos.Framework.IMGUI
                         {
                             EditorJsonUtility.FromJsonOverwrite(EditorPrefs.GetString(this._id), this);
                             this.IsLoadedPreviousState = true;
-                        } 
+                        }
                     }
                 }
                 #endregion
@@ -356,6 +358,7 @@ namespace Argos.Framework.IMGUI
             bool _sortRows;
             InternalDataTableColumnAttribute[] _columnAttributes;
             InternalDataTableState _state;
+            SerializedProperty[] _outGetItemIndexData;
             #endregion
 
             #region Public vars
@@ -380,7 +383,10 @@ namespace Argos.Framework.IMGUI
 
             #region Events
             public event Action<InternalTreeView, int> OnSearchColumnIndexChange;
-            public event Action<Rect, SerializedProperty> OnCustomCellGUI;
+
+            public event DataTable.OnCustomCellGUIHandler OnCustomCellGUI;
+            public event DataTable.OnRowClickHandler OnRowClick;
+            public event DataTable.OnRowClickHandler OnRowDoubleClick;
             #endregion
 
             #region Static members
@@ -441,11 +447,16 @@ namespace Argos.Framework.IMGUI
                 this.multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(columnStates));
                 this.multiColumnHeader.sortingChanged += this.OnSortingChanged;
 
-                if (this._state.IsLoadedPreviousState && this._state.isPreviouslySorted)
+                if (this._state.IsLoadedPreviousState)
                 {
-                    this.multiColumnHeader.sortedColumnIndex = this._state.sortedColumnIndex + 1;
-                    this.OnSortingChanged(this.multiColumnHeader);
-                    return;
+                    this.SetSelection(this.state.selectedIDs);
+
+                    if (this._state.isPreviouslySorted)
+                    {
+                        this.multiColumnHeader.sortedColumnIndex = this._state.sortedColumnIndex + 1;
+                        this.OnSortingChanged(this.multiColumnHeader);
+                        return; 
+                    }
                 }
 
                 this.Reload();
@@ -464,26 +475,56 @@ namespace Argos.Framework.IMGUI
                 {
                     this.searchColumnIndex = index;
                     this.OnSearchColumnIndexChange?.Invoke(this, index);
-                    this.Repaint(); 
+                    this.Repaint();
+                }
+            }
+
+            void CheckInputForRowClickEvent(RowGUIArgs args)
+            {
+                if (Event.current.type == EventType.MouseDown && Event.current.button == 0)
+                {
+                    if (args.rowRect.Contains(Event.current.mousePosition))
+                    {
+                        if (Event.current.clickCount >= 2)
+                        {
+                            this.OnRowDoubleClick?.Invoke(args.row + 1, (args.item as InternalTreeViewItem).data);
+                        }
+                        else
+                        {
+                            this.OnRowClick?.Invoke(args.row + 1, (args.item as InternalTreeViewItem).data);
+                        } 
+                    }
                 }
             }
 
             int GetItemIndex(TreeViewItem item)
             {
-                return this.GetItemIndex(item.id);
+                return this.GetItemIndex(item.id, out this._outGetItemIndexData);
+            }
+
+            int GetItemIndex(TreeViewItem item, out SerializedProperty[] data)
+            {
+                return this.GetItemIndex(item.id, out data);
             }
 
             int GetItemIndex(int id)
+            {
+                return this.GetItemIndex(id, out this._outGetItemIndexData);
+            }
+
+            int GetItemIndex(int id, out SerializedProperty[] data)
             {
                 IList<TreeViewItem> rows = this.GetRows();
                 for (int i = 0; i < rows.Count; i++)
                 {
                     if (rows[i].id == id)
                     {
+                        data = (rows[i] as InternalTreeViewItem).data;
                         return i;
                     }
                 }
 
+                data = null;
                 return -1;
             }
 
@@ -822,11 +863,29 @@ namespace Argos.Framework.IMGUI
                 //this.SetSelection(selectedIDs, TreeViewSelectionOptions.RevealAndFrame);
             }
 
+            protected override void SelectionChanged(IList<int> selectedIds)
+            {
+                base.SelectionChanged(selectedIds);
+
+                // TODO: Implement event call OnRowSelected(rowIndex, SerializedProperty[] data) when multiselect is false, and event call OnMultipleRowsSelected(int[] rowsIndex) when multiselection is true.
+
+                //Event.current.type == EventType.KeyDown && (Event.current.keyCode == KeyCode.Space || Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter) && (args.focused && args.selected)
+
+                string values = "";
+                foreach (var item in selectedIds)
+                {
+                    values += $"{item}, ";
+                }
+
+                Debug.Log(values);
+            }
+
             protected override void RowGUI(RowGUIArgs args)
             {
+                this.CheckInputForRowClickEvent(args);
                 this.CenterRectUsingSingleLineHeight(ref args.rowRect);
 
-                var rowData = (InternalTreeViewItem)args.item;
+                var rowData = (args.item as InternalTreeViewItem).data;
 
                 for (int i = 0; i < this.columnsSetup.Length + 1; i++)
                 {
@@ -847,7 +906,7 @@ namespace Argos.Framework.IMGUI
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.columnsSetup[columnIndex].propertyName))
                     {
-                        SerializedProperty cellProperty = rowData.data[columnIndex];
+                        SerializedProperty cellProperty = rowData[columnIndex];
 
                         if (cellProperty != null)
                         {
@@ -962,12 +1021,50 @@ namespace Argos.Framework.IMGUI
         public bool CanMultiselect { get { return this._treeView.canMultiselect; } set { this._treeView.canMultiselect = value; } }
         #endregion
 
+        #region Delegates
+        /// <summary>
+        /// Custom cell GUI handler.
+        /// </summary>
+        /// <param name="cellRect">Cell area on inspector.</param>
+        /// <param name="data"><see cref="SerializedProperty"/> data of the cell.</param>
+        public delegate void OnCustomCellGUIHandler(Rect cellRect, SerializedProperty data);
+
+        /// <summary>
+        /// Row cell click handler.
+        /// </summary>
+        /// <param name="rowIndex">Row index on users click.</param>
+        /// <param name="data"><see cref="SerializedProperty"/> array data of the row.</param>
+        public delegate void OnRowClickHandler(int rowIndex, SerializedProperty[] data);
+        #endregion
+
         #region Events
         /// <summary>
         /// Event used to customized data representation of a column cell.
         /// </summary>
         /// <see cref="DataTableColumn.useCustomGUI"/>
-        public event Action<Rect, SerializedProperty> OnCustomCellGUI;
+        public event OnCustomCellGUIHandler OnCustomCellGUI
+        {
+            add { this._treeView.OnCustomCellGUI += value; }
+            remove { this._treeView.OnCustomCellGUI -= value; }
+        }
+
+        /// <summary>
+        /// Event used to get user click on a row, and get the data.
+        /// </summary>
+        public event OnRowClickHandler OnRowClick
+        {
+            add { this._treeView.OnRowClick += value; }
+            remove { this._treeView.OnRowClick -= value; }
+        }
+
+        /// <summary>
+        /// Event used to get user double-click on a row, and get the data.
+        /// </summary>
+        public event OnRowClickHandler OnRowDoubleClick
+        {
+            add { this._treeView.OnRowDoubleClick += value; }
+            remove { this._treeView.OnRowDoubleClick -= value; }
+        }
         #endregion
 
         #region Constructor & Destructor
@@ -995,10 +1092,6 @@ namespace Argos.Framework.IMGUI
 
             var treeviewState = new InternalTreeView.InternalDataTableState(controlID);
             this._treeView = new InternalTreeView(property, columns, rowHeight, treeviewState);
-            {
-                this._treeView.OnCustomCellGUI += this.OnCustomCellGUI;
-            }
-
             this._searchField = new SearchField();
             {
                 this._searchField.DropDownItems = columns.Select(e => e.headerTitle).ToArray();

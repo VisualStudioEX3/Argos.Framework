@@ -144,6 +144,11 @@ namespace Argos.Framework.Localization
             {
                 this._dataTable.ShowRowIndexColumn = true;
                 this._dataTable.ShowSearchField = true;
+
+                this._dataTable.OnRowClick += (rowIndex, data) =>
+                {
+                    Debug.Log($"Row index {rowIndex}");
+                };
             }
 
             //this.editorSkin = Editor.CreateEditor(Argos.Framework.Utils.EditorSkinUtility.Skin);

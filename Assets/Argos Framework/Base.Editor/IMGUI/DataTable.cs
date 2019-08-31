@@ -121,12 +121,8 @@ namespace Argos.Framework.IMGUI
             public SerializedProperty[] data;
             #endregion
 
-            #region Static members
-            static int _index = 0;
-            #endregion
-
             #region Constructors
-            public InternalTreeViewItem(InternalTreeView treeView, SerializedProperty property) : base(++InternalTreeViewItem._index, 0, string.Empty)
+            public InternalTreeViewItem(InternalTreeView treeView, SerializedProperty property) : base(treeView.GetNewRowIndex(), 0, string.Empty)
             {
                 this.data = new SerializedProperty[treeView.columnsSetup.Length];
 
@@ -141,11 +137,6 @@ namespace Argos.Framework.IMGUI
                 this.OnSetSearchColumn(treeView, treeView.searchColumnIndex);
 
                 treeView.OnSearchColumnIndexChange += this.OnSetSearchColumn;
-            }
-
-            ~InternalTreeViewItem()
-            {
-                InternalTreeViewItem._index--;
             }
             #endregion
 
@@ -364,7 +355,7 @@ namespace Argos.Framework.IMGUI
             #region Public vars
             public SerializedProperty property;
             public DataTableColumn[] columnsSetup;
-
+            public int rowCount;
             public bool showRowIndex;
 
             public int searchColumnIndex = 0;
@@ -383,10 +374,11 @@ namespace Argos.Framework.IMGUI
 
             #region Events
             public event Action<InternalTreeView, int> OnSearchColumnIndexChange;
-
             public event DataTable.OnCustomCellGUIHandler OnCustomCellGUI;
             public event DataTable.OnRowClickHandler OnRowClick;
             public event DataTable.OnRowClickHandler OnRowDoubleClick;
+            public event DataTable.OnRowClickHandler OnRowSelected;
+            public event DataTable.OnMultipleRowSelectedHandler OnMultipleRowsSelected;
             #endregion
 
             #region Static members
@@ -455,7 +447,7 @@ namespace Argos.Framework.IMGUI
                     {
                         this.multiColumnHeader.sortedColumnIndex = this._state.sortedColumnIndex + 1;
                         this.OnSortingChanged(this.multiColumnHeader);
-                        return; 
+                        return;
                     }
                 }
 
@@ -487,14 +479,20 @@ namespace Argos.Framework.IMGUI
                     {
                         if (Event.current.clickCount >= 2)
                         {
-                            this.OnRowDoubleClick?.Invoke(args.row + 1, (args.item as InternalTreeViewItem).data);
+                            this.OnRowDoubleClick?.Invoke(args.row, (args.item as InternalTreeViewItem).data);
                         }
                         else
                         {
-                            this.OnRowClick?.Invoke(args.row + 1, (args.item as InternalTreeViewItem).data);
+                            this.OnRowClick?.Invoke(args.row, (args.item as InternalTreeViewItem).data);
                         } 
                     }
                 }
+            }
+
+            public int GetNewRowIndex()
+            {
+                this.rowCount++;
+                return this.rowCount - 1;
             }
 
             int GetItemIndex(TreeViewItem item)
@@ -719,25 +717,30 @@ namespace Argos.Framework.IMGUI
             #region Event listeners
             protected override TreeViewItem BuildRoot()
             {
+                this.rowCount = 0;
                 this.OnSearchColumnIndexChange = null;
 
-                var root = new TreeViewItem { id = 0, depth = -1, displayName = string.Empty };
-                var rows = new List<TreeViewItem>(this.property.arraySize);
+                var root = new TreeViewItem { id = -1, depth = -1, displayName = string.Empty };
 
                 for (int i = 0; i < this.property.arraySize; i++)
                 {
-                    rows.Add(new InternalTreeViewItem(this, this.property.GetArrayElementAtIndex(i)));
+                    root.AddChild(new InternalTreeViewItem(this, this.property.GetArrayElementAtIndex(i)));
                 }
 
                 if (this._sortRows)
                 {
-                    rows.Sort((x, y) => (this.sortAscending ? 1 : -1) * (x as InternalTreeViewItem).CompareTo(y as InternalTreeViewItem, this.sortColumnIndex));
-                    this._sortRows = false;
-                }
+                    // FYI: I can't achieve sorting directly rootItem.Children list out of this event. I can't understand 100% why can clear list or remove elements on overrided BuildRows event but can apply this code outside (a separated method to apply sorting).
+                    // This way is the only solution I found, reload entirely all data from data source and apply the new sorting. I think that may have better way to do this... but whatever...
 
-                foreach (var item in rows)
-                {
-                    root.AddChild(item);
+                    root.children.Sort((x, y) => (this.sortAscending ? 1 : -1) * (x as InternalTreeViewItem).CompareTo(y as InternalTreeViewItem, this.sortColumnIndex));
+
+                    // Renumber the row indexes:
+                    for (int i = 0; i < root.children.Count; i++)
+                    {
+                        root.children[i].id = i;
+                    }
+
+                    this._sortRows = false;
                 }
 
                 if (this._state.IsLoadedPreviousState)
@@ -760,7 +763,7 @@ namespace Argos.Framework.IMGUI
 
             void OnSortingChanged(MultiColumnHeader multiColumnHeader)
             {
-                if (multiColumnHeader.sortedColumnIndex == -1 && this.property.arraySize <= 2) return;
+                if (multiColumnHeader.sortedColumnIndex == -1 || this.property.arraySize <= 2) return;
 
                 this.sortColumnIndex = multiColumnHeader.sortedColumnIndex - 1;
                 this.sortAscending = multiColumnHeader.IsSortedAscending(multiColumnHeader.sortedColumnIndex);
@@ -867,17 +870,22 @@ namespace Argos.Framework.IMGUI
             {
                 base.SelectionChanged(selectedIds);
 
-                // TODO: Implement event call OnRowSelected(rowIndex, SerializedProperty[] data) when multiselect is false, and event call OnMultipleRowsSelected(int[] rowsIndex) when multiselection is true.
-
-                //Event.current.type == EventType.KeyDown && (Event.current.keyCode == KeyCode.Space || Event.current.keyCode == KeyCode.Return || Event.current.keyCode == KeyCode.KeypadEnter) && (args.focused && args.selected)
-
-                string values = "";
-                foreach (var item in selectedIds)
+                if (!this.canMultiselect && this.OnRowSelected != null)
                 {
-                    values += $"{item}, ";
+                    int rowIndex = this.GetItemIndex(selectedIds[0], out this._outGetItemIndexData);
+                    this.OnRowSelected(rowIndex, this._outGetItemIndexData);
                 }
-
-                Debug.Log(values);
+                else if (this.canMultiselect && this.OnMultipleRowsSelected != null)
+                {
+                    var rowIndexes = new int[selectedIds.Count];
+                    var rowData = new SerializedProperty[selectedIds.Count][];
+                    for (int i = 0; i < rowIndexes.Length; i++)
+                    {
+                        rowIndexes[i] = this.GetItemIndex(selectedIds[i]);
+                        rowData[i] = this._outGetItemIndexData;
+                    }
+                    this.OnMultipleRowsSelected(rowIndexes, rowData);
+                }
             }
 
             protected override void RowGUI(RowGUIArgs args)
@@ -1035,6 +1043,13 @@ namespace Argos.Framework.IMGUI
         /// <param name="rowIndex">Row index on users click.</param>
         /// <param name="data"><see cref="SerializedProperty"/> array data of the row.</param>
         public delegate void OnRowClickHandler(int rowIndex, SerializedProperty[] data);
+
+        /// <summary>
+        /// Multiple rows selection handler.
+        /// </summary>
+        /// <param name="rowIndexes">Array of indexes of selected rows.</param>
+        /// <param name="data">Array of <see cref="SerializedProperty"/> arrays, each array item is the data of each selected row.</param>
+        public delegate void OnMultipleRowSelectedHandler(int[] rowIndexes, SerializedProperty[][] data);
         #endregion
 
         #region Events
@@ -1064,6 +1079,24 @@ namespace Argos.Framework.IMGUI
         {
             add { this._treeView.OnRowDoubleClick += value; }
             remove { this._treeView.OnRowDoubleClick -= value; }
+        }
+
+        /// <summary>
+        /// Event used to get a user selected row.
+        /// </summary>
+        public event OnRowClickHandler OnRowSelected
+        {
+            add { this._treeView.OnRowSelected += value; }
+            remove { this._treeView.OnRowSelected -= value; }
+        }
+
+        /// <summary>
+        /// Event used to get user multiple row selection.
+        /// </summary>
+        public event OnMultipleRowSelectedHandler OnMultipleRowsSelected
+        {
+            add { this._treeView.OnMultipleRowsSelected += value;  }
+            remove { this._treeView.OnMultipleRowsSelected -= value; }
         }
         #endregion
 

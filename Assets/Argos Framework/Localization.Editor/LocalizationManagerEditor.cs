@@ -147,7 +147,22 @@ namespace Argos.Framework.Localization
 
                 this._dataTable.OnRowClick += (rowIndex, data) =>
                 {
-                    Debug.Log($"Row index {rowIndex}");
+                    Debug.Log($"User click on row index: {rowIndex}");
+                };
+
+                this._dataTable.OnRowSelected += (rowIndex, data) =>
+                {
+                    Debug.Log($"Selected row index: {rowIndex}");
+                };
+
+                this._dataTable.OnMultipleRowsSelected += (rowIndexes, data) =>
+                {
+                    var sb = new System.Text.StringBuilder();
+                    foreach (var item in rowIndexes)
+                    {
+                        sb.AppendFormat("{0}, ", item);
+                    }
+                    Debug.Log($"Selected multiple row indexes: {sb.ToString()}");
                 };
             }
 

@@ -496,6 +496,11 @@ namespace Argos.Framework.IMGUI
                 return this.rowCount - 1;
             }
 
+            public SerializedProperty[] GetRowData(int index)
+            {
+                return (this.rootItem.children[index] as InternalTreeViewItem).data;
+            }
+
             // TODO: Revise this
             bool ValidDrag(TreeViewItem parent, List<TreeViewItem> draggedItems)
             {
@@ -842,7 +847,7 @@ namespace Argos.Framework.IMGUI
 
                 if (!this.canMultiselect && this.OnRowSelected != null)
                 {
-                    this.OnRowSelected(selectedIds[0], (this.rootItem.children[selectedIds[0]] as InternalTreeViewItem).data);
+                    this.OnRowSelected(selectedIds[0], this.GetRowData(selectedIds[0]));
                 }
                 else if (this.canMultiselect && this.OnMultipleRowsSelected != null)
                 {
@@ -851,7 +856,7 @@ namespace Argos.Framework.IMGUI
                     for (int i = 0; i < rowIndexes.Length; i++)
                     {
                         rowIndexes[i] = selectedIds[i];
-                        rowData[i] = (this.rootItem.children[selectedIds[i]] as InternalTreeViewItem).data;
+                        rowData[i] = this.GetRowData(selectedIds[i]);
                     }
                     this.OnMultipleRowsSelected(rowIndexes, rowData);
                 }
@@ -1137,6 +1142,21 @@ namespace Argos.Framework.IMGUI
         public void Reload()
         {
             this._treeView.Reload();
+        }
+
+        /// <summary>
+        /// Get all fields data from a row.
+        /// </summary>
+        /// <param name="index">Row index.</param>
+        /// <returns>Returns a <see cref="SerializedProperty"/> array with data of each row fields.</returns>
+        public SerializedProperty[] GetRowData(int index)
+        {
+            if (Utils.MathUtility.IsClamped(index, 0, this.RowCount - 1))
+            {
+                return this._treeView.GetRowData(index);
+            }
+
+            throw new IndexOutOfRangeException("DataTable: The index of row not exists.");
         }
 
         /// <summary>

@@ -260,8 +260,10 @@ namespace Argos.Framework.IMGUI
                 [Serializable]
                 public struct InternalDataTableColumnState
                 {
+                    #region Public vars
                     public bool sortedAscending;
-                    public float currentWidth;
+                    public float currentWidth; 
+                    #endregion
                 }
                 #endregion
 
@@ -349,7 +351,6 @@ namespace Argos.Framework.IMGUI
             bool _sortRows;
             InternalDataTableColumnAttribute[] _columnAttributes;
             InternalDataTableState _state;
-            SerializedProperty[] _outGetItemIndexData;
             #endregion
 
             #region Public vars
@@ -493,37 +494,6 @@ namespace Argos.Framework.IMGUI
             {
                 this.rowCount++;
                 return this.rowCount - 1;
-            }
-
-            int GetItemIndex(TreeViewItem item)
-            {
-                return this.GetItemIndex(item.id, out this._outGetItemIndexData);
-            }
-
-            int GetItemIndex(TreeViewItem item, out SerializedProperty[] data)
-            {
-                return this.GetItemIndex(item.id, out data);
-            }
-
-            int GetItemIndex(int id)
-            {
-                return this.GetItemIndex(id, out this._outGetItemIndexData);
-            }
-
-            int GetItemIndex(int id, out SerializedProperty[] data)
-            {
-                IList<TreeViewItem> rows = this.GetRows();
-                for (int i = 0; i < rows.Count; i++)
-                {
-                    if (rows[i].id == id)
-                    {
-                        data = (rows[i] as InternalTreeViewItem).data;
-                        return i;
-                    }
-                }
-
-                data = null;
-                return -1;
             }
 
             // TODO: Revise this
@@ -788,7 +758,7 @@ namespace Argos.Framework.IMGUI
                     case DragAndDropPosition.UponItem:
                     case DragAndDropPosition.BetweenItems:
 
-                        int index = args.insertAtIndex < 0 ? this.GetItemIndex(args.parentItem) : args.insertAtIndex;
+                        int index = args.insertAtIndex < 0 ? args.parentItem.id : args.insertAtIndex;
 
                         //Debug.Log($"Drag & Drop: Move to target item/s index {index}");
 
@@ -844,7 +814,7 @@ namespace Argos.Framework.IMGUI
 
                 foreach (var item in args.draggedItemIDs)
                 {
-                    indexes += $"{this.GetItemIndex(item)}, ";
+                    indexes += $"{item}, ";
                 }
 
                 Debug.Log($"Drag & Drop: Item index/es to move {indexes.Remove(indexes.Length - 2)}");
@@ -872,8 +842,7 @@ namespace Argos.Framework.IMGUI
 
                 if (!this.canMultiselect && this.OnRowSelected != null)
                 {
-                    int rowIndex = this.GetItemIndex(selectedIds[0], out this._outGetItemIndexData);
-                    this.OnRowSelected(rowIndex, this._outGetItemIndexData);
+                    this.OnRowSelected(selectedIds[0], (this.rootItem.children[selectedIds[0]] as InternalTreeViewItem).data);
                 }
                 else if (this.canMultiselect && this.OnMultipleRowsSelected != null)
                 {
@@ -881,8 +850,8 @@ namespace Argos.Framework.IMGUI
                     var rowData = new SerializedProperty[selectedIds.Count][];
                     for (int i = 0; i < rowIndexes.Length; i++)
                     {
-                        rowIndexes[i] = this.GetItemIndex(selectedIds[i]);
-                        rowData[i] = this._outGetItemIndexData;
+                        rowIndexes[i] = selectedIds[i];
+                        rowData[i] = (this.rootItem.children[selectedIds[i]] as InternalTreeViewItem).data;
                     }
                     this.OnMultipleRowsSelected(rowIndexes, rowData);
                 }

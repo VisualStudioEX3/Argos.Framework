@@ -125,9 +125,9 @@ namespace Argos.Framework.IMGUI
 
             #region Constructors
             // TODO: Find way to create a fixed hash to property. Maybe other way is created UdpateHashCode() function, to use after drag & drop operation, and reuse again the SerializedProperty.GetHashCode() value (or implement function to swap hash code between drag & drop moved rows).
-            public InternalTreeViewItem(InternalTreeView treeView, SerializedProperty property) : base(property.propertyPath.GetHashCode(), 0, string.Empty)
+            public InternalTreeViewItem(InternalTreeView treeView, SerializedProperty property) : base(treeView.GetNewRowIndex(), 0, string.Empty)
             {
-                this.arrayIndex = this.rowIndex = treeView.GetNewRowIndex();
+                this.arrayIndex = this.rowIndex = this.id;
                 this.data = new SerializedProperty[treeView.columnsSetup.Length];
 
                 for (int i = 0; i < treeView.columnsSetup.Length; i++)
@@ -543,6 +543,18 @@ namespace Argos.Framework.IMGUI
                 return (this.rootItem.children[index] as InternalTreeViewItem).data;
             }
 
+            void SwapProperties(int sourceArrayIndex, int targetArrayIndex)
+            {
+                InternalTreeViewItem a = this.GetItemByRowIndex(sourceArrayIndex);
+                InternalTreeViewItem b = this.GetItemByRowIndex(targetArrayIndex);
+
+                Debug.LogWarning($"Before {a.id} => {b.id}");
+                int t = a.id; a.id = b.id; b.id = t;
+                
+                this.property.MoveArrayElement(a.arrayIndex, b.arrayIndex);
+                Debug.LogWarning($"After {a.id} => {b.id}");
+            }
+
             // Unity built-in slider control has a bug with the slider input rect that overlaps other controls to right when the slider control width is over 180px.
             // This function implements custom slider control that works and look same as Unity built-in control, and adds the read-only version.
             void DrawFixedSlider(Rect cellRect, SerializedProperty property, RangeAttribute attribute, bool readOnly)
@@ -790,22 +802,15 @@ namespace Argos.Framework.IMGUI
                     case DragAndDropPosition.BetweenItems:
 
                         int insertAtArrayIndex = -1;
-                        if (args.dragAndDropPosition == DragAndDropPosition.BetweenItems)
-                        {
-                            insertAtArrayIndex = this.GetItemByRowIndex(args.insertAtIndex).arrayIndex; 
-                        }
-                        else
-                        {
-                            int first, last;
-                            this.GetFirstAndLastVisibleRows(out first, out last);
+                        int first, last;
+                        this.GetFirstAndLastVisibleRows(out first, out last);
 
-                            for (int i = first; i < last + 1; i++)
+                        for (int i = first; i < last + 1; i++)
+                        {
+                            if (this.GetRowRect(i).Contains(Event.current.mousePosition))
                             {
-                                if (this.GetRowRect(i).Contains(Event.current.mousePosition))
-                                {
-                                    insertAtArrayIndex = this.GetItemByRowIndex(i).arrayIndex;
-                                    break;
-                                }
+                                insertAtArrayIndex = this.GetItemByRowIndex(i).arrayIndex;
+                                break;
                             }
                         }
 
@@ -813,13 +818,10 @@ namespace Argos.Framework.IMGUI
                         int startIndex = insertAtArrayIndex;
                         if (args.performDrop && validDrag)
                         {
-                            // TODO: Fix multiselection drag & drop behaviour.
+                            // TODO: Fix multiselection drag & drop behaviour. Maybe do inverse list? (start by the end element to first, drop on inserAtArrayIndex
                             foreach (InternalTreeViewItem item in draggedRows)
                             {
-                                var a = this.property.GetArrayElementAtIndex(item.arrayIndex).propertyPath.GetHashCode();
-                                this.property.MoveArrayElement(item.arrayIndex, insertAtArrayIndex);
-                                var b = this.property.GetArrayElementAtIndex(insertAtArrayIndex).propertyPath.GetHashCode();
-                                Debug.Log($"A: {a}, B: {b}");
+                                this.SwapProperties(item.rowIndex, insertAtArrayIndex);
                                 insertAtArrayIndex++;
                             }
                         }

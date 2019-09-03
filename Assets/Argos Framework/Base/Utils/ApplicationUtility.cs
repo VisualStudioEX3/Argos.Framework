@@ -115,13 +115,25 @@ namespace Argos.Framework.Utils
 
         #region Methods & Functions
         /// <summary>
-        /// Swap variable values.
+        /// Swap values.
         /// </summary>
-        /// <typeparam name="T">Type of variables.</typeparam>
-        /// <param name="a">First var.</param>
-        /// <param name="b">Second var.</param>
+        /// <typeparam name="T">Type of variable. Must be a struct or value type.</typeparam>
+        /// <param name="a">First value.</param>
+        /// <param name="b">Second value.</param>
         [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
-        public static void Swap<T>(ref T a, ref T b)
+        public static void Swap<T>(T a, T b) where T : struct
+        {
+            T c = a; a = b; b = c;
+        }
+
+        /// <summary>
+        /// Swap class instances.
+        /// </summary>
+        /// <typeparam name="T">Type of class. Struct values not allowed.</typeparam>
+        /// <param name="a">First instance.</param>
+        /// <param name="b">Second instance.</param>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static void SwapInstances<T>(ref T a, ref T b) where T : class
         {
             T c = a; a = b; b = c;
         }

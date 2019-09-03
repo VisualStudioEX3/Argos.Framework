@@ -118,12 +118,16 @@ namespace Argos.Framework.IMGUI
         class InternalTreeViewItem : TreeViewItem
         {
             #region Public vars
+            public int arrayIndex;
+            public int rowIndex;
             public SerializedProperty[] data;
             #endregion
 
             #region Constructors
-            public InternalTreeViewItem(InternalTreeView treeView, SerializedProperty property) : base(treeView.GetNewRowIndex(), 0, string.Empty)
+            // TODO: Find way to create a fixed hash to property. Maybe other way is created UdpateHashCode() function, to use after drag & drop operation, and reuse again the SerializedProperty.GetHashCode() value (or implement function to swap hash code between drag & drop moved rows).
+            public InternalTreeViewItem(InternalTreeView treeView, SerializedProperty property) : base(property.propertyPath.GetHashCode(), 0, string.Empty)
             {
+                this.arrayIndex = this.rowIndex = treeView.GetNewRowIndex();
                 this.data = new SerializedProperty[treeView.columnsSetup.Length];
 
                 for (int i = 0; i < treeView.columnsSetup.Length; i++)
@@ -496,25 +500,47 @@ namespace Argos.Framework.IMGUI
                 return this.rowCount - 1;
             }
 
+            public void RenumberRowIndexes()
+            {
+                this.RenumberRowIndexes(this.rootItem);
+            }
+
+            public void RenumberRowIndexes(TreeViewItem root)
+            {
+                for (int i = 0; i < root.children.Count; i++)
+                {
+                    (root.children[i] as InternalTreeViewItem).rowIndex = i;
+                }
+            }
+
+            InternalTreeViewItem GetItemById(int id)
+            {
+                return this.FindItem(id, this.rootItem) as InternalTreeViewItem;
+            }
+
+            InternalTreeViewItem GetItemByRowIndex(int index)
+            {
+                return (this.rootItem.children[index] as InternalTreeViewItem);
+            }
+
+            IList<InternalTreeViewItem> GetItemsById(IList<int> ids)
+            {
+                return this.FindRows(ids).Cast<InternalTreeViewItem>().ToList();
+            }
+
+            int GetArrayIndex(int itemId)
+            {
+                return this.GetItemById(itemId).arrayIndex;
+            }
+
+            int GetArrayIndex(TreeViewItem item)
+            {
+                return (item as InternalTreeViewItem).arrayIndex;
+            }
+
             public SerializedProperty[] GetRowData(int index)
             {
                 return (this.rootItem.children[index] as InternalTreeViewItem).data;
-            }
-
-            // TODO: Revise this
-            bool ValidDrag(TreeViewItem parent, List<TreeViewItem> draggedItems)
-            {
-                TreeViewItem currentParent = parent;
-                while (currentParent != null)
-                {
-                    if (draggedItems.Contains(currentParent))
-                    {
-                        return false;
-                    }
-                    currentParent = currentParent.parent;
-                }
-
-                return true;
             }
 
             // Unity built-in slider control has a bug with the slider input rect that overlaps other controls to right when the slider control width is over 180px.
@@ -697,30 +723,31 @@ namespace Argos.Framework.IMGUI
 
                 var root = new TreeViewItem { id = -1, depth = -1, displayName = string.Empty };
 
-                for (int i = 0; i < this.property.arraySize; i++)
+                if (this.property.arraySize > 0)
                 {
-                    root.AddChild(new InternalTreeViewItem(this, this.property.GetArrayElementAtIndex(i)));
-                }
-
-                if (this._sortRows)
-                {
-                    // FYI: I can't achieve sorting directly rootItem.Children list out of this event. I can't understand 100% why can clear list or remove elements on overrided BuildRows event but can apply this code outside (a separated method to apply sorting).
-                    // This way is the only solution I found, reload entirely all data from data source and apply the new sorting. I think that may have better way to do this... but whatever...
-
-                    root.children.Sort((x, y) => (this.sortAscending ? 1 : -1) * (x as InternalTreeViewItem).CompareTo(y as InternalTreeViewItem, this.sortColumnIndex));
-
-                    // Renumber the row indexes:
-                    for (int i = 0; i < root.children.Count; i++)
+                    for (int i = 0; i < this.property.arraySize; i++)
                     {
-                        root.children[i].id = i;
+                        root.AddChild(new InternalTreeViewItem(this, this.property.GetArrayElementAtIndex(i)));
                     }
 
-                    this._sortRows = false;
-                }
+                    if (this._sortRows)
+                    {
+                        // FYI: I can't achieve sorting directly rootItem.Children list out of this event. I can't understand 100% why can clear list or remove elements on overrided BuildRows event but can apply this code outside (a separated method to apply sorting).
+                        // This way is the only solution I found, reload entirely all data from data source and apply the new sorting. I think that may have better way to do this... but whatever...
 
-                if (this._state.IsLoadedPreviousState)
+                        root.children.Sort((x, y) => (this.sortAscending ? 1 : -1) * (x as InternalTreeViewItem).CompareTo(y as InternalTreeViewItem, this.sortColumnIndex));
+                        this.RenumberRowIndexes(root);
+                        this._sortRows = false;
+                    }
+
+                    if (this._state.IsLoadedPreviousState)
+                    {
+                        this.SetSearchColumnIndex(this._state.searchColumnIndex);
+                    } 
+                }
+                else
                 {
-                    this.SetSearchColumnIndex(this._state.searchColumnIndex);
+                    root.children = new List<TreeViewItem>();
                 }
 
                 return root;
@@ -757,49 +784,54 @@ namespace Argos.Framework.IMGUI
                     return DragAndDropVisualMode.None;
                 }
 
-                // Parent item is null when dragging outside any tree view items.
                 switch (args.dragAndDropPosition)
                 {
                     case DragAndDropPosition.UponItem:
                     case DragAndDropPosition.BetweenItems:
 
-                        int index = args.insertAtIndex < 0 ? args.parentItem.id : args.insertAtIndex;
+                        int insertAtArrayIndex = -1;
+                        if (args.dragAndDropPosition == DragAndDropPosition.BetweenItems)
+                        {
+                            insertAtArrayIndex = this.GetItemByRowIndex(args.insertAtIndex).arrayIndex; 
+                        }
+                        else
+                        {
+                            int first, last;
+                            this.GetFirstAndLastVisibleRows(out first, out last);
 
-                        //Debug.Log($"Drag & Drop: Move to target item/s index {index}");
+                            for (int i = first; i < last + 1; i++)
+                            {
+                                if (this.GetRowRect(i).Contains(Event.current.mousePosition))
+                                {
+                                    insertAtArrayIndex = this.GetItemByRowIndex(i).arrayIndex;
+                                    break;
+                                }
+                            }
+                        }
 
-                        bool validDrag = ValidDrag(args.parentItem, draggedRows);
+                        bool validDrag = (insertAtArrayIndex != this.GetArrayIndex(draggedRows[0]));
+                        int startIndex = insertAtArrayIndex;
                         if (args.performDrop && validDrag)
                         {
-                            Debug.Log($"Drag & Drop: Drop to target item/s index {index}");
-
-                            //T parentData = ((TreeViewItem<T>)args.parentItem).data;
-                            //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
-
-                            // TODO: Revise this code to finish the drag & drop behaviour:
-                            ////LocalizationItem parentData = (LocalizationItem)args.parentItem;
-                            //OnDropDraggedElementsAtIndex(draggedRows, parentData, args.insertAtIndex == -1 ? 0 : args.insertAtIndex);
+                            // TODO: Fix multiselection drag & drop behaviour.
+                            foreach (InternalTreeViewItem item in draggedRows)
+                            {
+                                var a = this.property.GetArrayElementAtIndex(item.arrayIndex).propertyPath.GetHashCode();
+                                this.property.MoveArrayElement(item.arrayIndex, insertAtArrayIndex);
+                                var b = this.property.GetArrayElementAtIndex(insertAtArrayIndex).propertyPath.GetHashCode();
+                                Debug.Log($"A: {a}, B: {b}");
+                                insertAtArrayIndex++;
+                            }
                         }
-                        return validDrag ? DragAndDropVisualMode.Move : DragAndDropVisualMode.None;
 
+                        this.RenumberRowIndexes();
+
+                        return validDrag ? DragAndDropVisualMode.Move : DragAndDropVisualMode.Rejected;
 
                     case DragAndDropPosition.OutsideItems:
-
-                        //if (args.performDrop)
-                        //{
-                        Debug.LogError("Drag & Drop: Drop outside of table.");
-                        //    //OnDropDraggedElementsAtIndex(draggedRows, this.root, m_TreeModel.root.children.Count);
-                        //}
-                        //else
-                        //{
-                        //    Debug.LogError("Drag & Drop: Move outside of table.");
-                        //}
-
-                        return DragAndDropVisualMode.Move;
-
                     default:
 
-                        Debug.LogError($"Unhandled enum: {args.dragAndDropPosition}");
-                        return DragAndDropVisualMode.None;
+                        return DragAndDropVisualMode.Rejected;
                 }
             }
 
@@ -807,58 +839,39 @@ namespace Argos.Framework.IMGUI
             {
                 if (this.hasSearch) return;
 
-                DragAndDrop.PrepareStartDrag();
-
                 IList<TreeViewItem> draggedRows = this.GetRows().Where(e => args.draggedItemIDs.Contains(e.id)).ToList();
-                DragAndDrop.SetGenericData(InternalTreeView.GENERIC_DRAG_ID, draggedRows);
-                DragAndDrop.objectReferences = new UnityEngine.Object[] { };
 
+                DragAndDrop.PrepareStartDrag();
+                {
+                    DragAndDrop.SetGenericData(InternalTreeView.GENERIC_DRAG_ID, draggedRows);
+                    DragAndDrop.objectReferences = new UnityEngine.Object[] { };
+                }
                 DragAndDrop.StartDrag(draggedRows.Count == 1 ? draggedRows[0].displayName : "< Multiple >");
 
-                string indexes = string.Empty;
+                //string indexes = string.Empty;
 
-                foreach (var item in args.draggedItemIDs)
-                {
-                    indexes += $"{item}, ";
-                }
+                //foreach (var item in args.draggedItemIDs)
+                //{
+                //    indexes += $"{this.GetArrayIndex(item)}, ";
+                //}
 
-                Debug.Log($"Drag & Drop: Item index/es to move {indexes.Remove(indexes.Length - 2)}");
-            }
-
-            //public event Action<IList<TreeViewItem>> beforeDroppingDraggedItems;
-
-            public virtual void OnDropDraggedElementsAtIndex(List<TreeViewItem> draggedRows, InternalTreeViewItem parent, int insertIndex)
-            {
-                //if (beforeDroppingDraggedItems != null)
-                //    beforeDroppingDraggedItems(draggedRows);
-
-                //var draggedElements = new List<LocalizationItem>();
-                //foreach (var x in draggedRows)
-                //    draggedElements.Add((LocalizationItem)x);
-
-                //var selectedIDs = draggedElements.Select(x => x.id).ToArray();
-                //this.MoveElements(parent, insertIndex, draggedElements);
-                //this.SetSelection(selectedIDs, TreeViewSelectionOptions.RevealAndFrame);
+                //Debug.Log($"Drag & Drop: Move {indexes.Remove(indexes.Length - 2)}");
             }
 
             protected override void SelectionChanged(IList<int> selectedIds)
             {
                 base.SelectionChanged(selectedIds);
 
-                if (!this.canMultiselect && this.OnRowSelected != null)
+                if (this.OnRowSelected != null && 
+                    (!this.canMultiselect || (this.canMultiselect && selectedIds.Count == 1)))
                 {
-                    this.OnRowSelected(selectedIds[0], this.GetRowData(selectedIds[0]));
+                    InternalTreeViewItem item = this.GetItemById(selectedIds[0]);
+                    this.OnRowSelected(item.rowIndex, item.data);
                 }
                 else if (this.canMultiselect && this.OnMultipleRowsSelected != null)
                 {
-                    var rowIndexes = new int[selectedIds.Count];
-                    var rowData = new SerializedProperty[selectedIds.Count][];
-                    for (int i = 0; i < rowIndexes.Length; i++)
-                    {
-                        rowIndexes[i] = selectedIds[i];
-                        rowData[i] = this.GetRowData(selectedIds[i]);
-                    }
-                    this.OnMultipleRowsSelected(rowIndexes, rowData);
+                    var rows = this.GetItemsById(selectedIds);
+                    this.OnMultipleRowsSelected(rows.Select(e => e.rowIndex).ToArray(), rows.Select(e => e.data).ToArray());
                 }
             }
 

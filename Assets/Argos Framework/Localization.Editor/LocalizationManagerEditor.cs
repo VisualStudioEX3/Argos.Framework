@@ -140,10 +140,12 @@ namespace Argos.Framework.Localization
                 });
             }
 
-            this._dataTable = new DataTable(this._prop, columns.ToArray(), -1, true, "Test4");
+            this._dataTable = new DataTable(this._prop, columns.ToArray(), -1, true, "DataTableTest");
             {
                 this._dataTable.ShowRowIndexColumn = true;
                 this._dataTable.ShowSearchField = true;
+                this._dataTable.CanDrag = true;
+                this._dataTable.CanMultiselect = true;
 
                 this._dataTable.OnRowClick += (rowIndex, data) =>
                 {
@@ -194,22 +196,22 @@ namespace Argos.Framework.Localization
 
             this.serializedObject.ApplyModifiedProperties();
 
-            SerializedProperty gradient = this.serializedObject.FindProperty("_gradient");
+            //SerializedProperty gradient = this.serializedObject.FindProperty("_gradient");
 
-            PropertyInfo gradientValue = gradient.GetType().GetProperty("gradientValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty);
+            //PropertyInfo gradientValue = gradient.GetType().GetProperty("gradientValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty);
 
-            var source = gradientValue.GetValue(gradient) as Gradient;
+            //var source = gradientValue.GetValue(gradient) as Gradient;
 
-            var copy = new Gradient();
-            copy.alphaKeys = source.alphaKeys;
-            copy.colorKeys = source.colorKeys;
-            copy.mode = source.mode;
+            //var copy = new Gradient();
+            //copy.alphaKeys = source.alphaKeys;
+            //copy.colorKeys = source.colorKeys;
+            //copy.mode = source.mode;
 
-            EditorGUI.GradientField(EditorGUILayout.GetControlRect(), source);
+            //EditorGUI.GradientField(EditorGUILayout.GetControlRect(), source);
 
-            SerializedProperty mask = this.serializedObject.FindProperty("_layerMask");
-            SerializedProperty letter = this.serializedObject.FindProperty("_letter");
-            SerializedProperty longValue = this.serializedObject.FindProperty("_longValue");
+            //SerializedProperty mask = this.serializedObject.FindProperty("_layerMask");
+            //SerializedProperty letter = this.serializedObject.FindProperty("_letter");
+            //SerializedProperty longValue = this.serializedObject.FindProperty("_longValue");
 
             //this.editorSkin.DrawDefaultInspector();
         }

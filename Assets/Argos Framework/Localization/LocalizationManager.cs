@@ -32,24 +32,24 @@ namespace Argos.Framework.Localization
         [SerializeField]
         TestData[] _test;
 
-        [SerializeField]
-        Gradient _gradient;
+        //[SerializeField]
+        //Gradient _gradient;
 
-        [SerializeField]
-        LayerMask _layerMask;
+        //[SerializeField]
+        //LayerMask _layerMask;
 
-        [SerializeField]
-        char _letter = 'a';
+        //[SerializeField]
+        //char _letter = 'a';
 
-        [SerializeField]
-        Bounds _bounds;
+        //[SerializeField]
+        //Bounds _bounds;
 
-        [SerializeField]
-        long _longValue;
+        //[SerializeField]
+        //long _longValue;
 
-        private void Start()
-        {
-            print($"{(char)97}");
-        }
+        //private void Start()
+        //{
+        //    print($"{(char)97}");
+        //}
     }
 }

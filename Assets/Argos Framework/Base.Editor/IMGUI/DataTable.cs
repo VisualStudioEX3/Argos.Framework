@@ -118,16 +118,14 @@ namespace Argos.Framework.IMGUI
         class InternalTreeViewItem : TreeViewItem
         {
             #region Public vars
-            public int arrayIndex;
-            public int rowIndex;
+            public int arrayIndex; // Array index on root Serialized Property.
             public SerializedProperty[] data;
             #endregion
 
             #region Constructors
-            // TODO: Find way to create a fixed hash to property. Maybe other way is created UdpateHashCode() function, to use after drag & drop operation, and reuse again the SerializedProperty.GetHashCode() value (or implement function to swap hash code between drag & drop moved rows).
             public InternalTreeViewItem(InternalTreeView treeView, SerializedProperty property) : base(treeView.GetNewRowIndex(), 0, string.Empty)
             {
-                this.arrayIndex = this.rowIndex = this.id;
+                this.arrayIndex = this.id;
                 this.data = new SerializedProperty[treeView.columnsSetup.Length];
 
                 for (int i = 0; i < treeView.columnsSetup.Length; i++)
@@ -509,7 +507,7 @@ namespace Argos.Framework.IMGUI
             {
                 for (int i = 0; i < root.children.Count; i++)
                 {
-                    (root.children[i] as InternalTreeViewItem).rowIndex = i;
+                    root.children[i].id = i;
                 }
             }
 
@@ -818,11 +816,10 @@ namespace Argos.Framework.IMGUI
                         int startIndex = insertAtArrayIndex;
                         if (args.performDrop && validDrag)
                         {
-                            // TODO: Fix multiselection drag & drop behaviour. Maybe do inverse list? (start by the end element to first, drop on inserAtArrayIndex
-                            foreach (InternalTreeViewItem item in draggedRows)
+                            // TODO: Fix current selection after perform multiselection drag & drop.
+                            for (int i = draggedRows.Count - 1; i > -1; i--)
                             {
-                                this.SwapProperties(item.rowIndex, insertAtArrayIndex);
-                                insertAtArrayIndex++;
+                                this.SwapProperties((draggedRows[i] as InternalTreeViewItem).arrayIndex, insertAtArrayIndex);
                             }
                         }
 
@@ -868,12 +865,12 @@ namespace Argos.Framework.IMGUI
                     (!this.canMultiselect || (this.canMultiselect && selectedIds.Count == 1)))
                 {
                     InternalTreeViewItem item = this.GetItemById(selectedIds[0]);
-                    this.OnRowSelected(item.rowIndex, item.data);
+                    this.OnRowSelected(item.id, item.data);
                 }
                 else if (this.canMultiselect && this.OnMultipleRowsSelected != null)
                 {
                     var rows = this.GetItemsById(selectedIds);
-                    this.OnMultipleRowsSelected(rows.Select(e => e.rowIndex).ToArray(), rows.Select(e => e.data).ToArray());
+                    this.OnMultipleRowsSelected(rows.Select(e => e.id).ToArray(), rows.Select(e => e.data).ToArray());
                 }
             }
 
@@ -899,7 +896,7 @@ namespace Argos.Framework.IMGUI
 
                     if (i == 0 && this.showRowIndex)
                     {
-                        EditorGUI.LabelField(cellRect, (args.row + 1).ToString());
+                        EditorGUI.LabelField(cellRect, (args.item.id /*args.row + 1*/).ToString());
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.columnsSetup[columnIndex].propertyName))
                     {

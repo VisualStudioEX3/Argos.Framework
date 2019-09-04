@@ -590,37 +590,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _test:
-  - key: ui_cancel
-    text: Cancel
-    keyCode: 27
-    enable: 1
-    value: 1
-    color: {r: 0, g: 3.9999995, b: 0.40592667, a: 0}
-    curve:
-      serializedVersion: 2
-      m_Curve:
-      - serializedVersion: 3
-        time: 0
-        value: 0
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      - serializedVersion: 3
-        time: 1
-        value: 1
-        inSlope: 2
-        outSlope: 2
-        tangentMode: 0
-        weightedMode: 0
-        inWeight: 0
-        outWeight: 0
-      m_PreInfinity: 2
-      m_PostInfinity: 2
-      m_RotationOrder: 0
-    threshold: -0.5
   - key: ui_submit
     text: Submit
     keyCode: 13
@@ -652,37 +621,37 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
     threshold: 0.25
-  - key: ui_aim
-    text: Aim
-    keyCode: 323
+  - key: ui_cancel
+    text: Cancel
+    keyCode: 27
     enable: 1
     value: 1
-    color: {r: 0, g: 32.125492, b: 766.9961, a: 0}
+    color: {r: 0, g: 3.9999995, b: 0.40592667, a: 0}
     curve:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 1
+        value: 0
         inSlope: 0
         outSlope: 0
-        tangentMode: 34
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
       - serializedVersion: 3
         time: 1
         value: 1
-        inSlope: 0
-        outSlope: 0
-        tangentMode: 34
+        inSlope: 2
+        outSlope: 2
+        tangentMode: 0
         weightedMode: 0
         inWeight: 0
         outWeight: 0
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 0
-    threshold: 666
+    threshold: -0.5
   - key: ui_defaults
     text: Set Defaults
     keyCode: 9
@@ -745,6 +714,37 @@ MonoBehaviour:
       m_PostInfinity: 2
       m_RotationOrder: 0
     threshold: -3.6
+  - key: ui_aim
+    text: Aim
+    keyCode: 323
+    enable: 1
+    value: 1
+    color: {r: 0, g: 32.125492, b: 766.9961, a: 0}
+    curve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      - serializedVersion: 3
+        time: 1
+        value: 1
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 34
+        weightedMode: 0
+        inWeight: 0
+        outWeight: 0
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 0
+    threshold: 666
 --- !u!4 &367070342
 Transform:
   m_ObjectHideFlags: 0

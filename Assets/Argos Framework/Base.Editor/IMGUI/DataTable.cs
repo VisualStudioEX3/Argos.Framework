@@ -122,6 +122,13 @@ namespace Argos.Framework.IMGUI
             public SerializedProperty[] data;
             #endregion
 
+            #region Operators
+            public static implicit operator DataTable.DataTableRow(InternalTreeViewItem item)
+            {
+                return new DataTable.DataTableRow(item.id, item.data);
+            }
+            #endregion
+
             #region Constructors
             public InternalTreeViewItem(InternalTreeView treeView, SerializedProperty property) : base(treeView.GetNewRowIndex(), 0, string.Empty)
             {
@@ -373,7 +380,7 @@ namespace Argos.Framework.IMGUI
             public bool showRowIndex;
 
             public int searchColumnIndex = 0;
-            public List<SerializedProperty[]> searchResult = new List<SerializedProperty[]>();
+            public IList<TreeViewItem> searchResult = new List<TreeViewItem>();
 
             public int sortColumnIndex;
             public bool sortAscending;
@@ -502,11 +509,11 @@ namespace Argos.Framework.IMGUI
                     {
                         if (Event.current.clickCount >= 2)
                         {
-                            this.OnRowDoubleClick?.Invoke(args.row, (args.item as InternalTreeViewItem).data);
+                            this.OnRowDoubleClick?.Invoke(args.item as InternalTreeViewItem);
                         }
                         else
                         {
-                            this.OnRowClick?.Invoke(args.row, (args.item as InternalTreeViewItem).data);
+                            this.OnRowClick?.Invoke(args.item as InternalTreeViewItem);
                         }
 
                         if (!Event.current.control && !(this.canDrag && this.canMultiselect))
@@ -794,7 +801,7 @@ namespace Argos.Framework.IMGUI
 
                 if (this.hasSearch)
                 {
-                    this.searchResult = rows.Cast<InternalTreeViewItem>().Select(e => e.data).ToList();
+                    this.searchResult = rows;
                 }
                 else
                 {
@@ -806,7 +813,7 @@ namespace Argos.Framework.IMGUI
 
             protected override bool CanStartDrag(CanStartDragArgs args)
             {
-                return this.canDrag && !this.hasSearch && !this.isPreviouslySorted;
+                return this.canDrag && !this.hasSearch && !this.isPreviouslySorted && (this.GetSelection().Count != this.rowCount);
             }
 
             protected override bool CanMultiSelect(TreeViewItem item)
@@ -858,19 +865,24 @@ namespace Argos.Framework.IMGUI
                         var updatedSelection = new int[draggedRows.Count];
                         if (args.performDrop && validDrag)
                         {
-                            // FIX: Single drag & drop seems to work fine. Multiple rows working moving to down but not when moving to up.
-                            if (true)
+                            if (firstIndex < insertAtArrayIndex)
                             {
-                                for (int moveIndex = draggedRows.Count - 1, toIndex = insertAtArrayIndex + draggedRows.Count - 1; moveIndex >= 0; moveIndex--, toIndex--)
+                                int targetIndex = insertAtArrayIndex + draggedRows.Count - 1;
+                                if (targetIndex > rowCount - 1)
                                 {
-                                    updatedSelection[moveIndex] = this.DragPropertyAtIndex(this.GetArrayIndex(draggedRows[moveIndex]), firstIndex < insertAtArrayIndex ? toIndex : insertAtArrayIndex);
+                                    targetIndex -= (targetIndex - rowCount) + 1;
+                                }
+
+                                for (int moveIndex = draggedRows.Count - 1, toIndex = targetIndex; moveIndex >= 0; moveIndex--, toIndex--)
+                                {
+                                    updatedSelection[moveIndex] = this.DragPropertyAtIndex(this.GetArrayIndex(draggedRows[moveIndex]), toIndex);
                                 } 
                             }
                             else
                             {
                                 for (int moveIndex = 0, toIndex = insertAtArrayIndex; moveIndex < draggedRows.Count; moveIndex++, toIndex++)
                                 {
-
+                                    updatedSelection[moveIndex] = this.DragPropertyAtIndex(this.GetArrayIndex(draggedRows[moveIndex]), toIndex);
                                 }
                             }
                         }
@@ -905,13 +917,12 @@ namespace Argos.Framework.IMGUI
             {
                 if (this.OnRowSelected != null && (!this.canMultiselect || (this.canMultiselect && selectedIds.Count == 1)))
                 {
-                    InternalTreeViewItem item = this.GetItemById(selectedIds[0]);
-                    this.OnRowSelected(item.id, item.data);
+                    this.OnRowSelected(this.GetItemById(selectedIds[0]));
                 }
                 else if (this.canMultiselect && this.OnMultipleRowsSelected != null)
                 {
-                    var rows = this.GetItemsById(selectedIds);
-                    this.OnMultipleRowsSelected(rows.Select(e => e.id).ToArray(), rows.Select(e => e.data).ToArray());
+                    var rows = this.GetItemsById(selectedIds).Cast<DataTable.DataTableRow>().ToArray();
+                    this.OnMultipleRowsSelected(rows);
                 }
             }
 
@@ -990,6 +1001,32 @@ namespace Argos.Framework.IMGUI
             }
             #endregion
         }
+
+        /// <summary>
+        /// DataTable row object.
+        /// </summary>
+        public class DataTableRow
+        {
+            #region Properties
+            /// <summary>
+            /// Row index.
+            /// </summary>
+            public int Row { get; private set; }
+
+            /// <summary>
+            /// <see cref="SerializedProperty"/> array with the row data.
+            /// </summary>
+            public SerializedProperty[] Data { get; private set; }
+            #endregion
+
+            #region Constructor
+            public DataTableRow(int row, SerializedProperty[] data)
+            {
+                this.Row = row;
+                this.Data = data;
+            } 
+            #endregion
+        }
         #endregion
 
         #region Internal vars
@@ -1029,15 +1066,21 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         public string SearchFieldLabelText { get; set; }
 
+
+        /// <summary>
+        /// Current row selection.
+        /// </summary>
+        public DataTableRow[] Selection => this._treeView.GetSelection().Cast<DataTableRow>().ToArray();
+
         /// <summary>
         /// The current search result, sorted alphabetically.
         /// </summary>
-        public IList<SerializedProperty[]> SearchResult => this._treeView.searchResult;
+        public DataTableRow[] SearchResult => this._treeView.searchResult.Cast<DataTableRow>().ToArray();
 
         /// <summary>
         /// Get all rows.
         /// </summary>
-        public IEnumerable<SerializedProperty[]> Rows => this._treeView.GetRows().Cast<InternalTreeViewItem>().Select(e => e.data);
+        public DataTableRow[] Rows => this._treeView.GetRows().Cast<DataTableRow>().ToArray();
 
         /// <summary>
         /// Row count.
@@ -1101,14 +1144,14 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         /// <param name="rowIndex">Row index on users click.</param>
         /// <param name="data"><see cref="SerializedProperty"/> array data of the row.</param>
-        public delegate void OnRowClickHandler(int rowIndex, SerializedProperty[] data);
+        public delegate void OnRowClickHandler(DataTableRow row);
 
         /// <summary>
         /// Multiple rows selection handler.
         /// </summary>
         /// <param name="rowIndexes">Array of indexes of selected rows.</param>
         /// <param name="data">Array of <see cref="SerializedProperty"/> arrays, each array item is the data of each selected row.</param>
-        public delegate void OnMultipleRowSelectedHandler(int[] rowIndexes, SerializedProperty[][] data);
+        public delegate void OnMultipleRowSelectedHandler(DataTableRow[] rows);
 
         /// <summary>
         /// Label area of search field when is visible.
@@ -1293,7 +1336,6 @@ namespace Argos.Framework.IMGUI
                 }
             }
 
-            //this._treeView.canDrag = this._canSort || this._treeView.hasSearch ? false : this.CanDrag;
             this._treeView.multiColumnHeader.state.columns[0].width = this.ShowRowIndexColumn ? this._indexRowColumnWidth : 0f;
 
             if (this.ResizeToFitColumns)

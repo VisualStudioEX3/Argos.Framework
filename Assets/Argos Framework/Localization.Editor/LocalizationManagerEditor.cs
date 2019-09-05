@@ -157,22 +157,22 @@ namespace Argos.Framework.Localization
                 this._dataTable.CanDrag = true;
                 this._dataTable.CanMultiselect = true;
 
-                this._dataTable.OnRowClick += (rowIndex, data) =>
+                this._dataTable.OnRowClick += (rowItem) =>
                 {
-                    Debug.Log($"User click on row index: {rowIndex}");
+                    Debug.Log($"User click on row index: {rowItem.Row}");
                 };
 
-                this._dataTable.OnRowSelected += (rowIndex, data) =>
+                this._dataTable.OnRowSelected += (rowItem) =>
                 {
-                    Debug.Log($"Selected row index: {rowIndex}");
+                    Debug.Log($"Selected row index: {rowItem.Row}");
                 };
 
-                this._dataTable.OnMultipleRowsSelected += (rowIndexes, data) =>
+                this._dataTable.OnMultipleRowsSelected += (rowItems) =>
                 {
                     var sb = new System.Text.StringBuilder();
-                    foreach (var item in rowIndexes)
+                    foreach (var item in rowItems)
                     {
-                        sb.AppendFormat("{0}, ", item);
+                        sb.AppendFormat("{0}, ", item.Row);
                     }
                     Debug.Log($"Selected multiple row indexes: {sb.ToString()}");
                 };

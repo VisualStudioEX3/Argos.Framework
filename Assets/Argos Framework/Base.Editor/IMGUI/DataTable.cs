@@ -118,7 +118,7 @@ namespace Argos.Framework.IMGUI
         class InternalTreeViewItem : TreeViewItem
         {
             #region Public vars
-            public int arrayIndex; // Array index on root Serialized Property.
+            public int arrayIndex; // Array index on root Serialized Property, for drag & drop operations.
             public SerializedProperty[] data;
             #endregion
 
@@ -264,7 +264,7 @@ namespace Argos.Framework.IMGUI
                 {
                     #region Public vars
                     public bool sortedAscending;
-                    public float currentWidth; 
+                    public float currentWidth;
                     #endregion
                 }
                 #endregion
@@ -305,7 +305,7 @@ namespace Argos.Framework.IMGUI
                 #endregion
 
                 #region Methods & Functions
-                public void SaveState(InternalTreeView treeView)
+                public void Save(InternalTreeView treeView)
                 {
                     if (string.IsNullOrEmpty(this._id)) return;
 
@@ -326,6 +326,16 @@ namespace Argos.Framework.IMGUI
                     this.isPreviouslySorted = treeView.isPreviouslySorted;
 
                     EditorPrefs.SetString(this._id, EditorJsonUtility.ToJson(this, true));
+                }
+
+                public void Delete()
+                {
+                    if (string.IsNullOrEmpty(this._id)) return;
+
+                    if (EditorPrefs.HasKey(this._id))
+                    {
+                        EditorPrefs.DeleteKey(this._id);
+                    }
                 }
 
                 public TreeViewState ToTreeViewState()
@@ -352,16 +362,18 @@ namespace Argos.Framework.IMGUI
             #region Internal vars
             bool _sortRows;
             InternalDataTableColumnAttribute[] _columnAttributes;
-            InternalDataTableState _state;
             #endregion
 
             #region Public vars
             public SerializedProperty property;
             public DataTableColumn[] columnsSetup;
+            public InternalDataTableState internalState;
+
             public int rowCount;
             public bool showRowIndex;
 
             public int searchColumnIndex = 0;
+            public List<InternalTreeViewItem> searchResult = new List<InternalTreeViewItem>();
 
             public int sortColumnIndex;
             public bool sortAscending;
@@ -414,7 +426,7 @@ namespace Argos.Framework.IMGUI
             #region Constructors
             public InternalTreeView(SerializedProperty property, DataTableColumn[] columns, float rowHeight, InternalDataTableState state) : base(state.ToTreeViewState(), null)
             {
-                this._state = state;
+                this.internalState = state;
                 this.property = property;
 
                 this.columnsSetup = columns;
@@ -431,10 +443,10 @@ namespace Argos.Framework.IMGUI
                     for (int i = 1; i < columnStates.Length; i++)
                     {
                         columnStates[i] = columns[i - 1];
-                        if (this._state.IsLoadedPreviousState)
+                        if (this.internalState.IsLoadedPreviousState)
                         {
-                            columnStates[i].sortedAscending = this._state.columnStates[i - 1].sortedAscending;
-                            columnStates[i].width = this._state.columnStates[i - 1].currentWidth;
+                            columnStates[i].sortedAscending = this.internalState.columnStates[i - 1].sortedAscending;
+                            columnStates[i].width = this.internalState.columnStates[i - 1].currentWidth;
                         }
                     }
                 }
@@ -442,13 +454,20 @@ namespace Argos.Framework.IMGUI
                 this.multiColumnHeader = new MultiColumnHeader(new MultiColumnHeaderState(columnStates));
                 this.multiColumnHeader.sortingChanged += this.OnSortingChanged;
 
-                if (this._state.IsLoadedPreviousState)
+                this.Refresh();
+            }
+            #endregion
+
+            #region Methods & Functions
+            public void Refresh()
+            {
+                if (this.internalState.IsLoadedPreviousState)
                 {
                     this.SetSelection(this.state.selectedIDs);
 
-                    if (this._state.isPreviouslySorted)
+                    if (this.internalState.isPreviouslySorted)
                     {
-                        this.multiColumnHeader.sortedColumnIndex = this._state.sortedColumnIndex + 1;
+                        this.multiColumnHeader.sortedColumnIndex = this.internalState.sortedColumnIndex + 1;
                         this.OnSortingChanged(this.multiColumnHeader);
                         return;
                     }
@@ -456,12 +475,13 @@ namespace Argos.Framework.IMGUI
 
                 this.Reload();
             }
-            #endregion
 
-            #region Methods & Functions
-            public void SaveState()
+            public void ResetState()
             {
-                this._state.SaveState(this);
+                this.isPreviouslySorted = false;
+                this.SetSelection(new int[] { }, TreeViewSelectionOptions.None);
+
+                this.internalState.Delete();
             }
 
             public void SetSearchColumnIndex(int index)
@@ -487,7 +507,12 @@ namespace Argos.Framework.IMGUI
                         else
                         {
                             this.OnRowClick?.Invoke(args.row, (args.item as InternalTreeViewItem).data);
-                        } 
+                        }
+
+                        if (!Event.current.control && !(this.canDrag && this.canMultiselect))
+                        {
+                            this.SetSelection(new int[] { args.item.id });
+                        }
                     }
                 }
             }
@@ -541,16 +566,16 @@ namespace Argos.Framework.IMGUI
                 return (this.rootItem.children[index] as InternalTreeViewItem).data;
             }
 
-            void SwapProperties(int sourceArrayIndex, int targetArrayIndex)
+            public void MoveToRow(int rowIndex)
             {
-                InternalTreeViewItem a = this.GetItemByRowIndex(sourceArrayIndex);
-                InternalTreeViewItem b = this.GetItemByRowIndex(targetArrayIndex);
+                this.FrameItem(this.GetItemByRowIndex(rowIndex).id);
+            }
 
-                Debug.LogWarning($"Before {a.id} => {b.id}");
-                int t = a.id; a.id = b.id; b.id = t;
-                
-                this.property.MoveArrayElement(a.arrayIndex, b.arrayIndex);
-                Debug.LogWarning($"After {a.id} => {b.id}");
+            int DragPropertyAtIndex(int sourceArrayIndex, int targetArrayIndex)
+            {
+                this.property.MoveArrayElement(this.GetItemByRowIndex(sourceArrayIndex).arrayIndex, this.GetItemByRowIndex(targetArrayIndex).arrayIndex);
+
+                return targetArrayIndex;
             }
 
             // Unity built-in slider control has a bug with the slider input rect that overlaps other controls to right when the slider control width is over 180px.
@@ -750,10 +775,10 @@ namespace Argos.Framework.IMGUI
                         this._sortRows = false;
                     }
 
-                    if (this._state.IsLoadedPreviousState)
+                    if (this.internalState.IsLoadedPreviousState)
                     {
-                        this.SetSearchColumnIndex(this._state.searchColumnIndex);
-                    } 
+                        this.SetSearchColumnIndex(this.internalState.searchColumnIndex);
+                    }
                 }
                 else
                 {
@@ -813,17 +838,18 @@ namespace Argos.Framework.IMGUI
                         }
 
                         bool validDrag = (insertAtArrayIndex != this.GetArrayIndex(draggedRows[0]));
-                        int startIndex = insertAtArrayIndex;
+                        var updatedSelection = new int[draggedRows.Count];
                         if (args.performDrop && validDrag)
                         {
-                            // TODO: Fix current selection after perform multiselection drag & drop.
-                            for (int i = draggedRows.Count - 1; i > -1; i--)
+                            // FIX: Single drag & drop seems to work fine. Multiple rows working moving to down but not when moving to up.
+                            for (int moveIndex = draggedRows.Count - 1, toIndex = insertAtArrayIndex + draggedRows.Count - 1; moveIndex >= 0; moveIndex--, toIndex--)
                             {
-                                this.SwapProperties((draggedRows[i] as InternalTreeViewItem).arrayIndex, insertAtArrayIndex);
+                                updatedSelection[moveIndex] = this.DragPropertyAtIndex((draggedRows[moveIndex] as InternalTreeViewItem).arrayIndex, toIndex);
                             }
                         }
 
                         this.RenumberRowIndexes();
+                        this.SetSelection(updatedSelection, TreeViewSelectionOptions.None);
 
                         return validDrag ? DragAndDropVisualMode.Move : DragAndDropVisualMode.Rejected;
 
@@ -846,23 +872,34 @@ namespace Argos.Framework.IMGUI
                     DragAndDrop.objectReferences = new UnityEngine.Object[] { };
                 }
                 DragAndDrop.StartDrag(draggedRows.Count == 1 ? draggedRows[0].displayName : "< Multiple >");
+            }
 
-                //string indexes = string.Empty;
+            protected override void SearchChanged(string newSearch)
+            {
+                if (string.IsNullOrEmpty(newSearch))
+                {
+                    this.searchResult.Clear();
+                }
 
-                //foreach (var item in args.draggedItemIDs)
-                //{
-                //    indexes += $"{this.GetArrayIndex(item)}, ";
-                //}
+                base.SearchChanged(newSearch);
+            }
 
-                //Debug.Log($"Drag & Drop: Move {indexes.Remove(indexes.Length - 2)}");
+            protected override bool DoesItemMatchSearch(TreeViewItem item, string search)
+            {
+                if (base.DoesItemMatchSearch(item, search))
+                {
+                    this.searchResult.Add(item as InternalTreeViewItem);
+                    return true;
+                }
+
+                return false;
             }
 
             protected override void SelectionChanged(IList<int> selectedIds)
             {
                 base.SelectionChanged(selectedIds);
 
-                if (this.OnRowSelected != null && 
-                    (!this.canMultiselect || (this.canMultiselect && selectedIds.Count == 1)))
+                if (this.OnRowSelected != null && (!this.canMultiselect || (this.canMultiselect && selectedIds.Count == 1)))
                 {
                     InternalTreeViewItem item = this.GetItemById(selectedIds[0]);
                     this.OnRowSelected(item.id, item.data);
@@ -896,7 +933,7 @@ namespace Argos.Framework.IMGUI
 
                     if (i == 0 && this.showRowIndex)
                     {
-                        EditorGUI.LabelField(cellRect, (args.item.id /*args.row + 1*/).ToString());
+                        EditorGUI.LabelField(cellRect, ((args.item as InternalTreeViewItem).arrayIndex /*args.row + 1*/).ToString());
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.columnsSetup[columnIndex].propertyName))
                     {
@@ -955,6 +992,7 @@ namespace Argos.Framework.IMGUI
         SearchField _searchField;
         InternalTreeView _treeView;
         float _indexRowColumnWidth;
+        bool _canSort;
         #endregion
 
         #region Properties
@@ -977,6 +1015,21 @@ namespace Argos.Framework.IMGUI
         /// Enables the search field that allow filter results for column values.
         /// </summary>
         public bool ShowSearchField { get; set; }
+
+        /// <summary>
+        /// Text shows as search field label when it is visible.
+        /// </summary>
+        public string SearchFieldLabelText { get; set; }
+
+        /// <summary>
+        /// The current search result. Returns a list of tuplas with row index and data.
+        /// </summary>
+        public IEnumerable<Tuple<int, SerializedProperty[]>> SearchResult => this._treeView.searchResult.Select(e => new Tuple<int, SerializedProperty[]>(e.id, e.data));
+
+        /// <summary>
+        /// Get all rows.
+        /// </summary>
+        public IEnumerable<SerializedProperty[]> Rows => this._treeView.GetRows().Cast<InternalTreeViewItem>().Select(e => e.data);
 
         /// <summary>
         /// Row count.
@@ -1007,7 +1060,8 @@ namespace Argos.Framework.IMGUI
         /// <summary>
         /// User can drag and drop rows?
         /// </summary>
-        public bool CanDrag { get { return this._treeView.canDrag; } set { this._treeView.canDrag = value; } }
+        /// <remarks>Drag & drog operations only allowed when sorting columns is disabled and not search is applied.</remarks>
+        public bool CanDrag { get; set; }
 
         /// <summary>
         /// User can select multiple rows at once?
@@ -1036,6 +1090,12 @@ namespace Argos.Framework.IMGUI
         /// <param name="rowIndexes">Array of indexes of selected rows.</param>
         /// <param name="data">Array of <see cref="SerializedProperty"/> arrays, each array item is the data of each selected row.</param>
         public delegate void OnMultipleRowSelectedHandler(int[] rowIndexes, SerializedProperty[][] data);
+
+        /// <summary>
+        /// Label area of search field when is visible.
+        /// </summary>
+        /// <param name="rect"><see cref="Rect"/> value with the label area.</param>
+        public delegate void OnLabelSearchGUIHandler(Rect rect);
         #endregion
 
         #region Events
@@ -1084,6 +1144,11 @@ namespace Argos.Framework.IMGUI
             add { this._treeView.OnMultipleRowsSelected += value;  }
             remove { this._treeView.OnMultipleRowsSelected -= value; }
         }
+
+        /// <summary>
+        /// Event used to get the label area when the search field is active. Useful to draw custom labels or toolbar controls or any kind of GUI stuff.
+        /// </summary>
+        public event OnLabelSearchGUIHandler OnLabelSearchGUI;
         #endregion
 
         #region Constructor & Destructor
@@ -1108,6 +1173,7 @@ namespace Argos.Framework.IMGUI
             }
 
             this._indexRowColumnWidth = Mathf.Clamp(DataTable.ROW_COLUMN_CHAR_WIDTH * property.arraySize.ToString().Length, DataTable.ROW_COLUMN_MIN_WIDTH, DataTable.ROW_COLUMN_MAX_WIDTH);
+            this._canSort = columns.Any(e => e.canSort == true);
 
             var treeviewState = new InternalTreeView.InternalDataTableState(controlID);
             this._treeView = new InternalTreeView(property, columns, rowHeight, treeviewState);
@@ -1153,7 +1219,7 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         public void Reload()
         {
-            this._treeView.Reload();
+            this._treeView.Refresh();
         }
 
         /// <summary>
@@ -1163,7 +1229,7 @@ namespace Argos.Framework.IMGUI
         /// <returns>Returns a <see cref="SerializedProperty"/> array with data of each row fields.</returns>
         public SerializedProperty[] GetRowData(int index)
         {
-            if (Utils.MathUtility.IsClamped(index, 0, this.RowCount - 1))
+            if (MathUtility.IsClamped(index, 0, this.RowCount - 1))
             {
                 return this._treeView.GetRowData(index);
             }
@@ -1177,19 +1243,38 @@ namespace Argos.Framework.IMGUI
         /// <param name="layout">Rect that positioned the control.</param>
         public void Do(Rect layout)
         {
+            EditorGUI.HelpBox(layout, 
+                              (this.OnLabelSearchGUI != null && this.SearchFieldLabelText.IsNullOrEmptyOrWhiteSpace()) ? 
+                                string.Empty : 
+                                this.SearchFieldLabelText, 
+                              MessageType.None);
+
             if (this.ShowSearchField)
             {
                 Rect searchFieldRect = layout;
                 {
                     searchFieldRect.x += EditorGUIUtility.labelWidth;
-                    searchFieldRect.xMax = layout.xMax;
+                    searchFieldRect.y += 2f;
+                    searchFieldRect.xMax = layout.xMax - 2f;
                 }
                 this._treeView.searchString = this._searchField.Do(searchFieldRect, this._treeView.searchString);
 
-                layout.y += SearchField.Height;
+                layout.y += SearchField.Height + 1f;
                 layout.height -= SearchField.Height;
+
+                if (this.OnLabelSearchGUI != null)
+                {
+                    Rect labelRect = searchFieldRect;
+                    {
+                        labelRect.x = layout.x + 2f;
+                        labelRect.width = EditorGUIUtility.labelWidth - 4f;
+                        labelRect.height = EditorGUIUtility.singleLineHeight - 2f;
+                    }
+                    this.OnLabelSearchGUI(labelRect);
+                }
             }
 
+            this._treeView.canDrag = this._canSort || !this._treeView.hasSearch ? false : this.CanDrag;
             this._treeView.multiColumnHeader.state.columns[0].width = this.ShowRowIndexColumn ? this._indexRowColumnWidth : 0f;
 
             if (this.ResizeToFitColumns)
@@ -1215,7 +1300,40 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         public void SaveState()
         {
-            this._treeView.SaveState();
+            this._treeView.internalState.Save(this._treeView);
+        }
+
+        /// <summary>
+        /// Delete previous control state and reset current state.
+        /// </summary>
+        public void DeleteState()
+        {
+            this._treeView.ResetState();
+        }
+
+        /// <summary>
+        /// Set focus to this control.
+        /// </summary>
+        public void SetFocus()
+        {
+            this._treeView.SetFocusAndEnsureSelectedItem();
+        }
+
+        /// <summary>
+        /// Select all rows.
+        /// </summary>
+        public void SelectAllRows()
+        {
+            this._treeView.SelectAllRows();
+        }
+
+        /// <summary>
+        /// Move scroll view to row.
+        /// </summary>
+        /// <param name="row">Row index.</param>
+        public void MoveToRow(int row)
+        {
+            this._treeView.MoveToRow(row);
         }
         #endregion
     }

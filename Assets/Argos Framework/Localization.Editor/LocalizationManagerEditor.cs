@@ -26,7 +26,7 @@ namespace Argos.Framework.Localization
                 columns.Add(new DataTable.DataTableColumn()
                 {
                     autoResize = true,
-                    canSort = true,
+                    //canSort = true,
                     headerTitle = "Key",
                     headerTextAlignment = TextAlignment.Left,
                     maxWidth = 200f,
@@ -40,7 +40,7 @@ namespace Argos.Framework.Localization
                 columns.Add(new DataTable.DataTableColumn()
                 {
                     autoResize = true,
-                    canSort = true,
+                    //canSort = true,
                     headerTitle = "Text",
                     headerTextAlignment = TextAlignment.Left,
                     maxWidth = 150f,
@@ -54,7 +54,7 @@ namespace Argos.Framework.Localization
                 columns.Add(new DataTable.DataTableColumn()
                 {
                     autoResize = true,
-                    canSort = true,
+                    //canSort = true,
                     headerTitle = "Key Code",
                     headerTextAlignment = TextAlignment.Left,
                     maxWidth = 150f,
@@ -68,7 +68,7 @@ namespace Argos.Framework.Localization
                 columns.Add(new DataTable.DataTableColumn()
                 {
                     autoResize = true,
-                    canSort = true,
+                    //canSort = true,
                     headerTitle = "Enable",
                     headerTextAlignment = TextAlignment.Left,
                     maxWidth = 150f,
@@ -83,7 +83,7 @@ namespace Argos.Framework.Localization
                 columns.Add(new DataTable.DataTableColumn()
                 {
                     autoResize = true,
-                    canSort = true,
+                    //canSort = true,
                     headerTitle = "Value",
                     headerTextAlignment = TextAlignment.Left,
                     maxWidth = 500f,
@@ -98,7 +98,7 @@ namespace Argos.Framework.Localization
                 columns.Add(new DataTable.DataTableColumn()
                 {
                     autoResize = true,
-                    canSort = true,
+                    //canSort = true,
                     headerTitle = "Color",
                     headerTextAlignment = TextAlignment.Left,
                     maxWidth = 250f,
@@ -113,7 +113,7 @@ namespace Argos.Framework.Localization
                 columns.Add(new DataTable.DataTableColumn()
                 {
                     autoResize = true,
-                    canSort = true,
+                    //canSort = true,
                     headerTitle = "Curve",
                     headerTextAlignment = TextAlignment.Left,
                     maxWidth = 250f,
@@ -127,7 +127,7 @@ namespace Argos.Framework.Localization
                 columns.Add(new DataTable.DataTableColumn()
                 {
                     autoResize = true,
-                    canSort = true,
+                    //canSort = true,
                     headerTitle = "Threshold",
                     headerTextAlignment = TextAlignment.Left,
                     maxWidth = 100f,
@@ -144,6 +144,16 @@ namespace Argos.Framework.Localization
             {
                 this._dataTable.ShowRowIndexColumn = true;
                 this._dataTable.ShowSearchField = true;
+                this._dataTable.SearchFieldLabelText = "Search filter";
+                this._dataTable.OnLabelSearchGUI += (rect) =>
+                {
+                    //EditorGUI.DrawRect(rect, Color.red);
+                    if (GUI.Button(rect, "Delete state & reload", EditorStyles.miniButton))
+                    {
+                        this._dataTable.DeleteState();
+                        this._dataTable.Reload();
+                    }
+                };
                 this._dataTable.CanDrag = true;
                 this._dataTable.CanMultiselect = true;
 

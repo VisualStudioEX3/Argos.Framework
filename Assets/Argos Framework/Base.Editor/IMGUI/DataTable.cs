@@ -373,7 +373,7 @@ namespace Argos.Framework.IMGUI
             public bool showRowIndex;
 
             public int searchColumnIndex = 0;
-            public List<InternalTreeViewItem> searchResult = new List<InternalTreeViewItem>();
+            public List<SerializedProperty[]> searchResult = new List<SerializedProperty[]>();
 
             public int sortColumnIndex;
             public bool sortAscending;
@@ -788,9 +788,25 @@ namespace Argos.Framework.IMGUI
                 return root;
             }
 
+            protected override IList<TreeViewItem> BuildRows(TreeViewItem root)
+            {
+                IList<TreeViewItem> rows = base.BuildRows(root);
+
+                if (this.hasSearch)
+                {
+                    this.searchResult = rows.Cast<InternalTreeViewItem>().Select(e => e.data).ToList();
+                }
+                else
+                {
+                    this.searchResult.Clear();
+                }
+
+                return rows;
+            }
+
             protected override bool CanStartDrag(CanStartDragArgs args)
             {
-                return this.canDrag;
+                return this.canDrag && !this.hasSearch && !this.isPreviouslySorted;
             }
 
             protected override bool CanMultiSelect(TreeViewItem item)
@@ -837,14 +853,25 @@ namespace Argos.Framework.IMGUI
                             }
                         }
 
-                        bool validDrag = (insertAtArrayIndex != this.GetArrayIndex(draggedRows[0]));
+                        int firstIndex = this.GetArrayIndex(draggedRows[0]);
+                        bool validDrag = (insertAtArrayIndex != firstIndex);
                         var updatedSelection = new int[draggedRows.Count];
                         if (args.performDrop && validDrag)
                         {
                             // FIX: Single drag & drop seems to work fine. Multiple rows working moving to down but not when moving to up.
-                            for (int moveIndex = draggedRows.Count - 1, toIndex = insertAtArrayIndex + draggedRows.Count - 1; moveIndex >= 0; moveIndex--, toIndex--)
+                            if (true)
                             {
-                                updatedSelection[moveIndex] = this.DragPropertyAtIndex((draggedRows[moveIndex] as InternalTreeViewItem).arrayIndex, toIndex);
+                                for (int moveIndex = draggedRows.Count - 1, toIndex = insertAtArrayIndex + draggedRows.Count - 1; moveIndex >= 0; moveIndex--, toIndex--)
+                                {
+                                    updatedSelection[moveIndex] = this.DragPropertyAtIndex(this.GetArrayIndex(draggedRows[moveIndex]), firstIndex < insertAtArrayIndex ? toIndex : insertAtArrayIndex);
+                                } 
+                            }
+                            else
+                            {
+                                for (int moveIndex = 0, toIndex = insertAtArrayIndex; moveIndex < draggedRows.Count; moveIndex++, toIndex++)
+                                {
+
+                                }
                             }
                         }
 
@@ -874,31 +901,8 @@ namespace Argos.Framework.IMGUI
                 DragAndDrop.StartDrag(draggedRows.Count == 1 ? draggedRows[0].displayName : "< Multiple >");
             }
 
-            protected override void SearchChanged(string newSearch)
-            {
-                if (string.IsNullOrEmpty(newSearch))
-                {
-                    this.searchResult.Clear();
-                }
-
-                base.SearchChanged(newSearch);
-            }
-
-            protected override bool DoesItemMatchSearch(TreeViewItem item, string search)
-            {
-                if (base.DoesItemMatchSearch(item, search))
-                {
-                    this.searchResult.Add(item as InternalTreeViewItem);
-                    return true;
-                }
-
-                return false;
-            }
-
             protected override void SelectionChanged(IList<int> selectedIds)
             {
-                base.SelectionChanged(selectedIds);
-
                 if (this.OnRowSelected != null && (!this.canMultiselect || (this.canMultiselect && selectedIds.Count == 1)))
                 {
                     InternalTreeViewItem item = this.GetItemById(selectedIds[0]);
@@ -933,7 +937,7 @@ namespace Argos.Framework.IMGUI
 
                     if (i == 0 && this.showRowIndex)
                     {
-                        EditorGUI.LabelField(cellRect, ((args.item as InternalTreeViewItem).arrayIndex /*args.row + 1*/).ToString());
+                        EditorGUI.LabelField(cellRect, (args.row + 1).ToString());
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.columnsSetup[columnIndex].propertyName))
                     {
@@ -1009,7 +1013,11 @@ namespace Argos.Framework.IMGUI
         /// <summary>
         /// Shows a column in the left with the index of each row.
         /// </summary>
-        public bool ShowRowIndexColumn { get { return this._treeView.showRowIndex; } set { this._treeView.showRowIndex = value; } }
+        public bool ShowRowIndexColumn
+        {
+            get { return this._treeView.showRowIndex; }
+            set { this._treeView.showRowIndex = value; }
+        }
 
         /// <summary>
         /// Enables the search field that allow filter results for column values.
@@ -1022,9 +1030,9 @@ namespace Argos.Framework.IMGUI
         public string SearchFieldLabelText { get; set; }
 
         /// <summary>
-        /// The current search result. Returns a list of tuplas with row index and data.
+        /// The current search result, sorted alphabetically.
         /// </summary>
-        public IEnumerable<Tuple<int, SerializedProperty[]>> SearchResult => this._treeView.searchResult.Select(e => new Tuple<int, SerializedProperty[]>(e.id, e.data));
+        public IList<SerializedProperty[]> SearchResult => this._treeView.searchResult;
 
         /// <summary>
         /// Get all rows.
@@ -1034,7 +1042,10 @@ namespace Argos.Framework.IMGUI
         /// <summary>
         /// Row count.
         /// </summary>
-        public int RowCount { get { return (this.Property != null && this.Property.isArray) ? this.Property.arraySize : 0; } }
+        public int RowCount
+        {
+            get { return (this.Property != null && this.Property.isArray) ? this.Property.arraySize : 0; }
+        }
 
         /// <summary>
         /// Row height.
@@ -1061,12 +1072,20 @@ namespace Argos.Framework.IMGUI
         /// User can drag and drop rows?
         /// </summary>
         /// <remarks>Drag & drog operations only allowed when sorting columns is disabled and not search is applied.</remarks>
-        public bool CanDrag { get; set; }
+        public bool CanDrag
+        {
+            get { return this._treeView.canDrag; }
+            set { this._treeView.canDrag = value; }
+        }
 
         /// <summary>
         /// User can select multiple rows at once?
         /// </summary>
-        public bool CanMultiselect { get { return this._treeView.canMultiselect; } set { this._treeView.canMultiselect = value; } }
+        public bool CanMultiselect
+        {
+            get { return this._treeView.canMultiselect; }
+            set { this._treeView.canMultiselect = value; }
+        }
         #endregion
 
         #region Delegates
@@ -1274,7 +1293,7 @@ namespace Argos.Framework.IMGUI
                 }
             }
 
-            this._treeView.canDrag = this._canSort || !this._treeView.hasSearch ? false : this.CanDrag;
+            //this._treeView.canDrag = this._canSort || this._treeView.hasSearch ? false : this.CanDrag;
             this._treeView.multiColumnHeader.state.columns[0].width = this.ShowRowIndexColumn ? this._indexRowColumnWidth : 0f;
 
             if (this.ResizeToFitColumns)

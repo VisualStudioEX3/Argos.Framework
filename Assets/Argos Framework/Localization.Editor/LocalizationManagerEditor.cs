@@ -71,11 +71,11 @@ namespace Argos.Framework.Localization
                     //canSort = true,
                     headerTitle = "Enable",
                     headerTextAlignment = TextAlignment.Left,
-                    maxWidth = 150f,
-                    minWidth = 100f,
+                    maxWidth = 47.5f,
+                    minWidth = 47.5f,
                     sortingArrowAlignment = TextAlignment.Center,
                     sortedAscending = false,
-                    width = 125f,
+                    width = 47.5f,
                     propertyName = "enable",
                     readOnly = true
                 });
@@ -144,18 +144,28 @@ namespace Argos.Framework.Localization
             {
                 this._dataTable.ShowRowIndexColumn = true;
                 this._dataTable.ShowSearchField = true;
+                this._dataTable.ShowFooter = true;
+                this._dataTable.CanDrag = true;
+                this._dataTable.CanMultiselect = true;
                 this._dataTable.SearchFieldLabelText = "Search filter";
+
                 this._dataTable.OnLabelSearchGUI += (rect) =>
                 {
                     //EditorGUI.DrawRect(rect, Color.red);
+                    //EditorGUI.LabelField(rect, "Test");
                     if (GUI.Button(rect, "Delete state & reload", EditorStyles.miniButton))
                     {
                         this._dataTable.DeleteState();
                         this._dataTable.Reload();
                     }
                 };
-                this._dataTable.CanDrag = true;
-                this._dataTable.CanMultiselect = true;
+
+                this._dataTable.OnFooterGUI += (rect) =>
+                {
+                    //EditorGUI.DrawRect(rect, Color.red);
+                    //GUI.Button(rect, "Test");
+                    EditorGUI.LabelField(rect, new GUIContent($"Total rows: {this._dataTable.RowCount} | Selected: {this._dataTable.Selection.Length} | Search result: {this._dataTable.SearchResult.Length}"));//, EditorStyles.miniLabel);
+                };
 
                 this._dataTable.OnRowClick += (rowItem) =>
                 {
@@ -198,10 +208,11 @@ namespace Argos.Framework.Localization
             this._dataTable.DoLayout();
             {
                 this._dataTable.ResizeToFitColumns = EditorGUILayout.Toggle("Resize To Fit Columns", this._dataTable.ResizeToFitColumns);
-                this._dataTable.ShowRowIndexColumn = EditorGUILayout.Toggle("Show row index", this._dataTable.ShowRowIndexColumn);
+                this._dataTable.ShowRowIndexColumn = EditorGUILayout.Toggle("Show Row Index", this._dataTable.ShowRowIndexColumn);
                 this._dataTable.ShowSearchField = EditorGUILayout.Toggle("Search", this._dataTable.ShowSearchField);
+                this._dataTable.ShowFooter = EditorGUILayout.Toggle("Show Footer", this._dataTable.ShowFooter);                
                 this._dataTable.CanDrag = EditorGUILayout.Toggle("Drag & Drop", this._dataTable.CanDrag);
-                this._dataTable.CanMultiselect = EditorGUILayout.Toggle("Multiselection", this._dataTable.CanMultiselect);
+                this._dataTable.CanMultiselect = EditorGUILayout.Toggle("Multiselection", this._dataTable.CanMultiselect);                
             }
 
             this.serializedObject.ApplyModifiedProperties();

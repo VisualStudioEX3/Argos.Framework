@@ -123,10 +123,7 @@ namespace Argos.Framework.IMGUI
             #endregion
 
             #region Operators
-            public static implicit operator DataTable.DataTableRow(InternalTreeViewItem item)
-            {
-                return new DataTable.DataTableRow(item.id, item.data);
-            }
+            public static implicit operator DataTable.DataTableRow(InternalTreeViewItem item) => new DataTable.DataTableRow(item.id, item.data);
             #endregion
 
             #region Constructors
@@ -185,6 +182,11 @@ namespace Argos.Framework.IMGUI
 
                         return 0;
                 }
+            }
+
+            public DataTable.DataTableRow ToDataTableRow()
+            {
+                return new DataTable.DataTableRow(this.id, this.data);
             }
             #endregion
 
@@ -392,10 +394,12 @@ namespace Argos.Framework.IMGUI
 
             #region Properties
             public float RowHeight => this.rowHeight;
+            public IList<InternalTreeViewItem> Selection => this.GetItemsById(this.GetSelection());
             #endregion
 
             #region Events
             public event Action<InternalTreeView, int> OnSearchColumnIndexChange;
+
             public event DataTable.OnCustomCellGUIHandler OnCustomCellGUI;
             public event DataTable.OnRowClickHandler OnRowClick;
             public event DataTable.OnRowClickHandler OnRowDoubleClick;
@@ -803,10 +807,6 @@ namespace Argos.Framework.IMGUI
                 {
                     this.searchResult = rows;
                 }
-                else
-                {
-                    this.searchResult.Clear();
-                }
 
                 return rows;
             }
@@ -921,8 +921,7 @@ namespace Argos.Framework.IMGUI
                 }
                 else if (this.canMultiselect && this.OnMultipleRowsSelected != null)
                 {
-                    var rows = this.GetItemsById(selectedIds).Cast<DataTable.DataTableRow>().ToArray();
-                    this.OnMultipleRowsSelected(rows);
+                    this.OnMultipleRowsSelected(this.GetItemsById(selectedIds).Select(e => e.ToDataTableRow()).ToArray());
                 }
             }
 
@@ -1062,6 +1061,11 @@ namespace Argos.Framework.IMGUI
         public bool ShowSearchField { get; set; }
 
         /// <summary>
+        /// Shows footer area to customize data.
+        /// </summary>
+        public bool ShowFooter { get; set; }
+
+        /// <summary>
         /// Text shows as search field label when it is visible.
         /// </summary>
         public string SearchFieldLabelText { get; set; }
@@ -1070,17 +1074,17 @@ namespace Argos.Framework.IMGUI
         /// <summary>
         /// Current row selection.
         /// </summary>
-        public DataTableRow[] Selection => this._treeView.GetSelection().Cast<DataTableRow>().ToArray();
+        public DataTableRow[] Selection => this.ToDataTableRowArray(this._treeView.Selection);
 
         /// <summary>
         /// The current search result, sorted alphabetically.
         /// </summary>
-        public DataTableRow[] SearchResult => this._treeView.searchResult.Cast<DataTableRow>().ToArray();
+        public DataTableRow[] SearchResult => this.ToDataTableRowArray(this._treeView.searchResult);
 
         /// <summary>
         /// Get all rows.
         /// </summary>
-        public DataTableRow[] Rows => this._treeView.GetRows().Cast<DataTableRow>().ToArray();
+        public DataTableRow[] Rows => this.ToDataTableRowArray(this._treeView.GetRows());
 
         /// <summary>
         /// Row count.
@@ -1154,10 +1158,10 @@ namespace Argos.Framework.IMGUI
         public delegate void OnMultipleRowSelectedHandler(DataTableRow[] rows);
 
         /// <summary>
-        /// Label area of search field when is visible.
+        /// Rect area for GUI operations.
         /// </summary>
         /// <param name="rect"><see cref="Rect"/> value with the label area.</param>
-        public delegate void OnLabelSearchGUIHandler(Rect rect);
+        public delegate void OnRectGUIHandler(Rect rect);
         #endregion
 
         #region Events
@@ -1210,7 +1214,12 @@ namespace Argos.Framework.IMGUI
         /// <summary>
         /// Event used to get the label area when the search field is active. Useful to draw custom labels or toolbar controls or any kind of GUI stuff.
         /// </summary>
-        public event OnLabelSearchGUIHandler OnLabelSearchGUI;
+        public event OnRectGUIHandler OnLabelSearchGUI;
+
+        /// <summary>
+        /// Event used to get the footer area of control.
+        /// </summary>
+        public event OnRectGUIHandler OnFooterGUI;
         #endregion
 
         #region Constructor & Destructor
@@ -1306,7 +1315,7 @@ namespace Argos.Framework.IMGUI
         public void Do(Rect layout)
         {
             EditorGUI.HelpBox(layout, 
-                              (this.OnLabelSearchGUI != null && this.SearchFieldLabelText.IsNullOrEmptyOrWhiteSpace()) ? 
+                              !(this.OnLabelSearchGUI == null && this.SearchFieldLabelText.IsNullOrEmptyOrWhiteSpace()) ? 
                                 string.Empty : 
                                 this.SearchFieldLabelText, 
                               MessageType.None);
@@ -1341,6 +1350,21 @@ namespace Argos.Framework.IMGUI
             if (this.ResizeToFitColumns)
             {
                 this._treeView.multiColumnHeader.ResizeToFit();
+            }
+
+            if (this.ShowFooter && this.OnFooterGUI != null)
+            {
+                Rect footerRect = layout;
+                {
+                    footerRect.x = layout.x + 2f;
+                    footerRect.width -= 4f;
+                    footerRect.height = EditorGUIUtility.singleLineHeight;
+                    footerRect.y = layout.yMax - footerRect.height - 3f;
+                }
+
+                layout.yMax -= footerRect.height + 4f;
+
+                this.OnFooterGUI(footerRect);
             }
 
             this._treeView.OnGUI(layout);
@@ -1395,6 +1419,16 @@ namespace Argos.Framework.IMGUI
         public void MoveToRow(int row)
         {
             this._treeView.MoveToRow(row);
+        }
+
+        DataTableRow[] ToDataTableRowArray(IList<TreeViewItem> list)
+        {
+            return list.Select(e => (e as InternalTreeViewItem).ToDataTableRow()).ToArray();
+        }
+
+        DataTableRow[] ToDataTableRowArray(IList<InternalTreeViewItem> list)
+        {
+            return list.Select(e => e.ToDataTableRow()).ToArray();
         }
         #endregion
     }

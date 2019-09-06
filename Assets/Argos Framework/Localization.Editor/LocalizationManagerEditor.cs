@@ -217,23 +217,6 @@ namespace Argos.Framework.Localization
 
             this.serializedObject.ApplyModifiedProperties();
 
-            //SerializedProperty gradient = this.serializedObject.FindProperty("_gradient");
-
-            //PropertyInfo gradientValue = gradient.GetType().GetProperty("gradientValue", BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.GetProperty);
-
-            //var source = gradientValue.GetValue(gradient) as Gradient;
-
-            //var copy = new Gradient();
-            //copy.alphaKeys = source.alphaKeys;
-            //copy.colorKeys = source.colorKeys;
-            //copy.mode = source.mode;
-
-            //EditorGUI.GradientField(EditorGUILayout.GetControlRect(), source);
-
-            //SerializedProperty mask = this.serializedObject.FindProperty("_layerMask");
-            //SerializedProperty letter = this.serializedObject.FindProperty("_letter");
-            //SerializedProperty longValue = this.serializedObject.FindProperty("_longValue");
-
             //this.editorSkin.DrawDefaultInspector();
         }
     }

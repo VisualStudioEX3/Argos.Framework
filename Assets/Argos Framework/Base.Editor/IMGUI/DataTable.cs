@@ -759,6 +759,11 @@ namespace Argos.Framework.IMGUI
                         break;
                 }
             }
+
+            void DrawDragIcon(Rect rect)
+            {
+
+            }
             #endregion
 
             #region Event listeners
@@ -945,9 +950,10 @@ namespace Argos.Framework.IMGUI
 
                     int columnIndex = i - 1;
 
-                    if (i == 0 && this.showRowIndex)
+                    if (i == 0 && (this.showRowIndex || this.canDrag))
                     {
-                        EditorGUI.LabelField(cellRect, (args.row + 1).ToString());
+                        EditorGUI.LabelField(cellRect, new GUIContent(this.showRowIndex ? (args.row + 1).ToString() : string.Empty, 
+                                                                      this.canDrag ? EditorSkinUtility.Icons.DragIcon : null));
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.columnsSetup[columnIndex].propertyName))
                     {
@@ -1032,7 +1038,7 @@ namespace Argos.Framework.IMGUI
         SearchField _searchField;
         InternalTreeView _treeView;
         float _indexRowColumnWidth;
-        bool _canSort;
+        float _indexDragAndDropRowColumnWidth;
         #endregion
 
         #region Properties
@@ -1244,7 +1250,7 @@ namespace Argos.Framework.IMGUI
             }
 
             this._indexRowColumnWidth = Mathf.Clamp(DataTable.ROW_COLUMN_CHAR_WIDTH * property.arraySize.ToString().Length, DataTable.ROW_COLUMN_MIN_WIDTH, DataTable.ROW_COLUMN_MAX_WIDTH);
-            this._canSort = columns.Any(e => e.canSort == true);
+            this._indexDragAndDropRowColumnWidth = this._indexRowColumnWidth + 14f;
 
             var treeviewState = new InternalTreeView.InternalDataTableState(controlID);
             this._treeView = new InternalTreeView(property, columns, rowHeight, treeviewState);
@@ -1308,6 +1314,26 @@ namespace Argos.Framework.IMGUI
             throw new IndexOutOfRangeException("DataTable: The index of row not exists.");
         }
 
+        float GetZeroColumnWidth()
+        {
+            if (this.ShowRowIndexColumn && this.CanDrag)
+            {
+                return this._indexDragAndDropRowColumnWidth;
+            }
+            else if (this.ShowRowIndexColumn && !this.CanDrag)
+            {
+                return this._indexRowColumnWidth;
+            }
+            else if (!this.ShowRowIndexColumn && this.CanDrag)
+            {
+                return 20f;
+            }
+            else
+            {
+                return 0f;
+            }
+        }
+
         /// <summary>
         /// Draws the <see cref="DataTable"/>.
         /// </summary>
@@ -1345,7 +1371,7 @@ namespace Argos.Framework.IMGUI
                 }
             }
 
-            this._treeView.multiColumnHeader.state.columns[0].width = this.ShowRowIndexColumn ? this._indexRowColumnWidth : 0f;
+            this._treeView.multiColumnHeader.state.columns[0].width = this.GetZeroColumnWidth();
 
             if (this.ResizeToFitColumns)
             {

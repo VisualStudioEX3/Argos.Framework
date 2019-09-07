@@ -11,26 +11,43 @@ namespace Argos.Framework.Utils
     public static class EditorSkinUtility
     {
         #region Structs
+        /// <summary>
+        /// Custom editor colors.
+        /// </summary>
         public readonly struct Colors
         {
             #region Constants
-            public static readonly Color Bright = new Color(0.4823529f, 0.4862745f, 0.4823529f, 1f);
+            public static readonly Color Bright = EditorGUIUtility.isProSkin ? (Color)(new Color32(98, 98, 98, 255)) : new Color(0.4823529f, 0.4862745f, 0.4823529f, 1f);
             public static readonly Color Dark = new Color(0.9333333f, 0.9372549f, 0.9333333f, 1f);
             #endregion
-        } 
+        }
+        #endregion
 
-        public readonly struct Icons
+        #region Classes
+        /// <summary>
+        /// Custom editor icons.
+        /// </summary>
+        public static class Icons
         {
-            #region Properties
-            public static Texture2D DragIcon { get; private set; }
+            #region Internal vars
+            static Texture2D _dragIcon; 
             #endregion
 
-            #region Initializers
-            [InitializeOnLoadMethod]
-            static void Initialize()
+            #region Properties
+            /// <summary>
+            /// Double horizontal lines that notice to user that the item es draggable (like the icon shows at left in each draggable element in ReorderableList controls).
+            /// </summary>
+            public static Texture2D DragIcon
             {
-                EditorSkinUtility.Icons.DragIcon = EditorSkinUtility.Icons.CreateDragButtonIcon();
-            } 
+                get
+                {
+                    if (Icons._dragIcon == null)
+                    {
+                        Icons._dragIcon = Icons.CreateDragButtonIcon();
+                    }
+                    return Icons._dragIcon;
+                }
+            }
             #endregion
 
             #region Methods & Functions
@@ -52,6 +69,7 @@ namespace Argos.Framework.Utils
                 {
                     texture.filterMode = FilterMode.Point;
                     texture.alphaIsTransparency = true;
+
                     texture.SetPixels(pixels);
                     texture.Apply();
                 }

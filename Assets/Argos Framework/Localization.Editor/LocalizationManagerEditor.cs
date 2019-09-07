@@ -172,6 +172,11 @@ namespace Argos.Framework.Localization
                     Debug.Log($"User click on row index: {rowItem.Row}");
                 };
 
+                this._dataTable.OnRowDoubleClick += (rowItem) =>
+                {
+                    Debug.Log($"User double-click on row index: {rowItem.Row}");
+                };
+
                 this._dataTable.OnRowSelected += (rowItem) =>
                 {
                     Debug.Log($"Selected row index: {rowItem.Row}");

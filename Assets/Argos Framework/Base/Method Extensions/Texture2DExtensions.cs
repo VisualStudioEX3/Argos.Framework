@@ -32,6 +32,11 @@ namespace Argos.Framework
             return Sprite.Create(texture, new Rect(0f, 0f, texture.width, texture.height), pivot);
         }
 
+        static Texture2D GetReadableTexture(this Texture2D texture)
+        {
+            return (texture.isReadable ? texture : texture.Copy());
+        }
+
 #if UNITY_STANDALONE
         /// <summary>
         /// Save to EXR file format.
@@ -41,7 +46,7 @@ namespace Argos.Framework
         /// <param name="flags">Optional flags to compress the output EXR file. By default is <see cref="Texture2D.EXRFlags.None"/>.</param>
         public static void SaveToEXRFile(this Texture2D texture, string filename, Texture2D.EXRFlags flags = Texture2D.EXRFlags.None)
         {
-            System.IO.File.WriteAllBytes(filename, texture.EncodeToEXR(flags));
+            System.IO.File.WriteAllBytes(filename, texture.GetReadableTexture().EncodeToEXR(flags));
         }
 
         /// <summary>
@@ -52,7 +57,7 @@ namespace Argos.Framework
         /// <param name="quality">Optional quality level. By default is 75.</param>
         public static void SaveToJPEGFile(this Texture2D texture, string filename, int quality = 75)
         {
-            System.IO.File.WriteAllBytes(filename, texture.EncodeToJPG(Mathf.Clamp(quality, 0, 100)));
+            System.IO.File.WriteAllBytes(filename, texture.GetReadableTexture().EncodeToJPG(Mathf.Clamp(quality, 0, 100)));
         }
 
         /// <summary>
@@ -62,7 +67,7 @@ namespace Argos.Framework
         /// <param name="filename">Filename for the new PNG file.</param>
         public static void SaveToPNGFile(this Texture2D texture, string filename)
         {
-            System.IO.File.WriteAllBytes(filename, texture.EncodeToPNG());
+            System.IO.File.WriteAllBytes(filename, texture.GetReadableTexture().EncodeToPNG());
         }
 
         /// <summary>
@@ -72,7 +77,7 @@ namespace Argos.Framework
         /// <param name="filename">Filename for the new TGA file.</param>
         public static void SaveToTGAFile(this Texture2D texture, string filename)
         {
-            System.IO.File.WriteAllBytes(filename, texture.EncodeToTGA());
+            System.IO.File.WriteAllBytes(filename, texture.GetReadableTexture().EncodeToTGA());
         }
 
         /// <summary>
@@ -89,7 +94,35 @@ namespace Argos.Framework
             {
                 throw new FormatException("Texture2D.LoadImageFile: Fail to load image file, maybe is not a JPEG/PNG format or the file is corrupted.");
             }
-        } 
+        }
+
+        /// <summary>
+        /// Create a copy of the texture. Useful when need to create a readable copy of an unreadable texture.
+        /// </summary>
+        /// <param name="texture"><see cref="Texture2D"/> instance.</param>
+        /// <param name="linear">Using linear or sRGB color space when create the copy? By default is false (sRGB).</param>
+        /// <returns>Returns a new <see cref="Texture2D"/> with all data from original texture instance.</returns>
+        public static Texture2D Copy(this Texture2D texture, bool linear = false)
+        {
+            var copy = new Texture2D(texture.width, texture.height, texture.format, texture.mipmapCount, linear);
+            {
+                copy.alphaIsTransparency = texture.alphaIsTransparency;
+                copy.anisoLevel = texture.anisoLevel;
+                copy.filterMode = texture.filterMode;
+                copy.imageContentsHash = texture.imageContentsHash;
+                copy.mipMapBias = texture.mipMapBias;
+                copy.requestedMipmapLevel = texture.requestedMipmapLevel;
+                copy.wrapMode = texture.wrapMode;
+                copy.wrapModeU = texture.wrapModeU;
+                copy.wrapModeV = texture.wrapModeV;
+                copy.wrapModeW = texture.wrapModeW;
+
+                copy.LoadRawTextureData(texture.GetRawTextureData());
+                copy.Apply(true);
+            }
+
+            return copy;
+        }
 #endif
         #endregion
     }

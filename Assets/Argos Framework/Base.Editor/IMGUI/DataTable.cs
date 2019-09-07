@@ -924,7 +924,7 @@ namespace Argos.Framework.IMGUI
                 {
                     this.OnRowSelected(this.GetItemById(selectedIds[0]));
                 }
-                else if (this.canMultiselect && this.OnMultipleRowsSelected != null)
+                else if (this.OnMultipleRowsSelected != null && this.canMultiselect)
                 {
                     this.OnMultipleRowsSelected(this.GetItemsById(selectedIds).Select(e => e.ToDataTableRow()).ToArray());
                 }

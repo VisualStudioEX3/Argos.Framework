@@ -36,35 +36,7 @@ namespace Argos.Framework.IMGUI
         #endregion
 
         #region Static members
-        static GUIStyle _toolbarSeachTextFieldPopupStyle;
-        static GUIStyle _cancelButtonStyle;
-        static GUIStyle _cancelButtonEmptyStyle;
-        static GUIStyle _invisibleButtonStyle;
-        static GUIStyle _miniLabelDisabled;
-
         public static float Height => EditorGUIUtility.singleLineHeight;
-        #endregion
-
-        #region Initializers
-        [InitializeOnLoadMethod]
-        static void Init()
-        {
-            SearchField._toolbarSeachTextFieldPopupStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("ToolbarSeachTextFieldPopup"));
-            SearchField._cancelButtonStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("ToolbarSeachCancelButton"));
-            SearchField._cancelButtonEmptyStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("ToolbarSeachCancelButtonEmpty"));
-
-            SearchField._invisibleButtonStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("InvisibleButton"));
-            {
-                SearchField._invisibleButtonStyle.normal.textColor = Color.clear;
-            }
-
-            SearchField._miniLabelDisabled = new GUIStyle(EditorSkinUtility.Skin.FindStyle("MiniLabel"));
-            {
-                Color color = SearchField._miniLabelDisabled.normal.textColor;
-                color.a = 0.5f;
-                SearchField._miniLabelDisabled.normal.textColor = color;
-            }
-        }
         #endregion
 
         #region Constructors
@@ -96,7 +68,7 @@ namespace Argos.Framework.IMGUI
             }
 
             int lastSelection = this.DropDownSelection;
-            this.DropDownSelection = EditorGUI.Popup(popupButtonRect, this.DropDownSelection, this.DropDownItems, SearchField._invisibleButtonStyle);
+            this.DropDownSelection = EditorGUI.Popup(popupButtonRect, this.DropDownSelection, this.DropDownItems, EditorSkinUtility.Styles.ArgosCustomVariants.invisibleButtonWithTransparentText);
 
             if (lastSelection != this.DropDownSelection)
             {
@@ -104,7 +76,10 @@ namespace Argos.Framework.IMGUI
                 lastSelection = this.DropDownSelection;
             }
 
-            string searchFieldText = this._searchField.OnGUI(position, searchString, SearchField._toolbarSeachTextFieldPopupStyle, SearchField._cancelButtonStyle, SearchField._cancelButtonEmptyStyle);
+            string searchFieldText = this._searchField.OnGUI(position, searchString, 
+                                                             EditorSkinUtility.Styles.Custom.ToolbarSearch.textFieldPopup, 
+                                                             EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButton, 
+                                                             EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButtonEmpty);
 
             if (string.IsNullOrEmpty(searchFieldText) && !this._searchField.HasFocus())
             {
@@ -114,7 +89,7 @@ namespace Argos.Framework.IMGUI
                     labelRect.y--;
                 }
 
-                EditorGUI.LabelField(labelRect, this.DropDownItems[this.DropDownSelection], SearchField._miniLabelDisabled);
+                EditorGUI.LabelField(labelRect, this.DropDownItems[this.DropDownSelection], EditorSkinUtility.Styles.ArgosCustomVariants.disabledMiniLabel);
             }
 
             if (!string.IsNullOrEmpty(searchFieldText) && !string.IsNullOrEmpty(searchString) && !searchFieldText.Equals(searchString))

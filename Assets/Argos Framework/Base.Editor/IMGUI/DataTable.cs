@@ -410,7 +410,6 @@ namespace Argos.Framework.IMGUI
             #region Static members
             static GUIContent _errorGUIContentNull;
             static GUIContent _errorGUIContentNotImplemented;
-            static GUIStyle _errorGUIStyle;
             #endregion
 
             #region Initializers
@@ -425,11 +424,6 @@ namespace Argos.Framework.IMGUI
                 InternalTreeView._errorGUIContentNotImplemented = new GUIContent(EditorGUIUtility.IconContent("console.erroricon.sml").image);
                 {
                     InternalTreeView._errorGUIContentNotImplemented.text = "Read-only field not implemented for this type!";
-                }
-
-                InternalTreeView._errorGUIStyle = new GUIStyle(EditorSkinUtility.Skin.FindStyle("miniBoldLabel"));
-                {
-                    InternalTreeView._errorGUIStyle.normal.textColor = Color.red;
                 }
             }
             #endregion
@@ -952,8 +946,27 @@ namespace Argos.Framework.IMGUI
 
                     if (i == 0 && (this.showRowIndex || this.canDrag))
                     {
-                        EditorGUI.LabelField(cellRect, new GUIContent(this.showRowIndex ? (args.row + 1).ToString() : string.Empty, 
-                                                                      this.canDrag ? EditorSkinUtility.Icons.DragIcon : null));
+                        Rect dragHandleRect = cellRect;
+                        {
+                            dragHandleRect.x += 5f;
+                            dragHandleRect.y += 5f;
+                            dragHandleRect.width = 10f;
+                            dragHandleRect.height -= (dragHandleRect.height - 7f);
+                        }
+                        //EditorSkinUtility.Styles.Custom.ReorderableList.DragHandle.SafeDraw(dragHandleRect, false, false, false, false);
+                        EditorSkinUtility.Styles.Custom.ReorderableList.dragHandle.SafeDraw(dragHandleRect, false, false, false, false);
+
+                        if (this.showRowIndex)
+                        {
+                            Rect numberRect = cellRect;
+                            {
+                                if (this.canDrag)
+                                {
+                                    numberRect.xMin = dragHandleRect.xMax + 4f;
+                                }
+                            }
+                            EditorGUI.LabelField(numberRect, (args.row + 1).ToString()); 
+                        }
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.columnsSetup[columnIndex].propertyName))
                     {
@@ -999,7 +1012,7 @@ namespace Argos.Framework.IMGUI
                             cellRect.y -= DataTable.ERROR_CONTENT_CELLRECT_CORRECTION;
                             cellRect.height += DataTable.ERROR_CONTENT_CELLRECT_CORRECTION;
 
-                            EditorGUI.LabelField(cellRect, InternalTreeView._errorGUIContentNull, InternalTreeView._errorGUIStyle);
+                            EditorGUI.LabelField(cellRect, InternalTreeView._errorGUIContentNull, EditorSkinUtility.Styles.ArgosCustomVariants.errorMiniLabel);
                         }
                     }
                 }
@@ -1340,11 +1353,20 @@ namespace Argos.Framework.IMGUI
         /// <param name="layout">Rect that positioned the control.</param>
         public void Do(Rect layout)
         {
-            EditorGUI.HelpBox(layout, 
-                              !(this.OnLabelSearchGUI == null && this.SearchFieldLabelText.IsNullOrEmptyOrWhiteSpace()) ? 
-                                string.Empty : 
-                                this.SearchFieldLabelText, 
-                              MessageType.None);
+            //EditorGUI.HelpBox(layout, 
+            //                  !(this.OnLabelSearchGUI == null && this.SearchFieldLabelText.IsNullOrEmptyOrWhiteSpace()) ? 
+            //                    string.Empty : 
+            //                    this.SearchFieldLabelText, 
+            //                  MessageType.None);
+
+            var box = new GUIStyle(EditorSkinUtility.Skin.GetStyle("MultiColumnHeader"));
+            //box.active.textColor = new Color32(153, 153, 153, 255);
+
+            EditorGUI.LabelField(layout,
+                                 !(this.OnLabelSearchGUI == null && this.SearchFieldLabelText.IsNullOrEmptyOrWhiteSpace()) ?
+                                    string.Empty :
+                                    this.SearchFieldLabelText,
+                                 box);
 
             if (this.ShowSearchField)
             {

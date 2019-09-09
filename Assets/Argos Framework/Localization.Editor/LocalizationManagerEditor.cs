@@ -153,11 +153,11 @@ namespace Argos.Framework.Localization
                 {
                     //EditorGUI.DrawRect(rect, Color.red);
                     //EditorGUI.LabelField(rect, "Test");
-                    if (GUI.Button(rect, "Delete state & reload", EditorStyles.miniButton))
-                    {
-                        this._dataTable.DeleteState();
-                        this._dataTable.Reload();
-                    }
+                    //if (GUI.Button(rect, "Delete state & reload", EditorStyles.miniButton))
+                    //{
+                    //    this._dataTable.DeleteState();
+                    //    this._dataTable.Reload();
+                    //}
                 };
 
                 this._dataTable.OnFooterGUI += (rect) =>
@@ -193,7 +193,7 @@ namespace Argos.Framework.Localization
                 };
             }
 
-            //this.editorSkin = Editor.CreateEditor(Argos.Framework.Utils.EditorSkinUtility.Skin);
+            this.editorSkin = Editor.CreateEditor(Argos.Framework.Utils.EditorSkinUtility.Skin);
         }
 
         private void OnDisable()
@@ -222,7 +222,7 @@ namespace Argos.Framework.Localization
 
             this.serializedObject.ApplyModifiedProperties();
 
-            //this.editorSkin.DrawDefaultInspector();
+            this.editorSkin.DrawDefaultInspector();
         }
     }
 }

@@ -14,18 +14,6 @@ namespace Argos.Framework
         int _splitCount;
         #endregion
 
-        #region Static members
-        static GUIStyle _radioStyle;
-        #endregion
-
-        #region Initializers
-        [InitializeOnLoadMethod]
-        static void Init()
-        {
-            OptionListDrawer._radioStyle = EditorSkinUtility.Skin.FindStyle("Radio");
-        } 
-        #endregion
-
         #region Methods & Functions
         public override bool CheckPropertyType(SerializedProperty property)
         {
@@ -69,7 +57,7 @@ namespace Argos.Framework
 
             EditorGUI.PrefixLabel(labelRect, new GUIContent(property.enumDisplayNames[index]));
 
-            if (EditorGUI.Toggle(toggleRect, string.Empty, property.enumValueIndex == index, OptionListDrawer._radioStyle))
+            if (EditorGUI.Toggle(toggleRect, string.Empty, property.enumValueIndex == index, EditorSkinUtility.Styles.Custom.radio))
             {
                 property.enumValueIndex = index;
             }

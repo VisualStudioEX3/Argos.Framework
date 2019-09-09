@@ -1198,7 +1198,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8b98a4b9a0e993e479c3890f344319bd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  optionList: 4
+  optionList: 3
   splitOptionList: 27
 --- !u!4 &889760508
 Transform:

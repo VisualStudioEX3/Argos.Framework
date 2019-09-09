@@ -416,12 +416,12 @@ namespace Argos.Framework.IMGUI
             [InitializeOnLoadMethod]
             static void Init()
             {
-                InternalTreeView._errorGUIContentNull = new GUIContent(EditorGUIUtility.IconContent("console.erroricon.sml").image);
+                InternalTreeView._errorGUIContentNull = EditorSkinUtility.Icons.Console.errorIcon.Copy();
                 {
                     InternalTreeView._errorGUIContentNull.text = "Null!";
                 }
 
-                InternalTreeView._errorGUIContentNotImplemented = new GUIContent(EditorGUIUtility.IconContent("console.erroricon.sml").image);
+                InternalTreeView._errorGUIContentNotImplemented = EditorSkinUtility.Icons.Console.errorIcon.Copy();
                 {
                     InternalTreeView._errorGUIContentNotImplemented.text = "Read-only field not implemented for this type!";
                 }
@@ -514,8 +514,13 @@ namespace Argos.Framework.IMGUI
                             this.OnRowClick?.Invoke(args.item as InternalTreeViewItem);
                         }
 
-                        if (!Event.current.control && !(this.canDrag && this.canMultiselect))
+                        if (!Event.current.control)
                         {
+                            if (args.selected && this.canDrag && this.Selection.Count > 1)
+                            {
+                                return;
+                            }
+
                             this.SetSelection(new int[] { args.item.id });
                         }
                     }
@@ -953,7 +958,6 @@ namespace Argos.Framework.IMGUI
                             dragHandleRect.width = 10f;
                             dragHandleRect.height -= (dragHandleRect.height - 7f);
                         }
-                        //EditorSkinUtility.Styles.Custom.ReorderableList.DragHandle.SafeDraw(dragHandleRect, false, false, false, false);
                         EditorSkinUtility.Styles.Custom.ReorderableList.dragHandle.SafeDraw(dragHandleRect, false, false, false, false);
 
                         if (this.showRowIndex)
@@ -1083,12 +1087,6 @@ namespace Argos.Framework.IMGUI
         /// Shows footer area to customize data.
         /// </summary>
         public bool ShowFooter { get; set; }
-
-        /// <summary>
-        /// Text shows as search field label when it is visible.
-        /// </summary>
-        public string SearchFieldLabelText { get; set; }
-
 
         /// <summary>
         /// Current row selection.
@@ -1231,9 +1229,9 @@ namespace Argos.Framework.IMGUI
         }
 
         /// <summary>
-        /// Event used to get the label area when the search field is active. Useful to draw custom labels or toolbar controls or any kind of GUI stuff.
+        /// Event used to get the toolbar area when the search field is active. Useful to draw custom labels or toolbar controls or any kind of GUI stuff.
         /// </summary>
-        public event OnRectGUIHandler OnLabelSearchGUI;
+        public event OnRectGUIHandler OnToobarSearchGUI;
 
         /// <summary>
         /// Event used to get the footer area of control.
@@ -1347,49 +1345,51 @@ namespace Argos.Framework.IMGUI
             }
         }
 
+        Rect DrawHeaderBackground(Rect rect)
+        {
+            rect.xMax--;
+            rect.height = EditorGUIUtility.singleLineHeight + 1f;
+
+            EditorGUI.LabelField(rect, GUIContent.none, EditorStyles.toolbarButton);
+
+            return rect;
+        }
+
+        Rect DrawFooterBackground(Rect rect)
+        {
+            rect.yMin = rect.yMax - (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
+
+            EditorGUI.LabelField(rect, GUIContent.none, EditorSkinUtility.Styles.Custom.greyBorder);
+
+            return rect;
+        }
+
         /// <summary>
         /// Draws the <see cref="DataTable"/>.
         /// </summary>
         /// <param name="layout">Rect that positioned the control.</param>
         public void Do(Rect layout)
         {
-            //EditorGUI.HelpBox(layout, 
-            //                  !(this.OnLabelSearchGUI == null && this.SearchFieldLabelText.IsNullOrEmptyOrWhiteSpace()) ? 
-            //                    string.Empty : 
-            //                    this.SearchFieldLabelText, 
-            //                  MessageType.None);
-
-            var box = new GUIStyle(EditorSkinUtility.Skin.GetStyle("MultiColumnHeader"));
-            //box.active.textColor = new Color32(153, 153, 153, 255);
-
-            EditorGUI.LabelField(layout,
-                                 !(this.OnLabelSearchGUI == null && this.SearchFieldLabelText.IsNullOrEmptyOrWhiteSpace()) ?
-                                    string.Empty :
-                                    this.SearchFieldLabelText,
-                                 box);
-
             if (this.ShowSearchField)
             {
-                Rect searchFieldRect = layout;
+                Rect headerRect = this.DrawHeaderBackground(layout);
+                Rect searchFieldRect = headerRect;
                 {
                     searchFieldRect.x += EditorGUIUtility.labelWidth;
                     searchFieldRect.y += 2f;
-                    searchFieldRect.xMax = layout.xMax - 2f;
+                    searchFieldRect.xMax = headerRect.xMax - 4f;
                 }
                 this._treeView.searchString = this._searchField.Do(searchFieldRect, this._treeView.searchString);
 
-                layout.y += SearchField.Height + 1f;
-                layout.height -= SearchField.Height;
+                layout.yMin = headerRect.yMax;
 
-                if (this.OnLabelSearchGUI != null)
+                if (this.OnToobarSearchGUI != null)
                 {
-                    Rect labelRect = searchFieldRect;
+                    Rect toolbarRect = headerRect;
                     {
-                        labelRect.x = layout.x + 2f;
-                        labelRect.width = EditorGUIUtility.labelWidth - 4f;
-                        labelRect.height = EditorGUIUtility.singleLineHeight - 2f;
+                        toolbarRect.width = EditorGUIUtility.labelWidth - 4f;
                     }
-                    this.OnLabelSearchGUI(labelRect);
+                    this.OnToobarSearchGUI(toolbarRect);
                 }
             }
 
@@ -1402,17 +1402,20 @@ namespace Argos.Framework.IMGUI
 
             if (this.ShowFooter && this.OnFooterGUI != null)
             {
-                Rect footerRect = layout;
+                Rect footerRect = this.DrawFooterBackground(layout);
+
+                if (this.OnFooterGUI != null)
                 {
-                    footerRect.x = layout.x + 2f;
-                    footerRect.width -= 4f;
-                    footerRect.height = EditorGUIUtility.singleLineHeight;
-                    footerRect.y = layout.yMax - footerRect.height - 3f;
+                    Rect footerGUIRect = footerRect;
+                    {
+                        footerGUIRect.xMin += 2f;
+                        footerGUIRect.xMax -= 2f;
+                    }
+
+                    this.OnFooterGUI(footerGUIRect); 
                 }
 
-                layout.yMax -= footerRect.height + 4f;
-
-                this.OnFooterGUI(footerRect);
+                layout.yMax -= footerRect.height;
             }
 
             this._treeView.OnGUI(layout);

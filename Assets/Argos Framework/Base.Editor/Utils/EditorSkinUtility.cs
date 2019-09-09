@@ -25,7 +25,7 @@ namespace Argos.Framework.Utils
         #endregion
 
         #region Classes
-        public sealed class GUIStyleProperty
+        class GUIStyleProperty
         {
             #region Internal vars
             string _name;
@@ -38,33 +38,63 @@ namespace Argos.Framework.Utils
             {
                 this._name = name;
                 this._customInitialization = customInitialization;
-                this.GetStyle();
             }
             #endregion
 
             #region Operators
             public static implicit operator GUIStyle(GUIStyleProperty item)
             {
-                return item.GetStyle();
-            }
-            #endregion
-
-            #region Methods & Functions
-            GUIStyle GetStyle()
-            {
-                if (this._style == null)
+                if (item._style == null)
                 {
-                    this._style = EditorSkinUtility.Skin.GetStyle(this._name).Copy();
+                    item._style = EditorSkinUtility.Skin.GetStyle(item._name).Copy();
 
-                    if (this._customInitialization != null)
+                    if (item._customInitialization != null)
                     {
-                        this._style = this._customInitialization(this._style); 
+                        item._style = item._customInitialization(item._style);
                     }
                 }
 
-                return this._style;
-            } 
+                return item._style;
+            }
             #endregion
+        }
+
+        class GUIContentProperty
+        {
+            #region Internal vars
+            string _name;
+            GUIContent _content;
+            Func<GUIContent, GUIContent> _customInitialization;
+            #endregion
+
+            #region Constructors
+            public GUIContentProperty(string name, Func<GUIContent, GUIContent> customInitialization = null)
+            {
+                this._name = name;
+                this._customInitialization = customInitialization;
+            }
+            #endregion
+
+            #region Operators
+            public static implicit operator GUIContent(GUIContentProperty item) => item.GetContent();
+            public static implicit operator Texture(GUIContentProperty item) => item.GetContent().image;
+            public static implicit operator string(GUIContentProperty item) => item.GetContent().text;
+            #endregion
+
+            GUIContent GetContent()
+            {
+                if (this._content == null)
+                {
+                    this._content = EditorGUIUtility.IconContent(this._name).Copy();
+
+                    if (this._customInitialization != null)
+                    {
+                        this._content = this._customInitialization(this._content);
+                    }
+                }
+
+                return this._content;
+            }
         }
 
         /// <summary>
@@ -93,14 +123,14 @@ namespace Argos.Framework.Utils
             {
                 #region Constants
                 /// <summary>
+                /// "grey_border" custom style.
+                /// </summary>
+                public readonly static GUIStyle greyBorder = new GUIStyleProperty("grey_border");
+
+                /// <summary>
                 /// "InvisibleButton" custom style.
                 /// </summary>
                 public readonly static GUIStyle invisibleButton = new GUIStyleProperty("invisibleButton");
-
-                /// <summary>
-                /// "radio" custom style.
-                /// </summary>
-                public readonly static GUIStyle radio = new GUIStyleProperty("radio");
                 #endregion
 
                 #region Classes
@@ -181,7 +211,27 @@ namespace Argos.Framework.Utils
             #endregion
         }
 
-        // TODO: Create GUIContent class to access built-in icons.
+        /// <summary>
+        /// Unity built-in icons.
+        /// </summary>
+        /// <remarks>This class exposed some cached built-in editor icons.</remarks>
+        public static class Icons
+        {
+            #region Classes
+            /// <summary>
+            /// Debug console icons.
+            /// </summary>
+            public static class Console
+            {
+                #region Constants
+                /// <summary>
+                /// "console.erroricon.sml" icon.
+                /// </summary>
+                public readonly static GUIContent errorIcon = new GUIContentProperty("console.erroricon.sml");
+                #endregion
+            } 
+            #endregion
+        }
         #endregion
 
         #region Properties

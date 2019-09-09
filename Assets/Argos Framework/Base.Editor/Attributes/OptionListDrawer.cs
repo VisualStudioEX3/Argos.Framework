@@ -57,7 +57,7 @@ namespace Argos.Framework
 
             EditorGUI.PrefixLabel(labelRect, new GUIContent(property.enumDisplayNames[index]));
 
-            if (EditorGUI.Toggle(toggleRect, string.Empty, property.enumValueIndex == index, EditorSkinUtility.Styles.Custom.radio))
+            if (EditorGUI.Toggle(toggleRect, string.Empty, property.enumValueIndex == index, EditorStyles.radioButton))
             {
                 property.enumValueIndex = index;
             }

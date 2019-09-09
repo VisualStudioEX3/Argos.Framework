@@ -147,17 +147,16 @@ namespace Argos.Framework.Localization
                 this._dataTable.ShowFooter = true;
                 this._dataTable.CanDrag = true;
                 this._dataTable.CanMultiselect = true;
-                this._dataTable.SearchFieldLabelText = "Search filter";
 
-                this._dataTable.OnLabelSearchGUI += (rect) =>
+                this._dataTable.OnToobarSearchGUI += (rect) =>
                 {
                     //EditorGUI.DrawRect(rect, Color.red);
                     //EditorGUI.LabelField(rect, "Test");
-                    //if (GUI.Button(rect, "Delete state & reload", EditorStyles.miniButton))
-                    //{
-                    //    this._dataTable.DeleteState();
-                    //    this._dataTable.Reload();
-                    //}
+                    if (GUI.Button(rect, "Delete state & reload", EditorStyles.toolbarButton))
+                    {
+                        this._dataTable.DeleteState();
+                        this._dataTable.Reload();
+                    }
                 };
 
                 this._dataTable.OnFooterGUI += (rect) =>
@@ -222,7 +221,7 @@ namespace Argos.Framework.Localization
 
             this.serializedObject.ApplyModifiedProperties();
 
-            this.editorSkin.DrawDefaultInspector();
+            //this.editorSkin.DrawDefaultInspector();
         }
     }
 }

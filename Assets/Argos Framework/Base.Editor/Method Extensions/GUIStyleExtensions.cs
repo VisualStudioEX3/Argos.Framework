@@ -9,17 +9,17 @@ namespace Argos.Framework
     /// </summary>
     public static class GUIStyleExtensions
     {
+        #region Methods & Functions
         /// <summary>
         /// Gets a copy from this style.
         /// </summary>
-        /// <param name="style"></param>
-        /// <returns></returns>
+        /// <param name="style"><see cref="GUIStyle"/> instance.</param>
+        /// <returns>Returns a new <see cref="GUIStyle"/> instance as copy of this instance.</returns>
         public static GUIStyle Copy(this GUIStyle style)
         {
             return new GUIStyle(style);
         }
 
-        #region Methods & Functions
         /// <summary>
         /// Draws this <see cref="GUIStyle"/> only when the current event is a <see cref="EventType.Repaint"/>.
         /// </summary>

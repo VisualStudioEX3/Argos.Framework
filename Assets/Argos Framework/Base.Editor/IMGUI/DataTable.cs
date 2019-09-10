@@ -12,9 +12,9 @@ namespace Argos.Framework.IMGUI
     public class DataTable
     {
         #region Constants
-        const float ROW_COLUMN_CHAR_WIDTH = 10f;
-        const float ROW_COLUMN_MIN_WIDTH = 30f;
-        const float ROW_COLUMN_MAX_WIDTH = DataTable.ROW_COLUMN_CHAR_WIDTH * 5;
+        const float ROW_CHAR_WIDTH = 7f;
+        const float ROW_COLUMN_MIN_WIDTH = (DataTable.ROW_CHAR_WIDTH * 4) + 4f;
+        const float ROW_COLUMN_MAX_WIDTH = (DataTable.ROW_CHAR_WIDTH * 5) + 4f;
 
         const float SLIDER_FIELD_WIDTH = 50f;
         const float SLIDER_SEPARATOR = 4f;
@@ -951,14 +951,17 @@ namespace Argos.Framework.IMGUI
 
                     if (i == 0 && (this.showRowIndex || this.canDrag))
                     {
-                        Rect dragHandleRect = cellRect;
+                        if (this.canDrag)
                         {
-                            dragHandleRect.x += 5f;
-                            dragHandleRect.y += 5f;
-                            dragHandleRect.width = 10f;
-                            dragHandleRect.height -= (dragHandleRect.height - 7f);
+                            Rect dragHandleRect = cellRect;
+                            {
+                                dragHandleRect.x += 4f;
+                                dragHandleRect.y += 5f;
+                                dragHandleRect.width = 10f;
+                                dragHandleRect.height -= (dragHandleRect.height - 7f);
+                            }
+                            EditorSkinUtility.Styles.Custom.ReorderableList.dragHandle.SafeDraw(dragHandleRect, false, false, false, false); 
                         }
-                        EditorSkinUtility.Styles.Custom.ReorderableList.dragHandle.SafeDraw(dragHandleRect, false, false, false, false);
 
                         if (this.showRowIndex)
                         {
@@ -966,7 +969,7 @@ namespace Argos.Framework.IMGUI
                             {
                                 if (this.canDrag)
                                 {
-                                    numberRect.xMin = dragHandleRect.xMax + 4f;
+                                    numberRect.xMin = 16f;
                                 }
                             }
                             EditorGUI.LabelField(numberRect, (args.row + 1).ToString()); 
@@ -1000,7 +1003,7 @@ namespace Argos.Framework.IMGUI
 
                                     if (rangeAttribute != null)
                                     {
-                                        // Unity built-in slider control has a bug with the slider input rect that overlaps other controls to right when the slider control width is over 180px.
+                                        // Unity built-in slider control has a bug with the slider input rect that overlaps other controls on the right when the slider control width is over 180px.
                                         // This function implements custom slider control that works and look same as Unity built-in control, and adds the read-only version.
                                         this.DrawFixedSlider(cellRect, cellProperty, rangeAttribute, false);
                                     }
@@ -1106,10 +1109,7 @@ namespace Argos.Framework.IMGUI
         /// <summary>
         /// Row count.
         /// </summary>
-        public int RowCount
-        {
-            get { return (this.Property != null && this.Property.isArray) ? this.Property.arraySize : 0; }
-        }
+        public int RowCount => (this.Property != null && this.Property.isArray) ? this.Property.arraySize : 0;
 
         /// <summary>
         /// Row height.
@@ -1252,15 +1252,15 @@ namespace Argos.Framework.IMGUI
         {
             if (property == null)
             {
-                throw new ArgumentNullException("DataTable.ctor(): The SerializedProperty can't be null!");
+                throw new ArgumentNullException($"DataTable.ctor(): The SerializedProperty \"{property.name}\" can't be null!");
             }
 
             if (!property.isArray)
             {
-                throw new ArgumentException("DataTable.ctor(): The SerializedProperty must be an array!");
+                throw new ArgumentException($"DataTable.ctor(): The SerializedProperty \"{property.name}\" must be an array!");
             }
 
-            this._indexRowColumnWidth = Mathf.Clamp(DataTable.ROW_COLUMN_CHAR_WIDTH * property.arraySize.ToString().Length, DataTable.ROW_COLUMN_MIN_WIDTH, DataTable.ROW_COLUMN_MAX_WIDTH);
+            this._indexRowColumnWidth = Mathf.Clamp(DataTable.ROW_CHAR_WIDTH * property.arraySize.ToString().Length, DataTable.ROW_COLUMN_MIN_WIDTH, DataTable.ROW_COLUMN_MAX_WIDTH);
             this._indexDragAndDropRowColumnWidth = this._indexRowColumnWidth + 14f;
 
             var treeviewState = new InternalTreeView.InternalDataTableState(controlID);
@@ -1377,7 +1377,7 @@ namespace Argos.Framework.IMGUI
                 {
                     searchFieldRect.x += EditorGUIUtility.labelWidth;
                     searchFieldRect.y += 2f;
-                    searchFieldRect.xMax = headerRect.xMax - 4f;
+                    searchFieldRect.xMax = headerRect.xMax - 3f;
                 }
                 this._treeView.searchString = this._searchField.Do(searchFieldRect, this._treeView.searchString);
 

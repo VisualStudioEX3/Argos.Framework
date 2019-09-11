@@ -14,13 +14,6 @@ namespace Argos.Framework
         const string ROTATION_PROPERTY = "_Rotation";
         #endregion
 
-        #region Internal vars
-#if UNITY_EDITOR
-        [SerializeField, Range(0f, 360f)]
-        float _testAngle;
-#endif
-        #endregion
-
         #region Public vars
         /// <summary>
         /// Rotation speed.
@@ -32,6 +25,9 @@ namespace Argos.Framework
         /// </summary>
         [Range(0f, 360f)]
         public float initialAngle = 0f;
+
+        [Tooltip("Test the rotation speed in edit mode.")]
+        public bool rotateInEditMode = false;
         #endregion
 
         #region Properties
@@ -67,7 +63,14 @@ namespace Argos.Framework
         #region Update logic
         void Update()
         {
-            this.Rotation = Time.time * this.speed;
+            if (!this.rotateInEditMode && !Application.isPlaying)
+            {
+                this.Rotation = this.initialAngle; 
+            }
+            else
+            {
+                this.Rotation = Time.time * this.speed;
+            }
         }
         #endregion
     }

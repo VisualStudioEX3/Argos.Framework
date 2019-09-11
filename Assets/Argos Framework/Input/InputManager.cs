@@ -196,7 +196,7 @@ namespace Argos.Framework.Input
                 StartCoroutine(this.CheckCurrentInputTypeCoroutine());
 
                 // Check for a generic joystick and initialize it for support Force Feedback:
-                ForceFeedback.CheckForAvailableJoystick(); 
+                ForceFeedback.CheckForAvailableJoystick();
             }
 
             base.Awake();
@@ -283,7 +283,7 @@ namespace Argos.Framework.Input
                 {
                     switch (type)
                     {
-                        case InputType.KeyboardAndMouse: return InputManager.NOT_ASSIGNABLE_KEYS.Contains(keyCode) ? KeyCode.None : keyCode; 
+                        case InputType.KeyboardAndMouse: return InputManager.NOT_ASSIGNABLE_KEYS.Contains(keyCode) ? KeyCode.None : keyCode;
                         case InputType.XBoxController: return InputManager.ASSIGNABLE_XBOX_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
                         case InputType.PS4Controller: return InputManager.ASSIGNABLE_PS4_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
                         case InputType.NintendoSwitchProController: return InputManager.ASSIGNABLE_NINTENDO_SWITCH_BUTTONS.Contains(keyCode) ? keyCode : KeyCode.None;
@@ -431,7 +431,7 @@ namespace Argos.Framework.Input
         private void Reset()
         {
             this._inputMaps = new InputMapDictionary();
-        } 
+        }
         #endregion
     }
 }

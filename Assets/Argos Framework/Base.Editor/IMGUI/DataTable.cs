@@ -955,7 +955,7 @@ namespace Argos.Framework.IMGUI
                         {
                             Rect dragHandleRect = cellRect;
                             {
-                                dragHandleRect.x += 4f;
+                                dragHandleRect.x += 2f;
                                 dragHandleRect.y += 5f;
                                 dragHandleRect.width = 10f;
                                 dragHandleRect.height -= (dragHandleRect.height - 7f);

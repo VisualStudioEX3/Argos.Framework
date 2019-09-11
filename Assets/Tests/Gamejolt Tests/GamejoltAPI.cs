@@ -22,14 +22,18 @@ public static class GamejoltAPI
     [Serializable]
     public class GamejoltBaseResponseData
     {
+        #region Public vars
         public bool success;
-        public string message;
+        public string message; 
+        #endregion
     }
 
     [Serializable]
     public class GamejoltBaseResponse
     {
-        public GamejoltBaseResponseData response;
+        #region Public vars
+        public GamejoltBaseResponseData response; 
+        #endregion
     }
     #endregion
 
@@ -62,7 +66,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
     #endregion
 
     #region Properties
-    public Dictionary<string, string> Params { get; private set; }
+    public SortedDictionary<string, string> Params { get; private set; }
     public string Response { get; private set; }
     public string URL { get; private set; }
     public bool IsDone { get; private set; }
@@ -86,7 +90,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
     #region Constructors & Destructors
     public GamejoltAPIWebRequest()
     {
-        this.Params = new Dictionary<string, string>();
+        this.Params = new SortedDictionary<string, string>();
     }
 
     public GamejoltAPIWebRequest(string apiUrl) : this()
@@ -97,7 +101,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
     public GamejoltAPIWebRequest(string apiURL, Dictionary<string, string> paramList)
     {
         this._apiURL = apiURL;
-        this.Params = new Dictionary<string, string>(paramList);
+        this.Params = new SortedDictionary<string, string>(paramList);
     }
 
     ~GamejoltAPIWebRequest()
@@ -148,7 +152,7 @@ public sealed class GamejoltAPIWebRequest : IDisposable
         else
         {
             this.URL = this.ComposePOSTURL();
-            this._request = UnityWebRequest.Post(this.URL, this.Params);
+            this._request = UnityWebRequest.Post(this.URL, this.Params.ToDictionary(e => e.Key, e => e.Value));
         }
 
         UnityWebRequestAsyncOperation asyncOp = this._request.SendWebRequest();
@@ -187,9 +191,8 @@ public sealed class GamejoltAPIWebRequest : IDisposable
     {
         string url = $"{this._apiURL}?game_id={GamejoltAPI.GameID}";
         var paramList = new StringBuilder();
-        Dictionary<string, string> sortedParams = this.Params.OrderBy(e => e.Key).ToDictionary(e => e.Key, e => e.Value);
 
-        foreach (var param in sortedParams)
+        foreach (var param in this.Params)
         {
             paramList.Append($"{param.Key}{param.Value}");
         }

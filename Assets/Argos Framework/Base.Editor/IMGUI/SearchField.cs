@@ -76,9 +76,20 @@ namespace Argos.Framework.IMGUI
                 lastSelection = this.DropDownSelection;
             }
 
-            string searchFieldText = this._searchField.OnGUI(position, searchString, 
-                                                             EditorSkinUtility.Styles.Custom.ToolbarSearch.textFieldPopup, 
-                                                             EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButton, 
+            //string searchFieldText = this._searchField.OnToolbarGUI(position, searchString);
+
+            /* TODO: Seems to be a style bug in new editor skin on Unity 2019.3.0 beta (maybe fixed in release version?).
+               The bug is the cancel button hasn't have a background texture, and his fixedwidth is used to rest to textbox width.
+               Need to implement a custom styles for buttons that using the textbox texture to get the right border,
+               and a custom style for textbox that not render the right border. */
+
+            // TODO: Maybe trying to implement custom toolbar searchbox from internal Unity disassembled code (from DotPeek, see EditorGUI.ToolbarSearchField function, at line 1265)
+            GUIStyle s = EditorSkinUtility.Styles.Custom.ToolbarSearch.textFieldPopup.Copy();
+            s.margin.right -= 40;
+
+            string searchFieldText = this._searchField.OnGUI(position, searchString,
+                                                             s, //EditorSkinUtility.Styles.Custom.ToolbarSearch.textFieldPopup,
+                                                             EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButton,
                                                              EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButtonEmpty);
 
             if (string.IsNullOrEmpty(searchFieldText) && !this._searchField.HasFocus())

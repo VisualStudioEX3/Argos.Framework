@@ -170,6 +170,8 @@ namespace Argos.Framework.IMGUI
 
         string DoToolbarSearchField(Rect position, string text, bool showWithPopupArrow)
         {
+            position.width++;
+
             Rect position1 = position;
             Rect position2 = position;
 

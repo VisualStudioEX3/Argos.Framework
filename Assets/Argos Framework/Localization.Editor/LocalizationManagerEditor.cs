@@ -153,6 +153,7 @@ namespace Argos.Framework.Localization
                     //EditorGUI.DrawRect(rect, Color.red);
                     //EditorGUI.LabelField(rect, "Test");
                     //rect.xMin += 4f;
+
                     if (GUI.Button(rect, "Delete state & reload"))
                     {
                         this._dataTable.DeleteState();

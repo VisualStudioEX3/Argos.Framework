@@ -131,6 +131,11 @@ namespace Argos.Framework.Utils
                 /// "InvisibleButton" custom style.
                 /// </summary>
                 public readonly static GUIStyle invisibleButton = new GUIStyleProperty("invisibleButton");
+
+                /// <summary>
+                /// "FrameBox" custom style (like the "Helpbox" style.
+                /// </summary>
+                public readonly static GUIStyle frameBox = new GUIStyleProperty("FrameBox");
                 #endregion
 
                 #region Classes

@@ -886,7 +886,7 @@ namespace Argos.Framework.IMGUI
                                 for (int moveIndex = draggedRows.Count - 1, toIndex = targetIndex; moveIndex >= 0; moveIndex--, toIndex--)
                                 {
                                     updatedSelection[moveIndex] = this.DragPropertyAtIndex(this.GetArrayIndex(draggedRows[moveIndex]), toIndex);
-                                } 
+                                }
                             }
                             else
                             {
@@ -970,7 +970,7 @@ namespace Argos.Framework.IMGUI
                                 dragHandleRect.width = 10f;
                                 dragHandleRect.height -= (dragHandleRect.height - 7f);
                             }
-                            EditorSkinUtility.Styles.Custom.ReorderableList.dragHandle.SafeDraw(dragHandleRect, false, false, false, false); 
+                            EditorSkinUtility.Styles.Custom.ReorderableList.dragHandle.SafeDraw(dragHandleRect, false, false, false, false);
                         }
 
                         if (this.showRowIndex)
@@ -982,7 +982,7 @@ namespace Argos.Framework.IMGUI
                                     numberRect.xMin = 16f;
                                 }
                             }
-                            EditorGUI.LabelField(numberRect, (args.row + 1).ToString()); 
+                            EditorGUI.LabelField(numberRect, (args.row + 1).ToString());
                         }
                     }
                     else if (i > 0 && !string.IsNullOrEmpty(this.columnsSetup[columnIndex].propertyName))
@@ -1034,7 +1034,7 @@ namespace Argos.Framework.IMGUI
                     }
                 }
             }
-#endregion
+            #endregion
         }
 
         /// <summary>
@@ -1042,7 +1042,7 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         public class DataTableRow
         {
-#region Properties
+            #region Properties
             /// <summary>
             /// Row index.
             /// </summary>
@@ -1052,26 +1052,26 @@ namespace Argos.Framework.IMGUI
             /// <see cref="SerializedProperty"/> array with the row data.
             /// </summary>
             public SerializedProperty[] Data { get; private set; }
-#endregion
+            #endregion
 
-#region Constructor
+            #region Constructor
             public DataTableRow(int row, SerializedProperty[] data)
             {
                 this.Row = row;
                 this.Data = data;
-            } 
-#endregion
+            }
+            #endregion
         }
-#endregion
+        #endregion
 
-#region Internal vars
+        #region Internal vars
         ToolbarSearchField _searchField;
         InternalTreeView _treeView;
         float _indexRowColumnWidth;
         float _indexDragAndDropRowColumnWidth;
-#endregion
+        #endregion
 
-#region Properties
+        #region Properties
         /// <summary>
         /// Source data of this <see cref="DataTable"/> control. Must be an array.
         /// </summary>
@@ -1160,9 +1160,9 @@ namespace Argos.Framework.IMGUI
             get { return this._treeView.canMultiselect; }
             set { this._treeView.canMultiselect = value; }
         }
-#endregion
+        #endregion
 
-#region Delegates
+        #region Delegates
         /// <summary>
         /// Custom cell GUI handler.
         /// </summary>
@@ -1189,9 +1189,9 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         /// <param name="rect"><see cref="Rect"/> value with the label area.</param>
         public delegate void OnRectGUIHandler(Rect rect);
-#endregion
+        #endregion
 
-#region Events
+        #region Events
         /// <summary>
         /// Event used to customized data representation of a column cell.
         /// </summary>
@@ -1234,7 +1234,7 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         public event OnMultipleRowSelectedHandler OnMultipleRowsSelected
         {
-            add { this._treeView.OnMultipleRowsSelected += value;  }
+            add { this._treeView.OnMultipleRowsSelected += value; }
             remove { this._treeView.OnMultipleRowsSelected -= value; }
         }
 
@@ -1247,9 +1247,9 @@ namespace Argos.Framework.IMGUI
         /// Event used to get the footer area of control.
         /// </summary>
         public event OnRectGUIHandler OnFooterGUI;
-#endregion
+        #endregion
 
-#region Constructor & Destructor
+        #region Constructor & Destructor
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -1293,9 +1293,9 @@ namespace Argos.Framework.IMGUI
         {
             this._searchField.OnDropDownSelect -= this.SetSearchColumn;
         }
-#endregion
+        #endregion
 
-#region Methods & Functions
+        #region Methods & Functions
         /// <summary>
         /// Sets the column used by search field to filter data.
         /// </summary>
@@ -1354,21 +1354,17 @@ namespace Argos.Framework.IMGUI
             }
         }
 
-        Rect DrawFooterBackground(Rect rect)
-        {
-            rect.yMin = rect.yMax - (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
-            rect.y--;
-            EditorGUI.LabelField(rect, GUIContent.none, EditorSkinUtility.Styles.Custom.greyBorder);
-
-            return rect;
-        }
-
         /// <summary>
         /// Draws the <see cref="DataTable"/>.
         /// </summary>
         /// <param name="layout">Rect that positioned the control.</param>
         public void Do(Rect layout)
         {
+            if (this.ShowSearchField || this.ShowFooter)
+            {
+                EditorSkinUtility.Styles.Custom.frameBox.SafeDraw(layout, GUIContent.none, 0); 
+            }
+
             if (this.ShowSearchField)
             {
                 Rect headerRect = layout;
@@ -1380,7 +1376,7 @@ namespace Argos.Framework.IMGUI
                 {
                     searchFieldRect.x += EditorGUIUtility.labelWidth + 4f;
                     searchFieldRect.y += 2f;
-                    searchFieldRect.xMax = headerRect.xMax;
+                    searchFieldRect.xMax = headerRect.xMax - 2f;
                 }
                 this._treeView.searchString = this._searchField.Do(searchFieldRect, this._treeView.searchString);
 
@@ -1388,9 +1384,11 @@ namespace Argos.Framework.IMGUI
 
                 if (this.OnToobarSearchGUI != null)
                 {
-                    Rect toolbarRect = headerRect;
+                    Rect toolbarRect = searchFieldRect;
                     {
+                        toolbarRect.x = layout.x + 2f;
                         toolbarRect.width = EditorGUIUtility.labelWidth;
+                        toolbarRect.height -= 3f;
                     }
                     this.OnToobarSearchGUI(toolbarRect);
                 }
@@ -1405,7 +1403,10 @@ namespace Argos.Framework.IMGUI
 
             if (this.ShowFooter && this.OnFooterGUI != null)
             {
-                Rect footerRect = this.DrawFooterBackground(layout);
+                Rect footerRect = layout;
+                {
+                    footerRect.yMin = footerRect.yMax - (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
+                }
 
                 if (this.OnFooterGUI != null)
                 {
@@ -1415,7 +1416,7 @@ namespace Argos.Framework.IMGUI
                         footerGUIRect.xMax -= 2f;
                     }
 
-                    this.OnFooterGUI(footerGUIRect); 
+                    this.OnFooterGUI(footerGUIRect);
                 }
 
                 layout.yMax -= footerRect.height;
@@ -1484,6 +1485,6 @@ namespace Argos.Framework.IMGUI
         {
             return list.Select(e => e.ToDataTableRow()).ToArray();
         }
-#endregion
+        #endregion
     }
 }

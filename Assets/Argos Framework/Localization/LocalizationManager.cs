@@ -32,7 +32,7 @@ namespace Argos.Framework.Localization
         [SerializeField]
         TestData[] _test;
 
-        [TexturePreview]
-        public Texture texture;
+        //[TexturePreview]
+        //public Texture texture;
     }
 }

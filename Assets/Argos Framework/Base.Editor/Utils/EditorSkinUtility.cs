@@ -154,6 +154,11 @@ namespace Argos.Framework.Utils
                 {
                     #region Constants
                     /// <summary>
+                    /// "ToolbarSearchField" custom style.
+                    /// </summary>
+                    public readonly static GUIStyle textField = new GUIStyleProperty("ToolbarSeachTextField");
+
+                    /// <summary>
                     /// "ToolbarSeachTextFieldPopup" custom style.
                     /// </summary>
                     public readonly static GUIStyle textFieldPopup = new GUIStyleProperty("ToolbarSeachTextFieldPopup");

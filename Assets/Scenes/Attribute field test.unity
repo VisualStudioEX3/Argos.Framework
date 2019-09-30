@@ -2073,8 +2073,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   File: {fileID: 11400000, guid: f0b1e116445f4c34699fd0fe37dc7040, type: 2}
-  Vector2MinMaxSliderField: {x: 1.66, y: 3.58}
-  Vector2IntMinMaxSliderField: {x: 1, y: 4}
+  Vector2MinMaxSliderField: {x: 1.66, y: 4.11}
+  Vector2IntMinMaxSliderField: {x: 1, y: 3}
   SceneField:
     _asset: {fileID: 102900000, guid: 99c9720ab356a0642a771bea13969a05, type: 3}
     _assetPath: Assets/Scenes/Attribute field test.unity
@@ -2132,7 +2132,7 @@ MonoBehaviour:
     Sprite: {fileID: 0}
     Multiline: 
     OptionList: 3
-    SplittedOptionList: 4
+    SplittedOptionList: 34
     ButtonAttribute: 
     LargeButtonAttribute: 
     MiniButtonAttribute: 

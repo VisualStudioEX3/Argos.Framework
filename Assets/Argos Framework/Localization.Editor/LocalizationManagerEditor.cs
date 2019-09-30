@@ -164,7 +164,7 @@ namespace Argos.Framework.Localization
                 {
                     //EditorGUI.DrawRect(rect, Color.red);
                     //GUI.Button(rect, "Test");
-                    EditorGUI.LabelField(rect, new GUIContent($"Total rows: {this._dataTable.RowCount} | Selected: {this._dataTable.Selection.Length} | Search result: {this._dataTable.SearchResult.Length}"));//, EditorStyles.miniLabel);
+                    EditorGUI.LabelField(rect, new GUIContent($"Total rows: {this._dataTable.RowCount} | Selected: {this._dataTable.Selection.Length} | Search result: {this._dataTable.SearchResult.Length}"), EditorStyles.miniLabel);
                 };
 
                 this._dataTable.OnRowClick += (rowItem) =>
@@ -195,7 +195,7 @@ namespace Argos.Framework.Localization
 
             this.editorSkin = Editor.CreateEditor(Argos.Framework.Utils.EditorSkinUtility.Skin);
 
-            (this.target as LocalizationManager).texture = Utils.EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButtonEmpty.normal.scaledBackgrounds[0];
+            //(this.target as LocalizationManager).texture = Utils.EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButtonEmpty.normal.scaledBackgrounds[0];
         }
 
         private void OnDisable()
@@ -208,6 +208,9 @@ namespace Argos.Framework.Localization
             this.serializedObject.Update();
 
             this.DrawDefaultInspector();
+
+            var searchField = new ToolbarSearchField(); 
+            searchField.DoLayout("", false);
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Argos.Framework DataTable control test", EditorStyles.boldLabel);
@@ -224,7 +227,7 @@ namespace Argos.Framework.Localization
 
             this.serializedObject.ApplyModifiedProperties();
 
-            this.editorSkin.DrawDefaultInspector();
+            //this.editorSkin.DrawDefaultInspector();
         }
     }
 }

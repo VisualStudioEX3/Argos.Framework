@@ -79,6 +79,11 @@ namespace Argos.Framework.Input
             this.OnDisable();
         }
 
+        protected override bool ShouldHideOpenButton()
+        {
+            return true;
+        }
+
         public override void OnInspectorGUI()
         {
             bool isMainGUIEnable = !Application.isPlaying && this._playbackState == VibrationPlaybackState.Stoped;
@@ -89,7 +94,7 @@ namespace Argos.Framework.Input
 
                 this.DrawPlaybackControls();
 
-                EditorGUILayout.BeginVertical(EditorStyles.helpBox);
+                EditorGUILayout.BeginVertical();
                 {
                     this.DrawProgressBar();
                     EditorGUILayout.Space();

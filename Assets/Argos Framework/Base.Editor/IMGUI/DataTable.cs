@@ -9,6 +9,12 @@ using Argos.Framework.Utils;
 
 namespace Argos.Framework.IMGUI
 {
+    /// <summary>
+    /// Serialized DataTable control based on Unity <see cref="TreeView"/> control.
+    /// </summary>
+    /// <remarks>This control creates a flexible and customizable DataTable control with multiple functions to customize the internal behaviours. 
+    /// This control, like the <see cref="ReorderableList"/>, uses a <see cref="SerializedProperty"/> array to show and manage data.
+    /// Use this control to manage high volume of data to show to user and for other task like sorting or filtering results.</remarks>
     public class DataTable
     {
         #region Constants
@@ -1059,7 +1065,7 @@ namespace Argos.Framework.IMGUI
 #endregion
 
 #region Internal vars
-        SearchField _searchField;
+        ToolbarSearchField _searchField;
         InternalTreeView _treeView;
         float _indexRowColumnWidth;
         float _indexDragAndDropRowColumnWidth;
@@ -1269,9 +1275,8 @@ namespace Argos.Framework.IMGUI
 
             var treeviewState = new InternalTreeView.InternalDataTableState(controlID);
             this._treeView = new InternalTreeView(property, columns, rowHeight, treeviewState);
-            this._searchField = new SearchField();
+            this._searchField = new ToolbarSearchField(columns.Select(e => e.headerTitle).ToArray());
             {
-                this._searchField.DropDownItems = columns.Select(e => e.headerTitle).ToArray();
                 this._searchField.OnDropDownSelect += this.SetSearchColumn;
 
                 if (treeviewState.IsLoadedPreviousState)
@@ -1373,9 +1378,9 @@ namespace Argos.Framework.IMGUI
 
                 Rect searchFieldRect = headerRect;
                 {
-                    searchFieldRect.x += EditorGUIUtility.labelWidth;
+                    searchFieldRect.x += EditorGUIUtility.labelWidth + 4f;
                     searchFieldRect.y += 2f;
-                    searchFieldRect.xMax = headerRect.xMax - 3f;
+                    searchFieldRect.xMax = headerRect.xMax;
                 }
                 this._treeView.searchString = this._searchField.Do(searchFieldRect, this._treeView.searchString);
 
@@ -1385,7 +1390,7 @@ namespace Argos.Framework.IMGUI
                 {
                     Rect toolbarRect = headerRect;
                     {
-                        toolbarRect.width = EditorGUIUtility.labelWidth - 4f;
+                        toolbarRect.width = EditorGUIUtility.labelWidth;
                     }
                     this.OnToobarSearchGUI(toolbarRect);
                 }

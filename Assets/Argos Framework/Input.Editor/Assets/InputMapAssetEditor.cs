@@ -35,6 +35,11 @@ namespace Argos.Framework.Input
             this._actionList?.Dispose();
         }
 
+        protected override bool ShouldHideOpenButton()
+        {
+            return true;
+        }
+
         public override void OnInspectorGUI()
         {
             this.serializedObject.Update();

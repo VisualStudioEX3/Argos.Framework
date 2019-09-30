@@ -41,6 +41,11 @@ namespace Argos.Framework.Input
             this.HeaderTitle = "Generic Gamepad Layout";
         }
 
+        protected override bool ShouldHideOpenButton()
+        {
+            return true;
+        }
+
         public override void OnInspectorGUI()
         {
             this.serializedObject.Update();

@@ -52,6 +52,9 @@ namespace Argos.Framework
             {
                 this.minFieldRect.width = MinMaxSliderDrawer.FIELD_WIDTH;
                 this.minFieldRect.x = position.xMin + EditorGUIUtility.labelWidth;
+#if UNITY_2019_3_OR_NEWER
+                this.minFieldRect.x += 2f;
+#endif
             }
 
             this.maxFieldRect = position;

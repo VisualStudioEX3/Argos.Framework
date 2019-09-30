@@ -31,5 +31,8 @@ namespace Argos.Framework.Localization
 
         [SerializeField]
         TestData[] _test;
+
+        [TexturePreview]
+        public Texture texture;
     }
 }

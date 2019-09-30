@@ -956,7 +956,11 @@ namespace Argos.Framework.IMGUI
                             Rect dragHandleRect = cellRect;
                             {
                                 dragHandleRect.x += 2f;
+#if UNITY_2019_3_OR_NEWER
+                                dragHandleRect.y += 8f;
+#else
                                 dragHandleRect.y += 5f;
+#endif
                                 dragHandleRect.width = 10f;
                                 dragHandleRect.height -= (dragHandleRect.height - 7f);
                             }
@@ -1024,7 +1028,7 @@ namespace Argos.Framework.IMGUI
                     }
                 }
             }
-            #endregion
+#endregion
         }
 
         /// <summary>
@@ -1032,7 +1036,7 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         public class DataTableRow
         {
-            #region Properties
+#region Properties
             /// <summary>
             /// Row index.
             /// </summary>
@@ -1042,26 +1046,26 @@ namespace Argos.Framework.IMGUI
             /// <see cref="SerializedProperty"/> array with the row data.
             /// </summary>
             public SerializedProperty[] Data { get; private set; }
-            #endregion
+#endregion
 
-            #region Constructor
+#region Constructor
             public DataTableRow(int row, SerializedProperty[] data)
             {
                 this.Row = row;
                 this.Data = data;
             } 
-            #endregion
+#endregion
         }
-        #endregion
+#endregion
 
-        #region Internal vars
+#region Internal vars
         SearchField _searchField;
         InternalTreeView _treeView;
         float _indexRowColumnWidth;
         float _indexDragAndDropRowColumnWidth;
-        #endregion
+#endregion
 
-        #region Properties
+#region Properties
         /// <summary>
         /// Source data of this <see cref="DataTable"/> control. Must be an array.
         /// </summary>
@@ -1150,9 +1154,9 @@ namespace Argos.Framework.IMGUI
             get { return this._treeView.canMultiselect; }
             set { this._treeView.canMultiselect = value; }
         }
-        #endregion
+#endregion
 
-        #region Delegates
+#region Delegates
         /// <summary>
         /// Custom cell GUI handler.
         /// </summary>
@@ -1179,9 +1183,9 @@ namespace Argos.Framework.IMGUI
         /// </summary>
         /// <param name="rect"><see cref="Rect"/> value with the label area.</param>
         public delegate void OnRectGUIHandler(Rect rect);
-        #endregion
+#endregion
 
-        #region Events
+#region Events
         /// <summary>
         /// Event used to customized data representation of a column cell.
         /// </summary>
@@ -1237,9 +1241,9 @@ namespace Argos.Framework.IMGUI
         /// Event used to get the footer area of control.
         /// </summary>
         public event OnRectGUIHandler OnFooterGUI;
-        #endregion
+#endregion
 
-        #region Constructor & Destructor
+#region Constructor & Destructor
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -1284,9 +1288,9 @@ namespace Argos.Framework.IMGUI
         {
             this._searchField.OnDropDownSelect -= this.SetSearchColumn;
         }
-        #endregion
+#endregion
 
-        #region Methods & Functions
+#region Methods & Functions
         /// <summary>
         /// Sets the column used by search field to filter data.
         /// </summary>
@@ -1345,20 +1349,10 @@ namespace Argos.Framework.IMGUI
             }
         }
 
-        Rect DrawHeaderBackground(Rect rect)
-        {
-            rect.xMax--;
-            rect.height = EditorGUIUtility.singleLineHeight + 1f;
-
-            EditorGUI.LabelField(rect, GUIContent.none, EditorStyles.toolbarButton);
-
-            return rect;
-        }
-
         Rect DrawFooterBackground(Rect rect)
         {
             rect.yMin = rect.yMax - (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
-
+            rect.y--;
             EditorGUI.LabelField(rect, GUIContent.none, EditorSkinUtility.Styles.Custom.greyBorder);
 
             return rect;
@@ -1372,7 +1366,11 @@ namespace Argos.Framework.IMGUI
         {
             if (this.ShowSearchField)
             {
-                Rect headerRect = this.DrawHeaderBackground(layout);
+                Rect headerRect = layout;
+                {
+                    headerRect.height = EditorGUIUtility.singleLineHeight + 1f;
+                }
+
                 Rect searchFieldRect = headerRect;
                 {
                     searchFieldRect.x += EditorGUIUtility.labelWidth;
@@ -1481,6 +1479,6 @@ namespace Argos.Framework.IMGUI
         {
             return list.Select(e => e.ToDataTableRow()).ToArray();
         }
-        #endregion
+#endregion
     }
 }

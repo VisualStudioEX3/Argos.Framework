@@ -152,8 +152,8 @@ namespace Argos.Framework.Localization
                 {
                     //EditorGUI.DrawRect(rect, Color.red);
                     //EditorGUI.LabelField(rect, "Test");
-                    rect.xMin += 4f;
-                    if (GUI.Button(rect, "Delete state & reload", EditorStyles.toolbarButton))
+                    //rect.xMin += 4f;
+                    if (GUI.Button(rect, "Delete state & reload"))
                     {
                         this._dataTable.DeleteState();
                         this._dataTable.Reload();
@@ -194,6 +194,8 @@ namespace Argos.Framework.Localization
             }
 
             this.editorSkin = Editor.CreateEditor(Argos.Framework.Utils.EditorSkinUtility.Skin);
+
+            (this.target as LocalizationManager).texture = Utils.EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButtonEmpty.normal.scaledBackgrounds[0];
         }
 
         private void OnDisable()
@@ -222,7 +224,7 @@ namespace Argos.Framework.Localization
 
             this.serializedObject.ApplyModifiedProperties();
 
-            //this.editorSkin.DrawDefaultInspector();
+            this.editorSkin.DrawDefaultInspector();
         }
     }
 }

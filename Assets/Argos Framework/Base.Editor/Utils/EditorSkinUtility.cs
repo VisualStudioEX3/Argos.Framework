@@ -179,6 +179,15 @@ namespace Argos.Framework.Utils
             {
                 #region Constants
                 /// <summary>
+                /// Fixed version of built-in label style to fix text aligment in Unity 2019.3 or newer versions.
+                /// </summary>
+                public readonly static GUIStyle upperLeftAligmentLabel = new GUIStyleProperty("label", (style) =>
+                {
+                    style.alignment = TextAnchor.UpperLeft;
+                    return style;
+                });
+
+                /// <summary>
                 /// "invisibleButton" custom style with transparent color on normal.textColor property .
                 /// </summary>
                 public readonly static GUIStyle invisibleButtonWithTransparentText = new GUIStyleProperty("invisibleButton", (style) =>

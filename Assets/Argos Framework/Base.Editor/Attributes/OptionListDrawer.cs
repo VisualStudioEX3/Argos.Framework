@@ -69,7 +69,7 @@ namespace Argos.Framework
         {
             Rect initial = position;
 
-            EditorGUI.LabelField(position, label);
+            EditorGUI.LabelField(position, label, EditorSkinUtility.Styles.ArgosCustomVariants.upperLeftAligmentLabel);
 
             EditorGUI.indentLevel++;
             {

@@ -15,7 +15,11 @@ namespace Argos.Framework.IMGUI
     {
         #region Constants
         const float HEADER_NONE_HEIGHT = 3f;
+#if UNITY_2019_3_OR_NEWER
+        static readonly float HEADER_DEFAULT_HEIGHT = (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing);
+#else
         static readonly float HEADER_DEFAULT_HEIGHT = (EditorGUIUtility.singleLineHeight + EditorGUIUtility.standardVerticalSpacing + 2f);
+#endif
         #endregion
 
         #region Enums

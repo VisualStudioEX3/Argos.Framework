@@ -19,10 +19,10 @@ namespace Argos.Framework.Input
         {
             this._target = (GamepadVibrationEffectController)this.target;
 
-            this._effect = this.serializedObject.FindProperty("Effect");
-            this._fixedUpdate = this.serializedObject.FindProperty("FixedUpdate");
-            this._useUnScaledTime = this.serializedObject.FindProperty("UseUnScaledTime");
-            this._playOnStart = this.serializedObject.FindProperty("PlayOnStart");
+            this._effect = this.serializedObject.FindProperty("effect");
+            this._fixedUpdate = this.serializedObject.FindProperty("fixedUpdate");
+            this._useUnScaledTime = this.serializedObject.FindProperty("useUnScaledTime");
+            this._playOnStart = this.serializedObject.FindProperty("playOnStart");
         }
 
         public override void OnInspectorGUI()

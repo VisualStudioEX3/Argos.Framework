@@ -81,8 +81,6 @@ namespace Argos.Framework.Input
         [Tooltip("Interval between input type identification checks."), Min(InputManager.MIN_TIME_INPUT_CHECK_INTERVAL)]
         public float checkInputTypeInterval = 0.02f;
 
-        public GenericGamepadInputLayoutAsset genericGamepadSetup;
-
         /// <summary>
         /// Enable gamepad vibration on available devices and platforms.
         /// </summary>

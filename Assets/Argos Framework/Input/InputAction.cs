@@ -200,16 +200,16 @@ namespace Argos.Framework.Input
 
             switch (this.gamepadButton)
             {
-                case GamepadButtons.Button1:
+                case GamepadButtons.A:
                     state = Gamepad.Instance.Button1;
                     break;
-                case GamepadButtons.Button2:
+                case GamepadButtons.B:
                     state = Gamepad.Instance.Button2;
                     break;
-                case GamepadButtons.Button3:
+                case GamepadButtons.X:
                     state = Gamepad.Instance.Button3;
                     break;
-                case GamepadButtons.Button4:
+                case GamepadButtons.Y:
                     state = Gamepad.Instance.Button4;
                     break;
                 case GamepadButtons.Start:

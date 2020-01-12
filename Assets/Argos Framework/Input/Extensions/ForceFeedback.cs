@@ -80,8 +80,15 @@ namespace Argos.Framework.Input.Extensions
 
                 if (ForceFeedback._forceFeedbackSupported)
                 {
-                    ForceFeedback._effect = new Effect(ForceFeedback._joystick, EffectGuid.ConstantForce, ForceFeedback._effectParams);
-                    ForceFeedback._effect.Start();
+                    try
+                    {
+                        ForceFeedback._effect = new Effect(ForceFeedback._joystick, EffectGuid.ConstantForce, ForceFeedback._effectParams);
+                        ForceFeedback._effect.Start();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.LogError($"ForceFeedback: Error to create force feedback effect: {ex.ToString()}");
+                    }
                 }
 
                 return true;

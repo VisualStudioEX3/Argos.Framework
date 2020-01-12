@@ -2110,7 +2110,7 @@ MonoBehaviour:
   OpenFolderField: 
   SaveFolderField: 
   OptionList: 3
-  SplittedOptionList: 9
+  SplittedOptionList: 34
   Texture: {fileID: 0}
   Texture2D: {fileID: 0}
   RenderTexture: {fileID: 0}

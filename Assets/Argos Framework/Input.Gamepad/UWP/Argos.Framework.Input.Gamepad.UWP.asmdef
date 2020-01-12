@@ -1,16 +1,14 @@
 {
-    "name": "Argos.Framework.Input",
+    "name": "Argos.Framework.Input.Gamepad.UWP",
     "references": [
-        "Argos.Framework",
-        "Argos.Framework.Gamepad"
+        "GUID:5ae3511480a20b8439c6ce2a5908b667",
+        "GUID:cad64400ace0c3b48bbbdcd66ad8e08d"
     ],
-    "includePlatforms": [],
-    "excludePlatforms": [
-        "Android",
-        "iOS",
-        "Lumin",
-        "tvOS"
+    "includePlatforms": [
+        "Editor",
+        "WSA"
     ],
+    "excludePlatforms": [],
     "allowUnsafeCode": false,
     "overrideReferences": false,
     "precompiledReferences": [],

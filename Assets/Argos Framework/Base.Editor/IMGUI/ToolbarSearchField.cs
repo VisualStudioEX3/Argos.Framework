@@ -14,7 +14,9 @@ namespace Argos.Framework.IMGUI
     public sealed class ToolbarSearchField
     {
         #region Internal vars
-        SearchField _searchField;
+#if !UNITY_2019_3_OR_NEWER
+        SearchField _searchField; 
+#endif
         int _dropDownSelection;
         string _controlName;
         bool _showPopup;
@@ -194,7 +196,7 @@ namespace Argos.Framework.IMGUI
             GUI.SetNextControlName(this._controlName);
             text = EditorGUI.TextField(position1, text, showWithPopupArrow ? EditorSkinUtility.Styles.Custom.ToolbarSearch.textFieldPopup : EditorSkinUtility.Styles.Custom.ToolbarSearch.textField);
 
-            GUI.Button(position2, GUIContent.none, text != string.Empty ? EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButton : EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButtonEmpty);
+            GUI.Button(position2, GUIContent.none, string.IsNullOrEmpty(text) ? EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButtonEmpty : EditorSkinUtility.Styles.Custom.ToolbarSearch.cancelButton);
 
             return text;
         }

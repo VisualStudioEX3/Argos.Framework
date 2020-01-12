@@ -133,7 +133,7 @@ namespace Argos.Framework.Utils
                 public readonly static GUIStyle invisibleButton = new GUIStyleProperty("invisibleButton");
 
                 /// <summary>
-                /// "FrameBox" custom style (like the "Helpbox" style.
+                /// "FrameBox" custom style (like the "Helpbox" style).
                 /// </summary>
                 public readonly static GUIStyle frameBox = new GUIStyleProperty("FrameBox");
                 #endregion
@@ -198,7 +198,7 @@ namespace Argos.Framework.Utils
                 });
 
                 /// <summary>
-                /// "invisibleButton" custom style with transparent color on normal.textColor property .
+                /// "invisibleButton" custom style with transparent color on normal.textColor property.
                 /// </summary>
                 public readonly static GUIStyle invisibleButtonWithTransparentText = new GUIStyleProperty("invisibleButton", (style) =>
                 {

@@ -34,58 +34,58 @@ namespace Argos.Framework.Input
     /// <summary>
     /// Unique gamepad map buttons.
     /// </summary>
-    public enum GamepadButtons
-    {
-        None = -1,
-        Button1,
-        Button2,
-        Button3,
-        Button4,
-        Start,
-        Select,
-        LeftStick,
-        RightStick,
-        LeftBumper,
-        RightBumper,
-        LeftTrigger,
-        RightTrigger,
-        DPadLeft,
-        DPadRight,
-        DPadUp,
-        DPadDown
-    }
+    //public enum GamepadButtons
+    //{
+    //    None = -1,
+    //    Button1,
+    //    Button2,
+    //    Button3,
+    //    Button4,
+    //    Start,
+    //    Select,
+    //    LeftStick,
+    //    RightStick,
+    //    LeftBumper,
+    //    RightBumper,
+    //    LeftTrigger,
+    //    RightTrigger,
+    //    DPadLeft,
+    //    DPadRight,
+    //    DPadUp,
+    //    DPadDown
+    //}
     #endregion
 
     /// <summary>
     /// Button states.
     /// </summary>
     /// <remarks>Uses to virtualize axis states (triggers, DPad) as button states.</remarks>
-    public struct ButtonStates
-    {
-        #region Internal vars
-        bool _isPressed;
-        bool _isDown;
-        bool _isUp;
-        #endregion
+    //public struct ButtonStates
+    //{
+    //    #region Internal vars
+    //    bool _isPressed;
+    //    bool _isDown;
+    //    bool _isUp;
+    //    #endregion
 
-        #region Properties
-        public bool IsPressed
-        {
-            get
-            {
-                return this._isPressed;
-            }
+    //    #region Properties
+    //    public bool IsPressed
+    //    {
+    //        get
+    //        {
+    //            return this._isPressed;
+    //        }
 
-            set
-            {
-                this._isDown = this._isUp = this._isPressed;
-                this._isPressed = value;
-            }
-        }
-        public bool IsDown { get { return !this._isDown && this._isPressed; } }
-        public bool IsUp { get { return this._isUp && !this._isPressed; } }
-        #endregion
-    }
+    //        set
+    //        {
+    //            this._isDown = this._isUp = this._isPressed;
+    //            this._isPressed = value;
+    //        }
+    //    }
+    //    public bool IsDown { get { return !this._isDown && this._isPressed; } }
+    //    public bool IsUp { get { return this._isUp && !this._isPressed; } }
+    //    #endregion
+    //}
 
     /// <summary>
     /// Generic Gamepad Input Layout struct.
@@ -232,24 +232,6 @@ namespace Argos.Framework.Input
         public GamepadType Type { get; private set; }
 
         /// <summary>
-        /// Generic gamepad setup shortcut.
-        /// </summary>
-        public GenericGamepadInputLayout GenericGamepadSetup
-        {
-            get
-            {
-                if (InputManager.Instance && InputManager.Instance.genericGamepadSetup)
-                {
-                    return InputManager.Instance.genericGamepadSetup.map; 
-                }
-                else
-                {
-                    return new GenericGamepadInputLayout();
-                }
-            }
-        }
-
-        /// <summary>
         /// Use the Nintendo Switch Pro controller button layout or XBox button layout.
         /// </summary>
         /// <remarks>When the Nintendo Switch Pro controller is active, this setting allow to use the Nintendo button layout. If this setting is false, uses the XBox button layout (swtich A B buttons, and X Y buttons to match the XBox controller button layout).
@@ -387,9 +369,9 @@ namespace Argos.Framework.Input
                     leftStickButton,
                     rightStickButton;
 
-            switch (this.Type)
-            {
-                case GamepadType.XBoxController:
+            //switch (this.Type)
+            //{
+            //    case GamepadType.XBoxController:
 
                     button1 = (KeyCode)XBoxControllerButtons.A;
                     button2 = (KeyCode)XBoxControllerButtons.B;
@@ -401,51 +383,36 @@ namespace Argos.Framework.Input
                     rightBumper = (KeyCode)XBoxControllerButtons.RightBumper;
                     leftStickButton = (KeyCode)XBoxControllerButtons.LeftStick;
                     rightStickButton = (KeyCode)XBoxControllerButtons.RightStick;
-                    break;
+                    //break;
 
-                case GamepadType.PS4Controller:
+            //    case GamepadType.PS4Controller:
 
-                    button1 = (KeyCode)PS4ControllerButtons.Cross;
-                    button2 = (KeyCode)PS4ControllerButtons.Circle;
-                    button3 = (KeyCode)PS4ControllerButtons.Square;
-                    button4 = (KeyCode)PS4ControllerButtons.Triangle;
-                    start = (KeyCode)PS4ControllerButtons.Options;
-                    select = (KeyCode)PS4ControllerButtons.Share;
-                    leftBumper = (KeyCode)PS4ControllerButtons.L1;
-                    rightBumper = (KeyCode)PS4ControllerButtons.R1;
-                    leftStickButton = (KeyCode)PS4ControllerButtons.L3;
-                    rightStickButton = (KeyCode)PS4ControllerButtons.R3;
-                    break;
+            //        button1 = (KeyCode)PS4ControllerButtons.Cross;
+            //        button2 = (KeyCode)PS4ControllerButtons.Circle;
+            //        button3 = (KeyCode)PS4ControllerButtons.Square;
+            //        button4 = (KeyCode)PS4ControllerButtons.Triangle;
+            //        start = (KeyCode)PS4ControllerButtons.Options;
+            //        select = (KeyCode)PS4ControllerButtons.Share;
+            //        leftBumper = (KeyCode)PS4ControllerButtons.L1;
+            //        rightBumper = (KeyCode)PS4ControllerButtons.R1;
+            //        leftStickButton = (KeyCode)PS4ControllerButtons.L3;
+            //        rightStickButton = (KeyCode)PS4ControllerButtons.R3;
+            //        break;
 
-                case GamepadType.NintendoSwitchProController:
+            //    case GamepadType.NintendoSwitchProController:
 
-                    button1 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.A : (KeyCode)NintendoSwitchProControllerButtons.B;
-                    button2 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.B : (KeyCode)NintendoSwitchProControllerButtons.A;
-                    button3 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.X : (KeyCode)NintendoSwitchProControllerButtons.Y;
-                    button4 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.Y : (KeyCode)NintendoSwitchProControllerButtons.X;
-                    start = (KeyCode)NintendoSwitchProControllerButtons.Plus;
-                    select = (KeyCode)NintendoSwitchProControllerButtons.Minus;
-                    leftBumper = (KeyCode)NintendoSwitchProControllerButtons.ZL;
-                    rightBumper = (KeyCode)NintendoSwitchProControllerButtons.ZR;
-                    leftStickButton = (KeyCode)NintendoSwitchProControllerButtons.LeftStick;
-                    rightStickButton = (KeyCode)NintendoSwitchProControllerButtons.RightStick;
-                    break;
-
-                default:
-
-                    button1 = (KeyCode)this.GenericGamepadSetup.button1;
-                    button2 = (KeyCode)this.GenericGamepadSetup.button2;
-                    button3 = (KeyCode)this.GenericGamepadSetup.button3;
-                    button4 = (KeyCode)this.GenericGamepadSetup.button4;
-                    start = (KeyCode)this.GenericGamepadSetup.start;
-                    select = (KeyCode)this.GenericGamepadSetup.select;
-                    leftBumper = (KeyCode)this.GenericGamepadSetup.leftBumper;
-                    rightBumper = (KeyCode)this.GenericGamepadSetup.rightBumper;
-                    leftStickButton = (KeyCode)this.GenericGamepadSetup.leftStick;
-                    rightStickButton = (KeyCode)this.GenericGamepadSetup.rightStick;
-                    break;
-
-            }
+            //        button1 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.A : (KeyCode)NintendoSwitchProControllerButtons.B;
+            //        button2 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.B : (KeyCode)NintendoSwitchProControllerButtons.A;
+            //        button3 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.X : (KeyCode)NintendoSwitchProControllerButtons.Y;
+            //        button4 = this.UseNintendoButtonLayout ? (KeyCode)NintendoSwitchProControllerButtons.Y : (KeyCode)NintendoSwitchProControllerButtons.X;
+            //        start = (KeyCode)NintendoSwitchProControllerButtons.Plus;
+            //        select = (KeyCode)NintendoSwitchProControllerButtons.Minus;
+            //        leftBumper = (KeyCode)NintendoSwitchProControllerButtons.ZL;
+            //        rightBumper = (KeyCode)NintendoSwitchProControllerButtons.ZR;
+            //        leftStickButton = (KeyCode)NintendoSwitchProControllerButtons.LeftStick;
+            //        rightStickButton = (KeyCode)NintendoSwitchProControllerButtons.RightStick;
+            //        break;
+            //}
 
             state = this.Button1;
             this.ReadButtonState(button1, ref state);
@@ -494,36 +461,36 @@ namespace Argos.Framework.Input
             string xAxis, yAxis;
             float invertY;
 
-            switch (this.Type)
-            {
-                case GamepadType.XBoxController:
+            //switch (this.Type)
+            //{
+            //    case GamepadType.XBoxController:
 
                     xAxis = this.GetAxisName((int)XboxControllerAxes.LeftStickX);
                     yAxis = this.GetAxisName((int)XboxControllerAxes.LeftStickY);
                     invertY = -1f;
-                    break;
+            //        break;
 
-                case GamepadType.PS4Controller:
+            //    case GamepadType.PS4Controller:
 
-                    xAxis = this.GetAxisName((int)PS4ControllerAxes.LeftStickX);
-                    yAxis = this.GetAxisName((int)PS4ControllerAxes.LeftStickY);
-                    invertY = -1f;
-                    break;
+            //        xAxis = this.GetAxisName((int)PS4ControllerAxes.LeftStickX);
+            //        yAxis = this.GetAxisName((int)PS4ControllerAxes.LeftStickY);
+            //        invertY = -1f;
+            //        break;
 
-                case GamepadType.NintendoSwitchProController:
+            //    case GamepadType.NintendoSwitchProController:
 
-                    xAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.LeftStickX);
-                    yAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.LeftStickY);
-                    invertY = -1f;
-                    break;
+            //        xAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.LeftStickX);
+            //        yAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.LeftStickY);
+            //        invertY = -1f;
+            //        break;
 
-                default:
+            //    default:
 
-                    xAxis = this.GetAxisName(this.GenericGamepadSetup.leftStickAxes.x);
-                    yAxis = this.GetAxisName(this.GenericGamepadSetup.leftStickAxes.y);
-                    invertY = this.GenericGamepadSetup.leftStickInvertY ? -1f : 1f;
-                    break;
-            }
+            //        xAxis = this.GetAxisName(this.GenericGamepadSetup.leftStickAxes.x);
+            //        yAxis = this.GetAxisName(this.GenericGamepadSetup.leftStickAxes.y);
+            //        invertY = this.GenericGamepadSetup.leftStickInvertY ? -1f : 1f;
+            //        break;
+            //}
 
             this.LeftStick = new Vector2(UnityEngine.Input.GetAxis(xAxis),
                                          UnityEngine.Input.GetAxis(yAxis) * invertY);
@@ -535,36 +502,36 @@ namespace Argos.Framework.Input
             string xAxis, yAxis;
             float invertY;
 
-            switch (this.Type)
-            {
-                case GamepadType.XBoxController:
+            //switch (this.Type)
+            //{
+            //    case GamepadType.XBoxController:
 
                     xAxis = this.GetAxisName((int)XboxControllerAxes.RightStickX);
                     yAxis = this.GetAxisName((int)XboxControllerAxes.RightStickY);
                     invertY = -1f;
-                    break;
+            //        break;
 
-                case GamepadType.PS4Controller:
+            //    case GamepadType.PS4Controller:
 
-                    xAxis = this.GetAxisName((int)PS4ControllerAxes.RightStickX);
-                    yAxis = this.GetAxisName((int)PS4ControllerAxes.RightStickY);
-                    invertY = -1f;
-                    break;
+            //        xAxis = this.GetAxisName((int)PS4ControllerAxes.RightStickX);
+            //        yAxis = this.GetAxisName((int)PS4ControllerAxes.RightStickY);
+            //        invertY = -1f;
+            //        break;
 
-                case GamepadType.NintendoSwitchProController:
+            //    case GamepadType.NintendoSwitchProController:
 
-                    xAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.RightStickX);
-                    yAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.RightStickY);
-                    invertY = -1f;
-                    break;
+            //        xAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.RightStickX);
+            //        yAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.RightStickY);
+            //        invertY = -1f;
+            //        break;
 
-                default:
+            //    default:
 
-                    xAxis = this.GetAxisName(this.GenericGamepadSetup.rightStickAxes.x);
-                    yAxis = this.GetAxisName(this.GenericGamepadSetup.rightStickAxes.y);
-                    invertY = this.GenericGamepadSetup.rightStickInvertY ? -1f : 1f;
-                    break;
-            }
+            //        xAxis = this.GetAxisName(this.GenericGamepadSetup.rightStickAxes.x);
+            //        yAxis = this.GetAxisName(this.GenericGamepadSetup.rightStickAxes.y);
+            //        invertY = this.GenericGamepadSetup.rightStickInvertY ? -1f : 1f;
+            //        break;
+            //}
 
             this.RightStick = new Vector2(UnityEngine.Input.GetAxis(xAxis),
                                           UnityEngine.Input.GetAxis(yAxis) * invertY);
@@ -576,9 +543,9 @@ namespace Argos.Framework.Input
             string xAxis, yAxis;
             float invertY;
 
-            switch (this.Type)
-            {
-                case GamepadType.XBoxController:
+            //switch (this.Type)
+            //{
+            //    case GamepadType.XBoxController:
 
                     xAxis = this.GetAxisName((int)XboxControllerAxes.DPadX);
                     yAxis = this.GetAxisName((int)XboxControllerAxes.DPadY);
@@ -610,60 +577,60 @@ namespace Argos.Framework.Input
                         }
                     }
 #endif
-                    break;
+            //        break;
 
-                case GamepadType.PS4Controller:
+            //    case GamepadType.PS4Controller:
 
-                    xAxis = this.GetAxisName((int)PS4ControllerAxes.DPadX);
-                    yAxis = this.GetAxisName((int)PS4ControllerAxes.DPadY);
-                    invertY = 1f;
+            //        xAxis = this.GetAxisName((int)PS4ControllerAxes.DPadX);
+            //        yAxis = this.GetAxisName((int)PS4ControllerAxes.DPadY);
+            //        invertY = 1f;
 
-                    this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
-                                            UnityEngine.Input.GetAxis(yAxis) * invertY);
-                    break;
+            //        this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
+            //                                UnityEngine.Input.GetAxis(yAxis) * invertY);
+            //        break;
 
-                case GamepadType.NintendoSwitchProController:
+            //    case GamepadType.NintendoSwitchProController:
 
-                    xAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.DPadX);
-                    yAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.DPadY);
-                    invertY = 1f;
+            //        xAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.DPadX);
+            //        yAxis = this.GetAxisName((int)NintendoSwitchProControllerAxes.DPadY);
+            //        invertY = 1f;
 
-                    this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
-                                            UnityEngine.Input.GetAxis(yAxis) * invertY);
-                    break;
+            //        this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
+            //                                UnityEngine.Input.GetAxis(yAxis) * invertY);
+            //        break;
 
-                default:
+            //    default:
 
-                    // Check first the axes:
-                    xAxis = this.GetAxisName(this.GenericGamepadSetup.dPadAxes.x);
-                    yAxis = this.GetAxisName(this.GenericGamepadSetup.dPadAxes.y);
-                    invertY = this.GenericGamepadSetup.dPadInvertY ? -1f : 1f;
+            //        // Check first the axes:
+            //        xAxis = this.GetAxisName(this.GenericGamepadSetup.dPadAxes.x);
+            //        yAxis = this.GetAxisName(this.GenericGamepadSetup.dPadAxes.y);
+            //        invertY = this.GenericGamepadSetup.dPadInvertY ? -1f : 1f;
 
-                    this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
-                                            UnityEngine.Input.GetAxis(yAxis) * invertY);
+            //        this.DPad = new Vector2(UnityEngine.Input.GetAxis(xAxis),
+            //                                UnityEngine.Input.GetAxis(yAxis) * invertY);
 
-                    // If axes not return values, check buttons:
-                    if (this.DPad == Vector2.zero)
-                    {
-                        if (UnityEngine.Input.GetKeyDown((KeyCode)this.GenericGamepadSetup.DPadLeft))
-                        {
-                            this.DPad = Vector2.left;
-                        }
-                        else if (UnityEngine.Input.GetKeyDown((KeyCode)this.GenericGamepadSetup.DPadRight))
-                        {
-                            this.DPad = Vector2.right;
-                        }
-                        else if (UnityEngine.Input.GetKeyDown((KeyCode)this.GenericGamepadSetup.DPadUp))
-                        {
-                            this.DPad = Vector2.up;
-                        }
-                        else if (UnityEngine.Input.GetKeyDown((KeyCode)this.GenericGamepadSetup.DPadDown))
-                        {
-                            this.DPad = Vector2.down;
-                        }
-                    }
-                    break;
-            }
+            //        // If axes not return values, check buttons:
+            //        if (this.DPad == Vector2.zero)
+            //        {
+            //            if (UnityEngine.Input.GetKeyDown((KeyCode)this.GenericGamepadSetup.DPadLeft))
+            //            {
+            //                this.DPad = Vector2.left;
+            //            }
+            //            else if (UnityEngine.Input.GetKeyDown((KeyCode)this.GenericGamepadSetup.DPadRight))
+            //            {
+            //                this.DPad = Vector2.right;
+            //            }
+            //            else if (UnityEngine.Input.GetKeyDown((KeyCode)this.GenericGamepadSetup.DPadUp))
+            //            {
+            //                this.DPad = Vector2.up;
+            //            }
+            //            else if (UnityEngine.Input.GetKeyDown((KeyCode)this.GenericGamepadSetup.DPadDown))
+            //            {
+            //                this.DPad = Vector2.down;
+            //            }
+            //        }
+            //        break;
+            //}
 
             // Process button states:
             ButtonStates left = this.DPadLeft;
@@ -697,43 +664,43 @@ namespace Argos.Framework.Input
             ButtonStates left = this.LeftTrigger;
             ButtonStates right = this.RightTrigger;
 
-            switch (this.Type)
-            {
-                case GamepadType.XBoxController:
+            //switch (this.Type)
+            //{
+            //    case GamepadType.XBoxController:
 
                     this.ReadAxisTriggerState((int)XboxControllerAxes.LeftTrigger, ref left);
                     this.ReadAxisTriggerState((int)XboxControllerAxes.RightTrigger, ref right);
 
-                    break;
+            //        break;
 
-                case GamepadType.PS4Controller:
+            //    case GamepadType.PS4Controller:
 
-                    this.ReadButtonState((KeyCode)PS4ControllerButtons.L2, ref left);
-                    this.ReadButtonState((KeyCode)PS4ControllerButtons.R2, ref right);
+            //        this.ReadButtonState((KeyCode)PS4ControllerButtons.L2, ref left);
+            //        this.ReadButtonState((KeyCode)PS4ControllerButtons.R2, ref right);
 
-                    break;
+            //        break;
 
-                case GamepadType.NintendoSwitchProController:
+            //    case GamepadType.NintendoSwitchProController:
 
-                    this.ReadButtonState((KeyCode)NintendoSwitchProControllerButtons.ZL, ref left);
-                    this.ReadButtonState((KeyCode)NintendoSwitchProControllerButtons.ZR, ref right);
+            //        this.ReadButtonState((KeyCode)NintendoSwitchProControllerButtons.ZL, ref left);
+            //        this.ReadButtonState((KeyCode)NintendoSwitchProControllerButtons.ZR, ref right);
 
-                    break;
+            //        break;
 
-                default:
+            //    default:
 
-                    // Check first the axes, if axes not return values, check buttons:
-                    if (!this.ReadAxisTriggerState((int)this.GenericGamepadSetup.triggersAxes.x, ref left))
-                    {
-                        this.ReadButtonState((KeyCode)this.GenericGamepadSetup.leftTrigger, ref left);
-                    }
+            //        // Check first the axes, if axes not return values, check buttons:
+            //        if (!this.ReadAxisTriggerState((int)this.GenericGamepadSetup.triggersAxes.x, ref left))
+            //        {
+            //            this.ReadButtonState((KeyCode)this.GenericGamepadSetup.leftTrigger, ref left);
+            //        }
 
-                    if (!this.ReadAxisTriggerState((int)this.GenericGamepadSetup.triggersAxes.y, ref right))
-                    {
-                        this.ReadButtonState((KeyCode)this.GenericGamepadSetup.rightTrigger, ref right);
-                    }
-                    break;
-            }
+            //        if (!this.ReadAxisTriggerState((int)this.GenericGamepadSetup.triggersAxes.y, ref right))
+            //        {
+            //            this.ReadButtonState((KeyCode)this.GenericGamepadSetup.rightTrigger, ref right);
+            //        }
+            //        break;
+            //}
 
             this.LeftTrigger = left;
             this.RightTrigger = right;

@@ -19,7 +19,7 @@ namespace Argos.Framework.Input
         X,
         Y,
         Start,
-        Select,
+        Back,
         LeftStick,
         RightStick,
         LeftBumper,
@@ -31,6 +31,29 @@ namespace Argos.Framework.Input
         DPadUp,
         DPadDown
     }
+
+    /// <summary>
+    /// Gamepad controller type.
+    /// </summary>
+    public enum GamepadType
+    {
+        /// <summary>
+        /// Xbox360 / Xbox One game controller.
+        /// </summary>
+        XBoxController,
+        /// <summary>
+        /// PS3/PS4 game controller.
+        /// </summary>
+        PSController,
+        /// <summary>
+        /// Nintendo Switch Pro controller.
+        /// </summary>
+        NintendoSwitchProController,
+        /// <summary>
+        /// Steam Controller.
+        /// </summary>
+        SteamController
+    }
     #endregion
 
     #region Structs
@@ -40,28 +63,24 @@ namespace Argos.Framework.Input
     /// <remarks>Uses to ease get the button states and to virtualize axis states (triggers, DPad) as button states.</remarks>
     public struct ButtonStates
     {
-        #region protected vars
+        #region Internal vars
         bool _isPressed;
         bool _isDown;
         bool _isUp;
         #endregion
 
         #region Properties
-        public bool IsPressed
-        {
-            get
-            {
-                return this._isPressed;
-            }
-
-            internal set
-            {
-                this._isDown = this._isUp = this._isPressed;
-                this._isPressed = value;
-            }
-        }
+        public bool IsPressed => this._isPressed;
         public bool IsDown => !this._isDown && this._isPressed;
         public bool IsUp => this._isUp && !this._isPressed;
+        #endregion
+
+        #region Methods & Functions
+        public void SetState(bool state)
+        {
+            this._isDown = this._isUp = this._isPressed;
+            this._isPressed = state;
+        } 
         #endregion
     }
     #endregion
@@ -71,11 +90,12 @@ namespace Argos.Framework.Input
     {
         #region Properties
         public int Index { get; protected set; }
+        public GamepadType Type { get; protected set; }
 
         public Vector2 LeftStick { get; protected set; }
         public Vector2 RightStick { get; protected set; }
-        public Vector2 LeftTrigger { get; protected set; }
-        public Vector2 RightTrigger { get; protected set; }
+        public float LeftTrigger { get; protected set; }
+        public float RightTrigger { get; protected set; }
         public Vector2 DPad { get; protected set; }
 
         public ButtonStates A { get; protected set; }
@@ -84,7 +104,7 @@ namespace Argos.Framework.Input
         public ButtonStates Y { get; protected set; }
 
         public ButtonStates Start { get; protected set; }
-        public ButtonStates Select { get; protected set; }
+        public ButtonStates Back { get; protected set; }
 
         public ButtonStates LeftBumper { get; protected set; }
         public ButtonStates RightBumper { get; protected set; }
@@ -100,12 +120,12 @@ namespace Argos.Framework.Input
         public ButtonStates DPadUp { get; protected set; }
         public ButtonStates DPadDown { get; protected set; }
 
-        public bool IsAnyButtonPressed =>   this.A.IsPressed ||
+        public bool IsAnyButtonPressed => this.A.IsPressed ||
                                             this.B.IsPressed ||
                                             this.X.IsPressed ||
                                             this.Y.IsPressed ||
                                             this.Start.IsPressed ||
-                                            this.Select.IsPressed ||
+                                            this.Back.IsPressed ||
                                             this.LeftBumper.IsPressed ||
                                             this.RightBumper.IsPressed ||
                                             this.LeftTriggerButton.IsPressed ||
@@ -117,12 +137,12 @@ namespace Argos.Framework.Input
                                             this.DPadUp.IsPressed ||
                                             this.DPadDown.IsPressed;
 
-        public bool IsAnyButtonDown =>      this.A.IsDown ||
+        public bool IsAnyButtonDown => this.A.IsDown ||
                                             this.B.IsDown ||
                                             this.X.IsDown ||
                                             this.Y.IsDown ||
                                             this.Start.IsDown ||
-                                            this.Select.IsDown ||
+                                            this.Back.IsDown ||
                                             this.LeftBumper.IsDown ||
                                             this.RightBumper.IsDown ||
                                             this.LeftTriggerButton.IsDown ||
@@ -134,12 +154,12 @@ namespace Argos.Framework.Input
                                             this.DPadUp.IsDown ||
                                             this.DPadDown.IsDown;
 
-        public bool IsAnyButtonUp =>        this.A.IsUp ||
+        public bool IsAnyButtonUp => this.A.IsUp ||
                                             this.B.IsUp ||
                                             this.X.IsUp ||
                                             this.Y.IsUp ||
                                             this.Start.IsUp ||
-                                            this.Select.IsUp ||
+                                            this.Back.IsUp ||
                                             this.LeftBumper.IsUp ||
                                             this.RightBumper.IsUp ||
                                             this.LeftTriggerButton.IsUp ||
@@ -156,6 +176,12 @@ namespace Argos.Framework.Input
         public Vector2 Vibration { get; protected set; }
         #endregion
 
+        #region Destructor
+        ~GamepadBase()
+        {
+            this.Dispose(false);
+        }
+
         public void Dispose()
         {
             this.Dispose(true);
@@ -164,11 +190,11 @@ namespace Argos.Framework.Input
 
         protected virtual void Dispose(bool disposing)
         {
-
         }
+        #endregion
 
         #region Update logic
-        public abstract void Update(); 
+        public abstract void Update();
         #endregion
 
         #region Methods & Functions
@@ -177,7 +203,7 @@ namespace Argos.Framework.Input
         public void SetVibration(float left, float right)
         {
             this.SetVibration(new Vector2(left, right));
-        } 
+        }
         #endregion
     }
     #endregion
@@ -189,7 +215,7 @@ namespace Argos.Framework.Input
     public abstract class GamepadManagerBase
     {
         #region Properties
-        public GamepadBase[] Gamepads { get; private set; } 
+        public GamepadBase[] Gamepads { get; private set; }
         #endregion
 
         #region Update logic

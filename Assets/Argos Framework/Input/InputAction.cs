@@ -215,7 +215,7 @@ namespace Argos.Framework.Input
                 case GamepadButtons.Start:
                     state = Gamepad.Instance.Start;
                     break;
-                case GamepadButtons.Select:
+                case GamepadButtons.Back:
                     state = Gamepad.Instance.Select;
                     break;
                 case GamepadButtons.LeftStick:

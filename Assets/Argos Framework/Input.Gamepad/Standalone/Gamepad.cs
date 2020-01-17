@@ -34,8 +34,12 @@ namespace Argos.Framework.Input
         static void Initialize()
         {
             SDL.SDL_Init(SDL.SDL_INIT_GAMECONTROLLER);
-            Application.onBeforeRender += () => { SDL.SDL_GameControllerUpdate(); };
-            Application.quitting += () => { SDL.SDL_Quit(); };
+            Application.onBeforeRender += SDL.SDL_GameControllerUpdate;
+            Application.quitting += () => 
+            {
+                Application.onBeforeRender -= SDL.SDL_GameControllerUpdate;
+                SDL.SDL_Quit(); 
+            };
         }
         #endregion
 

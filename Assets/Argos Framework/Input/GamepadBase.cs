@@ -35,7 +35,7 @@ namespace Argos.Framework.Input
     /// <summary>
     /// Gamepad controller type.
     /// </summary>
-    public enum GamepadType
+    public enum GamepadType // TODO: Maybe add specific versions: Xbox360, Xbox One, PS3, PS4, Nintendo Switch Pro, Nintendo Switch Joycon, etc...
     {
         /// <summary>
         /// Xbox360 / Xbox One game controller.
@@ -44,7 +44,7 @@ namespace Argos.Framework.Input
         /// <summary>
         /// PS3/PS4 game controller.
         /// </summary>
-        PSController,
+        PlayStationController,
         /// <summary>
         /// Nintendo Switch Pro controller.
         /// </summary>
@@ -64,22 +64,21 @@ namespace Argos.Framework.Input
     public struct ButtonStates
     {
         #region Internal vars
-        bool _isPressed;
         bool _isDown;
         bool _isUp;
         #endregion
 
         #region Properties
-        public bool IsPressed => this._isPressed;
-        public bool IsDown => !this._isDown && this._isPressed;
-        public bool IsUp => this._isUp && !this._isPressed;
+        public bool IsPressed { get; private set; }
+        public bool IsDown => !this._isDown && this.IsPressed;
+        public bool IsUp => this._isUp && !this.IsPressed;
         #endregion
 
         #region Methods & Functions
         public void SetState(bool state)
         {
-            this._isDown = this._isUp = this._isPressed;
-            this._isPressed = state;
+            this._isDown = this._isUp = this.IsPressed;
+            this.IsPressed = state;
         } 
         #endregion
     }
@@ -207,43 +206,4 @@ namespace Argos.Framework.Input
         #endregion
     }
     #endregion
-
-    /// <summary>
-    /// Gamepad manager base implementation.
-    /// </summary>
-    /// <remarks>Use this class to define custom platform implementation.</remarks>
-    public abstract class GamepadManagerBase
-    {
-        #region Properties
-        public GamepadBase[] Gamepads { get; private set; }
-        #endregion
-
-        #region Update logic
-        /// <summary>
-        /// Update gamepad values.
-        /// </summary>
-        public virtual void Update()
-        {
-            this.ReadLeftStick();
-            this.ReadRightStick();
-            this.ReadDPad();
-            this.ReadTriggers();
-            this.ReadButtons();
-        }
-        #endregion
-
-        #region Methods & Functions
-        public abstract void ReadButtons();
-
-        public abstract void ReadLeftStick();
-
-        public abstract void ReadRightStick();
-
-        public abstract void ReadDPad();
-
-        public abstract void ReadTriggers();
-
-
-        #endregion
-    }
 }

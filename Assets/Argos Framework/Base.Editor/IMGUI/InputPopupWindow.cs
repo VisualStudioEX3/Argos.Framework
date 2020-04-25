@@ -51,7 +51,7 @@ namespace Argos.Framework.IMGUI
             }
             else
             {
-                throw new InvalidCastException("InputPopupWindow<T>: Error to create instance. The generic type passed is not supported. Only support the following types: int, float and string.");
+                throw new InvalidCastException($"InputPopupWindow<{typeof(T)}>: Error to create instance. The generic type passed is not supported. Only support the following types: int, float and string.");
             }
         }
         #endregion

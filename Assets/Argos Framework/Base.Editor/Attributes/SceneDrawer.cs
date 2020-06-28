@@ -18,7 +18,6 @@ namespace Argos.Framework
         UnityEditor.SceneAsset _sceneAssetEditor;
 
         string _guid;
-        long _localID;
         #endregion
 
         #region Event listeners
@@ -29,7 +28,7 @@ namespace Argos.Framework
             this._scenePath = property.FindPropertyRelative("_scenePath");
             this._sceneIndex = property.FindPropertyRelative("_sceneIndex");
 
-            if (this._sceneAssetReference.objectReferenceValue && AssetDatabase.TryGetGUIDAndLocalFileIdentifier(this._sceneAssetReference.objectReferenceValue, out _guid, out _localID))
+            if (this._sceneAssetReference.objectReferenceValue && AssetDatabase.TryGetGUIDAndLocalFileIdentifier(this._sceneAssetReference.objectReferenceValue, out _guid, out long localID))
             {
                 this._sceneAssetEditor = AssetDatabase.LoadAssetAtPath<UnityEditor.SceneAsset>(AssetDatabase.GUIDToAssetPath(_guid));
             }
@@ -42,7 +41,7 @@ namespace Argos.Framework
 
             this._sceneAssetEditor = (UnityEditor.SceneAsset)EditorGUI.ObjectField(propertyField, label, this._sceneAssetEditor, typeof(UnityEditor.SceneAsset), true);
 
-            this._sceneAssetReference.objectReferenceValue = this._sceneAssetEditor ? this._sceneAssetEditor : null;
+            this._sceneAssetReference.objectReferenceValue = this._sceneAssetEditor ?? null;
             if (this._sceneAssetEditor)
             {
                 this._assetPath.stringValue = AssetDatabase.GetAssetOrScenePath(this._sceneAssetEditor);

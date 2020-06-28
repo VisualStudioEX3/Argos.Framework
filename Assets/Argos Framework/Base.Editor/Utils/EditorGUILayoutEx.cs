@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Argos.Framework.Utils;
 
 namespace Argos.Framework
 {
@@ -56,7 +57,7 @@ namespace Argos.Framework
         /// <param name="content">Method that define the content of the section.</param>
         public static void WindowSection(string title, Action content)
         {
-            Rect headerRect = EditorGUILayout.BeginVertical("window", GUILayout.Height(10f));
+            Rect headerRect = EditorGUILayout.BeginVertical(EditorSkinUtility.Styles.window, GUILayout.Height(10f));
             {
                 headerRect.x += 8f;
                 EditorGUI.LabelField(headerRect, title, EditorStyles.boldLabel);

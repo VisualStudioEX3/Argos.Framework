@@ -635,25 +635,25 @@ namespace Argos.Framework.Input
             // Process button states:
             ButtonStates left = this.DPadLeft;
             {
-                left.IsPressed = this.DPad.x < -Gamepad.AXIS_DELTA;
+                left.SetState(this.DPad.x < -Gamepad.AXIS_DELTA);
             }
             this.DPadLeft = left;
 
             ButtonStates right = this.DPadRight;
             {
-                right.IsPressed = this.DPad.x > Gamepad.AXIS_DELTA;
+                right.SetState(this.DPad.x > Gamepad.AXIS_DELTA);
             }
             this.DPadRight = right;
 
             ButtonStates up = this.DPadUp;
             {
-                up.IsPressed = this.DPad.y > Gamepad.AXIS_DELTA;
+                up.SetState(this.DPad.y > Gamepad.AXIS_DELTA);
             }
             this.DPadUp = up;
 
             ButtonStates down = this.DPadDown;
             {
-                down.IsPressed = this.DPad.y < -Gamepad.AXIS_DELTA;
+                down.SetState(this.DPad.y < -Gamepad.AXIS_DELTA);
             }
             this.DPadDown = down;
         }
@@ -718,7 +718,7 @@ namespace Argos.Framework.Input
             if (!Utils.MathUtility.IsClamped(axis, Gamepad.MIN_AXIS_INDEX, Gamepad.MAX_AXIS_INDEX)) return false;
 
             // KeyDown and KeyUp logic run in GamepadButtonStates code:
-            states.IsPressed = UnityEngine.Input.GetAxis(this.GetAxisName(axis)) > Gamepad.AXIS_DELTA;
+            states.SetState(UnityEngine.Input.GetAxis(this.GetAxisName(axis)) > Gamepad.AXIS_DELTA);
 
             return states.IsPressed || states.IsDown || states.IsUp;
         }
@@ -734,7 +734,7 @@ namespace Argos.Framework.Input
             if (!Utils.MathUtility.IsClamped((int)button, (int)KeyCode.JoystickButton0, (int)KeyCode.JoystickButton19)) return;
 
             // KeyDown and KeyUp logic run in GamepadButtonStates code:
-            states.IsPressed = UnityEngine.Input.GetKey(button);
+            states.SetState(UnityEngine.Input.GetKey(button));
         }
 
         /// <summary>

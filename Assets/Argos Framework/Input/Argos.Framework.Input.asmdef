@@ -8,7 +8,6 @@
     "excludePlatforms": [
         "Android",
         "iOS",
-        "Lumin",
         "tvOS"
     ],
     "allowUnsafeCode": false,

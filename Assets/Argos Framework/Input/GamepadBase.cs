@@ -32,28 +32,28 @@ namespace Argos.Framework.Input
         DPadDown
     }
 
-    /// <summary>
-    /// Gamepad controller type.
-    /// </summary>
-    public enum GamepadType // TODO: Maybe add specific versions: Xbox360, Xbox One, PS3, PS4, Nintendo Switch Pro, Nintendo Switch Joycon, etc...
-    {
-        /// <summary>
-        /// Xbox360 / Xbox One game controller.
-        /// </summary>
-        XBoxController,
-        /// <summary>
-        /// PS3/PS4 game controller.
-        /// </summary>
-        PlayStationController,
-        /// <summary>
-        /// Nintendo Switch Pro controller.
-        /// </summary>
-        NintendoSwitchProController,
-        /// <summary>
-        /// Steam Controller.
-        /// </summary>
-        SteamController
-    }
+    ///// <summary>
+    ///// Gamepad controller type.
+    ///// </summary>
+    //public enum GamepadType // TODO: Maybe add specific versions: Xbox360, Xbox One, PS3, PS4, Nintendo Switch Pro, Nintendo Switch Joycon, etc...
+    //{
+    //    /// <summary>
+    //    /// Xbox360 / Xbox One game controller.
+    //    /// </summary>
+    //    XBoxController,
+    //    /// <summary>
+    //    /// PS3/PS4 game controller.
+    //    /// </summary>
+    //    PlayStationController,
+    //    /// <summary>
+    //    /// Nintendo Switch Pro controller.
+    //    /// </summary>
+    //    NintendoSwitchProController,
+    //    /// <summary>
+    //    /// Steam Controller.
+    //    /// </summary>
+    //    SteamController
+    //}
     #endregion
 
     #region Structs

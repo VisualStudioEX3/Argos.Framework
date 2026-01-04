@@ -3,23 +3,25 @@
 # =============== #
 Temp/
 Obj/
+Logs/
 
 # ================== #
 # Own build binaries #
 # ================== #
 Builds/
-Library/cache/
-Library/FacebookSDK/
-Library/metadata/
-Library/PlayerDataCache/
-Library/ScriptAssemblies/
-Library/ShaderCache/
-Library/UnityAssemblies/
+Library/
 Screen Shoots/
+
+# ============= #
+# Rafa's plugin #
+# ============= #
+Assets/FavoritesWindow/
+Assets/FavoritesWindow.meta
 
 # ===================================== #
 # Visual Studio / MonoDevelop generated #
 # ===================================== #
+.vs
 ExportedObj/
 *.svd
 *.userprefs
@@ -42,3 +44,6 @@ ExportedObj/
 .Trashes
 ehthumbs.db
 Thumbs.db
+Library/EditorInstance.json
+Library/CurrentMaximizeLayout.dwlt
+Library/CurrentLayout-default.dwlt

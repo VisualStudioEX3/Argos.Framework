@@ -1,0 +1,18 @@
+{
+    "name": "Argos.Framework.Trophies.Editor",
+    "references": [
+        "Argos.Framework",
+        "Argos.Framework.Editor",
+        "Argos.Framework.Trophies"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

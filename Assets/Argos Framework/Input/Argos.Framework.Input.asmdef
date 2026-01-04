@@ -1,0 +1,20 @@
+{
+    "name": "Argos.Framework.Input",
+    "references": [
+        "Argos.Framework",
+        "Argos.Framework.Gamepad"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [
+        "Android",
+        "iOS",
+        "tvOS"
+    ],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

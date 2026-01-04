@@ -1,0 +1,10 @@
+{
+    "name": "Argos.Framework.FileSystem",
+    "references": [
+        "Argos.Framework"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

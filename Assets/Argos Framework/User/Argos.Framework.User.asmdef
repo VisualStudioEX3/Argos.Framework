@@ -1,0 +1,20 @@
+{
+    "name": "Argos.Framework.User",
+    "references": [
+        "Argos.Framework",
+        "Argos.Framework.FileSystem",
+        "Argos.Framework.Input",
+        "Argos.Framework.Trophies",
+        "Argos.Framework.LeaderBoards",
+        "Argos.Framework.RichPresence"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

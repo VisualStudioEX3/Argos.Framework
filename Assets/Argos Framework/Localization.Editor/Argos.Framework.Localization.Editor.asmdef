@@ -1,0 +1,14 @@
+{
+    "name": "Argos.Framework.Localization.Editor",
+    "references": [
+        "Argos.Framework",
+        "Argos.Framework.Editor",
+        "Argos.Framework.Localization"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

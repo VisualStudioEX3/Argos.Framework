@@ -1,0 +1,266 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using UnityEngine;
+
+namespace Argos.Framework.Utils
+{
+    /// <summary>
+    /// Math helper class.
+    /// </summary>
+    public static class MathUtility
+    {
+        #region Constants
+        const float DELTA_COMPARER_TOLERANCE = 0.000001f;
+        #endregion
+
+        #region Methods & Functions
+        /// <summary>
+        /// Determine if a value is clamped in a range.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="min">Lower bound of range.</param>
+        /// <param name="max">Upper bound of range.</param>
+        /// <returns>Return true if the value is clamped.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static bool IsClamped(int value, int min, int max)
+        {
+            return value >= min && value <= max;
+        }
+
+        /// <summary>
+        /// Determine if a value is clamped in a range.
+        /// </summary>
+        /// <param name="value">Value to check.</param>
+        /// <param name="min">Lower bound of range.</param>
+        /// <param name="max">Upper bound of range.</param>
+        /// <returns>Return true if the value is clamped.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static bool IsClamped(float value, float min, float max)
+        {
+            return value >= min && value <= max;
+        }
+
+        /// <summary>
+        /// Return a random element index on base of a probability table values.
+        /// </summary>
+        /// <param name="probabilityRatesTable">The array of probability with the occurrences for each element.</param>
+        /// <returns>A random index based on its occurrence.</returns>
+        /// <remarks>The probability rates table array contains values, from 0 to a max value to determine the occurrence of each element of an array. 
+        /// This algorithm is based on a symbol rate generation code from a slot machine game.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static int GetRandomIndexByProbabilityRate(int[] probabilityRatesTable)
+        {
+            int index;
+
+            while (true)
+            {
+                // Get random element from the list:
+                index = UnityEngine.Random.Range(0, probabilityRatesTable.Length);
+
+                // Calculate the max occurrence value, using the probability rate table array, and if its major than random value between 0 and 1, return the element index:
+                if (((float)probabilityRatesTable[index] / (float)probabilityRatesTable.Length) >= UnityEngine.Random.value)
+                {
+                    return index;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Get angle between two vector positions.
+        /// </summary>
+        /// <param name="a">First <see cref="Vector2"/>.</param>
+        /// <param name="b">Second <see cref="Vector2"/>.</param>
+        /// <returns>Return the angle in degrees between positions.</returns>
+        /// <remarks>This function calculate the angle in degrees between two vectors ignoring their vector directions.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float GetAngle(Vector2 a, Vector2 b)
+        {
+            return Mathf.Atan2(b.y - a.y, b.x - a.x) * Mathf.Rad2Deg;
+        }
+
+        /// <summary>
+        /// Get angle between two vector positions.
+        /// </summary>
+        /// <param name="a">First <see cref="Vector3"/>.</param>
+        /// <param name="b">Second <see cref="Vector3"/>.</param>
+        /// <param name="axis">World rotation axis between vectors. Only accepts <see cref="Vector3.up"/> and <see cref="Vector3.right"/>, any other value must be interpreted as <see cref="Vector3.forward"/>.</param>
+        /// <returns>Return the angle in degrees between positions.</returns>
+        /// <remarks>This function calculate the angle in degrees between two vectors ignoring their vector directions.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float GetAngle(Vector3 a, Vector3 b, Vector3 axis)
+        {
+            Vector2 vA, vB;
+
+            if (axis == Vector3.up)
+            {
+                vA = new Vector2(a.x, a.z); vB = new Vector2(b.x, b.z);
+            }
+            else if (axis == Vector3.right)
+            {
+                vA = new Vector2(a.z, a.y); vB = new Vector2(b.z, b.y);
+            }
+            else
+            {
+                vA = a; vB = b;
+            }
+
+            return MathUtility.GetAngle(vA, vB);
+        }
+
+        /// <summary>
+        /// Determine if a float value is similar to a second float value, using tolerance value.
+        /// </summary>
+        /// <param name="a">First value.</param>
+        /// <param name="b">Second value.</param>
+        /// <param name="tolerance">Tolerance to similarity.</param>
+        /// <returns>Return true if the first value is similar to second value.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static bool CompareFloats(float a, float b, float tolerance = MathUtility.DELTA_COMPARER_TOLERANCE)
+        {
+            return Mathf.Abs(a - b) < tolerance;
+        }
+
+        /// <summary>
+        /// Determine if a vector value is similar to a second vector value, using tolerance value.
+        /// </summary>
+        /// <param name="a">First vector.</param>
+        /// <param name="b">Second vector.</param>
+        /// <param name="tolerance">Tolerance to similarity.</param>
+        /// <returns>Return true if the first vector is similar to second vector.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static bool CompareVector(Vector2 a, Vector2 b, float tolerance = MathUtility.DELTA_COMPARER_TOLERANCE)
+        {
+            return Vector2.SqrMagnitude(a - b) < tolerance;
+        }
+
+        /// <summary>
+        /// Determine if a vector value is similar to a second vector value, using tolerance value.
+        /// </summary>
+        /// <param name="a">First vector.</param>
+        /// <param name="b">Second vector.</param>
+        /// <param name="tolerance">Tolerance to similarity.</param>
+        /// <returns>Return true if the first vector is similar to second vector.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static bool CompareVector(Vector3 a, Vector3 b, float tolerance = MathUtility.DELTA_COMPARER_TOLERANCE)
+        {
+            return Vector3.SqrMagnitude(a - b) < tolerance;
+        }
+
+        /// <summary>
+        /// Force value to the next even number.
+        /// </summary>
+        /// <param name="value">Value to evaluate and force.</param>
+        /// <returns>The next even number.</returns>14104
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static int ForceEvenValue(int value)
+        {
+            return (value % 2 != 0) ? value + 1 : value;
+        }
+
+        /// <summary>
+        /// Force value to the next even number.
+        /// </summary>
+        /// <param name="value">Value to evaluate and force.</param>
+        /// <returns>The next even number.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float ForceEvenValue(float value)
+        {
+            return MathUtility.ForceEvenValue((int)value);
+        }
+
+        /// <summary>
+        /// Force value to the next odd number.
+        /// </summary>
+        /// <param name="value">Value to evaluate and force.</param>
+        /// <returns>The next odd number.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static int ForceOddValue(int value)
+        {
+            return (value % 2 == 0) ? value + 1 : value;
+        }
+
+        /// <summary>
+        /// Force value to the next odd number.
+        /// </summary>
+        /// <param name="value">Value to evaluate and force.</param>
+        /// <returns>The next odd number.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float ForceOddValue(float value)
+        {
+            return MathUtility.ForceOddValue((int)value);
+        }
+
+        /// <summary>
+        /// Convert a normalized value to decibels.
+        /// </summary>
+        /// <param name="value">A value between 0 and 1. If the value is out of range, it will clamp between 0 and 1.</param>
+        /// <returns>Returns the decibels value.</returns>
+        /// <remarks>Use this function when need to manage a audio volume easily.
+        /// Source: https://johnleonardfrench.com/articles/the-right-way-to-make-a-volume-slider-in-unity-using-logarithmic-conversion/ </remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float ToDecibels(float value)
+        {
+            return Mathf.Log10(Mathf.Clamp(value, 0.0001f, 1f)) * 20f;
+        }
+
+        /// <summary>
+        /// Remap value from original range to new range.
+        /// </summary>
+        /// <param name="value"><see cref="float"/> value.</param>
+        /// <param name="oldMin">Original min range value.</param>
+        /// <param name="oldMax">Original max range value.</param>
+        /// <param name="newMin">New min range value.</param>
+        /// <param name="newMax">New max range value.</param>
+        /// <returns>Returns the value in the new range.</returns>
+        /// <remarks>Source: https://forum.unity.com/threads/re-map-a-number-from-one-range-to-another.119437/ </remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float Remap(float value, float oldMin, float oldMax, float newMin, float newMax)
+        {
+            return (value - oldMin) / (oldMax - oldMin) * (newMax - newMin) + newMin;
+        }
+
+        /// <summary>
+        /// Remap value from original range to new range.
+        /// </summary>
+        /// <param name="value"><see cref="int"/> value.</param>
+        /// <param name="oldMin">Original min range value.</param>
+        /// <param name="oldMax">Original max range value.</param>
+        /// <param name="newMin">New min range value.</param>
+        /// <param name="newMax">New max range value.</param>
+        /// <returns>Returns the value in the new range.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static int Remap(int value, int oldMin, int oldMax, int newMin, int newMax)
+        {
+            return (int)MathUtility.Remap((float)value, (float)oldMin, (float)oldMax, (float)newMin, (float)newMax);
+        }
+
+        /// <summary>
+        /// Remap value from original range to new range.
+        /// </summary>
+        /// <param name="value"><see cref="float"/> value.</param>
+        /// <param name="oldRange">Original range defined by a <see cref="Vector2"/>.</param>
+        /// <param name="newRange">New range defined by a <see cref="Vector2"/>.</param>
+        /// <returns>Returns the value in the new range.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static float Remap(float value, Vector2 oldRange, Vector2 newRange)
+        {
+            return MathUtility.Remap(value, oldRange.x, oldRange.y, newRange.x, newRange.y);
+        }
+
+        /// <summary>
+        /// Remap value from original range to new range.
+        /// </summary>
+        /// <param name="value"><see cref="float"/> value.</param>
+        /// <param name="oldRange">Original range defined by a <see cref="Vector2Int"/>.</param>
+        /// <param name="newRange">New range defined by a <see cref="Vector2Int"/>.</param>
+        /// <returns>Returns the value in the new range.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static int Remap(float value, Vector2Int oldRange, Vector2Int newRange)
+        {
+            return (int)MathUtility.Remap((float)value, (Vector2)oldRange, (Vector2)newRange);
+        }
+        #endregion
+    }
+}

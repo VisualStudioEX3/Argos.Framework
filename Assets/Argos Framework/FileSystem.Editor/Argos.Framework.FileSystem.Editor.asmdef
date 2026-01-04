@@ -1,0 +1,14 @@
+{
+    "name": "Argos.Framework.FileSystem.Editor",
+    "references": [
+        "Argos.Framework",
+        "Argos.Framework.Editor",
+        "Argos.Framework.FileSystem"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false
+}

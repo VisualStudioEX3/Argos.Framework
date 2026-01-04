@@ -1,0 +1,232 @@
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
+using System.Security.Cryptography;
+using System.Text;
+using UnityEngine;
+
+namespace Argos.Framework.Utils
+{
+    #region Enums
+    /// <summary>
+    /// Enumeration of platforms supported by Argos.Framework.
+    /// </summary>
+    [Flags]
+    public enum ArgosSupportedPlatforms
+    {
+        Windows = 0,
+        Linux = 1,
+        OSX = 2,
+        Desktop = Windows | Linux | OSX,
+
+        UWPDesktop = 4,
+        UWPXBoxOne = 8,
+        UniversalWindowsPlatform = UWPDesktop | UWPXBoxOne,
+
+        XBoxOne = 16,
+        PS4 = 32,
+        NintendoSwitch = 64,
+        Console = XBoxOne | UWPXBoxOne | PS4 | NintendoSwitch
+    }
+    #endregion
+
+    /// <summary>
+    /// General utility class.
+    /// </summary>
+    public static class ApplicationUtility
+    {
+        #region Properties
+        /// <summary>
+        /// Return the current supported platform.
+        /// </summary>
+        public static ArgosSupportedPlatforms CurrentPlatform
+        {
+            get
+            {
+                switch (UnityEngine.Application.platform)
+                {
+                    case RuntimePlatform.OSXEditor:
+                    case RuntimePlatform.OSXPlayer:
+
+                        return ArgosSupportedPlatforms.OSX;
+
+                    case RuntimePlatform.WindowsPlayer:
+                    case RuntimePlatform.WindowsEditor:
+
+                        return ArgosSupportedPlatforms.Windows;
+
+                    case RuntimePlatform.LinuxPlayer:
+                    case RuntimePlatform.LinuxEditor:
+
+                        return ArgosSupportedPlatforms.Linux;
+
+                    case RuntimePlatform.WSAPlayerX86:
+                    case RuntimePlatform.WSAPlayerARM:
+
+                        return ArgosSupportedPlatforms.UWPDesktop;
+
+                    case RuntimePlatform.WSAPlayerX64:
+
+                        switch (SystemInfo.deviceType)
+                        {
+                            case DeviceType.Console:
+
+                                return ArgosSupportedPlatforms.UWPXBoxOne;
+
+                            case DeviceType.Desktop:
+
+                                return ArgosSupportedPlatforms.UWPDesktop;
+
+                            default:
+
+                                throw new NotImplementedException($"Platform not supported. Platform: {UnityEngine.Application.platform}, Device type: {SystemInfo.deviceType}");
+                        }
+
+                    case RuntimePlatform.PS4:
+
+                        return ArgosSupportedPlatforms.PS4;
+
+                    case RuntimePlatform.XboxOne:
+
+                        return ArgosSupportedPlatforms.XBoxOne;
+
+                    case RuntimePlatform.Switch:
+
+                        return ArgosSupportedPlatforms.NintendoSwitch;
+
+                    default:
+
+                        throw new NotImplementedException($"Platform not supported. Platform: {UnityEngine.Application.platform}, Device type: {SystemInfo.deviceType}");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Determine if the current platform a desktop platform.
+        /// </summary>
+        public static bool IsDesktopPlatform { get { return ArgosSupportedPlatforms.Desktop.HasFlag(ApplicationUtility.CurrentPlatform); } }
+
+        /// <summary>
+        /// Determine if the current platform a console platform.
+        /// </summary>
+        public static bool IsConsolePlatform { get { return ArgosSupportedPlatforms.Console.HasFlag(ApplicationUtility.CurrentPlatform); } }
+        #endregion
+
+        #region Methods & Functions
+        /// <summary>
+        /// Swap values.
+        /// </summary>
+        /// <typeparam name="T">Type of variable. Must be a struct or value type.</typeparam>
+        /// <param name="a">First value.</param>
+        /// <param name="b">Second value.</param>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static void Swap<T>(T a, T b) where T : struct
+        {
+            T c = a; a = b; b = c;
+        }
+
+        /// <summary>
+        /// Swap class instances.
+        /// </summary>
+        /// <typeparam name="T">Type of class. Struct values not allowed.</typeparam>
+        /// <param name="a">First instance.</param>
+        /// <param name="b">Second instance.</param>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static void SwapInstances<T>(ref T a, ref T b) where T : class
+        {
+            T c = a; a = b; b = c;
+        }
+
+        /// <summary>
+        /// Created a safe random seed for intializing the System.Random class.
+        /// </summary>
+        /// <returns>Return a random seed.</returns>
+        /// <remarks>This functions calculated the seed using the <see cref="System.Security.Cryptography.RandomNumberGenerator"/>.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static int GenerateSafeRandomSeed()
+        {
+            var cryptoResult = new byte[4];
+            new RNGCryptoServiceProvider().GetBytes(cryptoResult);
+            return BitConverter.ToInt32(cryptoResult, 0);
+        }
+
+        /// <summary>
+        /// Generate a Int32 value based on a GUID value.
+        /// </summary>
+        /// <returns>Return a Int32 GUID value.</returns>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static int GenerateInt32GuidValue()
+        {
+            return BitConverter.ToInt32(Guid.NewGuid().ToByteArray(), 0);
+        }
+
+        /// <summary>
+        /// Set the ragdoll pose based on the character current pose.
+        /// </summary>
+        /// <param name="ragdoll">Ragdoll based on character.</param>
+        /// <param name="character">Character to copy the pose.</param>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static void SetRagdollPose(Transform ragdoll, Transform character)
+        {
+            ragdoll.position = character.position;
+            ragdoll.rotation = character.rotation;
+
+            for (int i = 0; i < ragdoll.childCount; i++)
+            {
+                ApplicationUtility.SetRagdollPose(ragdoll.GetChild(i), character.GetChild(i));
+            }
+        }
+
+        /// <summary>
+        /// Cleanup memory and unused assets.
+        /// </summary>
+        /// <param name="discardGCCollect">Discard <see cref="System.GC.Collect()"/> call during the cleanup process.</param>
+        /// <returns>Return an AsyncOperation for controlling the wait period during the cleanup process.</returns>
+        /// <remarks>This function is only a shortcut to call a <see cref="System.GC.Collect()"/> and <see cref="UnityEngine.Resources.UnloadUnussedAssets()"/> functions.</remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static AsyncOperation CleanUpMemoryAndAssets(bool discardGCCollect = false)
+        {
+            if (!discardGCCollect)
+            {
+                GC.Collect();
+            }
+
+            return Resources.UnloadUnusedAssets();
+        }
+
+        /// <summary>
+        /// Calculate MD5 Hash.
+        /// </summary>
+        /// <param name="input">Input string.</param>
+        /// <returns>MD5 Hash string.</returns>
+        /// <remarks>Based on this source: https://blogs.msdn.microsoft.com/csharpfaq/2006/10/09/how-do-i-calculate-a-md5-hash-from-a-string/ </remarks>
+        [MethodImplAttribute(MethodImplOptions.AggressiveInlining)]
+        public static string CalculateMD5Hash(string input)
+        {
+            var md5 = MD5.Create();
+            byte[] inputBytes = Encoding.UTF8.GetBytes(input);
+            byte[] hash = md5.ComputeHash(inputBytes);
+            var hashString = new StringBuilder();
+
+            foreach (var b in hash)
+            {
+                hashString.Append(b.ToString("x2"));
+            }
+
+            return hashString.ToString();
+        }
+
+        public static string[] GetLayerNames()
+        {
+            var names = new string[32];
+            for (int i = 0; i < 32; i++)
+            {
+                names[i] = LayerMask.LayerToName(i);
+            }
+
+            return names;
+        }
+        #endregion
+    }
+}
